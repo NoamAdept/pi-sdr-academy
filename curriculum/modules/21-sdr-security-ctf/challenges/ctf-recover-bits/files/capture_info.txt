@@ -1,0 +1,2 @@
+sample_rate_hz=8000
+complex_samples=2240

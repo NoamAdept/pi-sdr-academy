@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+echo "=== grq-flowgraph-connect ==="
+python3 starter.py
+echo
+echo "Read README.txt, edit connect_flowgraph.py, then run ./check"

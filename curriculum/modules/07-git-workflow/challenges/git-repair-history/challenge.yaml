@@ -1,0 +1,76 @@
+id: git-repair-history
+module: git-workflow
+title: Repair History with Revert
+difficulty: hard
+estimated_time: "50-80 minutes"
+
+prerequisites:
+  - git-debug-history
+
+objectives:
+  - local_git_history
+  - inspect_changes
+  - safe_recovery
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  git revert makes a new commit that safely undoes an old commit.
+
+  Your task: Revert the commit that changed mode=FM to mode=AM; do not reset or delete history.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: git-repair-history
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - check
+  - run
+
+expected_tools:
+  - git
+  - bash
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{git_repair_history}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Revert the commit that changed mode=FM to mode=AM; do not reset or delete history.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Find the bad hash with `git -C lab log --oneline`, then run `git -C lab revert HASH`.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  The configuration is repaired and HEAD is a revert commit. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

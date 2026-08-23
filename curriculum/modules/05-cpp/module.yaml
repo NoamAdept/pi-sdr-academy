@@ -1,0 +1,15 @@
+id: cpp
+slug: cpp
+title: C++
+order: 5
+description: |
+  Modern C++: classes, STL, RAII, smart pointers, and library design.
+prerequisites:
+  - debugging-gdb
+challenges:
+  - cpp-first-class
+  - cpp-stl
+  - cpp-raii
+  - cpp-smart-ptr
+  - cpp-mini-lib
+  - cpp-debug-app

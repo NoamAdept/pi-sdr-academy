@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Pi SDR Academy — How to Use</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    :root {
+      --bg: #fff;
+      --fg: #111;
+      --muted: #444;
+      --lime: #5a7a00;
+      --line: #ddd;
+      --code-bg: #f4f6f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      font-size: 10.5pt;
+      line-height: 1.45;
+    }
+    h1 {
+      font-size: 22pt;
+      margin: 0 0 0.25rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 11pt;
+      margin: 0 0 1.25rem;
+    }
+    h2 {
+      font-size: 13pt;
+      margin: 1.4rem 0 0.5rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 2px solid #c8ff00;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11pt;
+      margin: 1rem 0 0.35rem;
+      page-break-after: avoid;
+    }
+    p { margin: 0.4rem 0; }
+    ul, ol { margin: 0.35rem 0 0.6rem 1.2rem; padding: 0; }
+    li { margin: 0.2rem 0; }
+    code, pre {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 9pt;
+    }
+    code {
+      background: var(--code-bg);
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+    }
+    pre {
+      background: #0b0f0b;
+      color: #e8f0e8;
+      padding: 0.75rem 0.9rem;
+      border-radius: 6px;
+      overflow: hidden;
+      white-space: pre-wrap;
+      page-break-inside: avoid;
+    }
+    pre code { background: none; color: inherit; padding: 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5rem 0 0.8rem;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.4rem 0.5rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f0f4e8; }
+    .note {
+      border-left: 3px solid #c8ff00;
+      background: #f7faef;
+      padding: 0.55rem 0.75rem;
+      margin: 0.7rem 0;
+      page-break-inside: avoid;
+    }
+    .warn {
+      border-left: 3px solid #c45;
+      background: #fff5f4;
+      padding: 0.55rem 0.75rem;
+      margin: 0.7rem 0;
+    }
+    .footer {
+      margin-top: 2rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 8.5pt;
+    }
+    .hero-kanji {
+      float: right;
+      font-size: 42pt;
+      line-height: 1;
+      color: #c8ff00;
+      opacity: 0.85;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-kanji">道場</div>
+  <h1>Pi SDR Academy</h1>
+  <p class="subtitle">How to use the lab — student playbook &amp; instructor notes</p>
+
+  <div class="note">
+    Offline dojo for systems, DSP, and software-defined radio on a Raspberry Pi (or Mac for development).
+    You earn <strong>belts</strong> by finishing <strong>dojos</strong> in order. Day-to-day scoring is
+    <code>./check</code> — you do not need to type <code>academy …</code> for normal play.
+  </div>
+
+  <h2>1. One-time setup (Mac)</h2>
+  <pre><code>cd /Users/noamyakar/Desktop/pi-sdr-academy
+source .venv/bin/activate
+export ACADEMY_CURRICULUM=$PWD/curriculum
+export PYTHONPATH=$PWD/platform
+
+# Optional — installs short commands on PATH: next, hint, submit, status, dojos
+pip install -e ./platform</code></pre>
+  <p>On a prepared Pi image, instead source <code>/opt/academy/academy.env</code> (or your install path) after <code>offline_bundle/install.sh</code>.</p>
+
+  <h2>2. Everyday student loop</h2>
+  <pre><code>python -m academy              # home screen + belt status
+# or:  dojos
+
+python -m academy next         # load next challenge
+cd ~/challenge                 # or /challenge on Pi
+# … solve the challenge …
+
+./check                        # grade + score in one step
+python -m academy next         # continue</code></pre>
+
+  <h3>If you found a flag in the files</h3>
+  <pre><code>./submit 'flag{...}'           # quotes required in zsh</code></pre>
+
+  <h3>Useful local commands (inside the challenge folder)</h3>
+  <table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>./check</code></td><td>Runs the grader and submits on success</td></tr>
+    <tr><td><code>./submit 'flag{…}'</code></td><td>Submit a flag you found yourself</td></tr>
+    <tr><td><code>./hint</code></td><td>Reveal the next hint</td></tr>
+    <tr><td><code>./next</code></td><td>Load the next challenge</td></tr>
+  </table>
+
+  <h3>Useful global commands (after <code>pip install -e ./platform</code>)</h3>
+  <table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>next</code></td><td>Start next unlocked challenge</td></tr>
+    <tr><td><code>hint</code></td><td>Get a hint</td></tr>
+    <tr><td><code>submit</code></td><td>Score (auto-runs check if needed)</td></tr>
+    <tr><td><code>dojos</code> / <code>status</code></td><td>Belt map / scoreboard</td></tr>
+    <tr><td><code>python -m academy where</code></td><td>Print challenge folder path</td></tr>
+  </table>
+
+  <h2>3. Dojo map in the browser</h2>
+  <pre><code>python -m academy serve --port 8081
+# open http://127.0.0.1:8081/</code></pre>
+  <ul>
+    <li>Click a dojo card to see modules, every challenge, and a short description.</li>
+    <li>Core dojos unlock in belt order (white → black).</li>
+    <li>Side quests are optional and do not block the core path.</li>
+  </ul>
+
+  <h2>4. Belts (core path)</h2>
+  <table>
+    <tr><th>Belt</th><th>Dojo</th><th>Focus</th></tr>
+    <tr><td>White</td><td>Intro to the Lab</td><td>Terminal, files, first flags</td></tr>
+    <tr><td>Yellow</td><td>Software Craft</td><td>Python, C/C++, GDB, CMake, Git</td></tr>
+    <tr><td>Orange</td><td>Systems Core</td><td>Processes, IPC, architecture</td></tr>
+    <tr><td>Green</td><td>DSP Foundations</td><td>Sampling, FFT, filters</td></tr>
+    <tr><td>Blue</td><td>Radio Path</td><td>IQ, GNU Radio, BPSK/QPSK, sync</td></tr>
+    <tr><td>Purple</td><td>Receivers &amp; Radio Security</td><td>Full RX, protocol RE, CTF</td></tr>
+    <tr><td>Black</td><td>Capstone — Blackout</td><td>End-to-end recovery</td></tr>
+  </table>
+  <p>Side quest: <strong>Language Qualification</strong> (brown) — Python / C++ / GNU Radio C++ depth.</p>
+
+  <h2>5. How flags work</h2>
+  <ul>
+    <li>Each <code>next</code> / start mints a <strong>session flag</strong> with a random suffix (e.g. <code>flag{name_a1b2c3}</code>).</li>
+    <li>The flag file stays empty until you earn it via <code>./check</code> (or you paste a found flag).</li>
+    <li>Checkers do not hardcode the live flag. Do not distribute instructor solutions to students.</li>
+  </ul>
+
+  <h2>6. Instructor guides (password protected)</h2>
+  <div class="warn">
+    Keep unlocked instructor material off student machines and Pi images.
+  </div>
+  <pre><code># Unlock (password from env, prompt, or instructor/.instructor_password)
+python3 scripts/unlock_instructor_guides.py
+open instructor/INDEX.md
+
+# Lock again before sharing the repo / imaging a Pi
+python3 scripts/lock_instructor_guides.py</code></pre>
+  <p>After editing challenges, regenerate then re-lock:</p>
+  <pre><code>python3 scripts/generate_instructor_guides.py
+python3 scripts/lock_instructor_guides.py</code></pre>
+
+  <h2>7. Project map</h2>
+  <table>
+    <tr><th>Path</th><th>Purpose</th></tr>
+    <tr><td><code>curriculum/</code></td><td>Modules, challenges, <code>dojos.yaml</code></td></tr>
+    <tr><td><code>platform/</code></td><td>Engine, CLI, dojo web UI</td></tr>
+    <tr><td><code>~/challenge</code> or <code>/challenge</code></td><td>Active challenge workspace</td></tr>
+    <tr><td><code>instructor/guides.encrypted</code></td><td>Encrypted solution pack</td></tr>
+    <tr><td><code>offline_bundle/</code></td><td>Pi offline installer</td></tr>
+    <tr><td><code>docs/</code></td><td>Topic notes + this guide</td></tr>
+  </table>
+
+  <h2>8. Raspberry Pi (later)</h2>
+  <ol>
+    <li>Copy the repo (and offline bundle) to the Pi.</li>
+    <li>Run <code>offline_bundle/install.sh</code>.</li>
+    <li><code>source</code> the generated <code>academy.env</code>.</li>
+    <li>Same student loop: <code>next</code> → work in <code>/challenge</code> → <code>./check</code>.</li>
+    <li>Do <strong>not</strong> unlock instructor guides on student images.</li>
+  </ol>
+
+  <h2>9. Quick troubleshooting</h2>
+  <table>
+    <tr><th>Problem</th><th>Fix</th></tr>
+    <tr><td><code>next</code> / <code>academy</code> not found</td><td>Activate venv; set <code>PYTHONPATH</code> or <code>pip install -e ./platform</code></td></tr>
+    <tr><td>Wrong folder</td><td>Run <code>python -m academy where</code> and <code>cd</code> there</td></tr>
+    <tr><td><code>./submit flag{…}</code> fails in zsh</td><td>Use quotes: <code>./submit 'flag{…}'</code></td></tr>
+    <tr><td>Old flag rejected</td><td>Session nonce changed — use planted flag or re-run <code>./check</code></td></tr>
+    <tr><td>Port 8080 in use</td><td><code>python -m academy serve --port 8081</code></td></tr>
+    <tr><td>Cannot unlock guides</td><td>Set <code>INSTRUCTOR_PASSWORD</code> or check <code>instructor/.instructor_password</code></td></tr>
+  </table>
+
+  <div class="footer">
+    Pi SDR Academy — How to Use · Generated for local / workshop distribution ·
+    Prefer learning over spoilers when this lab is used for a class.
+  </div>
+</body>
+</html>

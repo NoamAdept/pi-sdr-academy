@@ -1,0 +1,64 @@
+id: cppq-modern-cpp
+module: cpp-qualification
+title: "Modernize a Channel Scanner"
+difficulty: medium
+estimated_time: "55-80 minutes"
+
+prerequisites:
+  - cppq-strings-files
+
+objectives:
+  - type-inference-and-range-for
+  - scoped-enumerations
+  - constexpr-and-std-array
+
+mastery_evidence:
+  - understand
+  - implement
+  - integrate
+
+description: |
+  Finish one C++17 scanner project using `auto`, range-based for loops,
+  `enum class`, `constexpr`, and `std::array`. Classify fixed signal levels and
+  calculate the compile-time channel count needed to decode the result.
+
+environment:
+  type: workspace
+  workspace_subdir: cppq-modern-cpp
+  notes: CMake is covered in Module 6; this exercise intentionally uses one direct g++ command.
+
+files:
+  - README.md
+  - scanner.cpp
+  - check
+
+expected_tools:
+  - bash
+  - g++
+
+flags:
+  value: "flag{modern_cpp_makes_states_explicit}"
+  validation: session
+
+hints:
+  - level: 1
+    text: A scoped enum value is written `Signal::strong`, not just `strong`.
+  - level: 2
+    text: A constexpr function can be used in a `static_assert`.
+  - level: 3
+    text: "Iterate over the array by value with `for (auto level : levels)`."
+
+solution: |
+  Return scoped enum values from a constexpr classifier, declare the levels as
+  `std::array<int, 5>`, use a range-for loop, and print the number of strong values.
+
+explanation: |
+  These C++17 features reduce accidental conversions, make fixed-size data
+  explicit, and allow simple invariants to be checked during compilation.
+
+extension:
+  title: "Add a weak count"
+  description: Count all enum states and verify the total equals the array size.
+
+performance_notes: One small translation unit; no external dependencies.
+optional_hardware: []

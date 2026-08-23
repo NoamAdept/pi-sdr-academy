@@ -1,0 +1,5 @@
+Morning notes: antenna inspection at 08:15.
+Control moved to 145.800 MHz after a test on 433.500 MHz.
+Ignore channel 12 and ticket 2026.
+Backup remains 145.800 MHz; beacon is 28.120 MHz.
+Weather receiver: 162.550 MHz.

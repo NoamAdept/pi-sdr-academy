@@ -1,0 +1,78 @@
+id: cmake-first
+module: cmake
+title: First CMake Project
+difficulty: easy
+estimated_time: "25-40 minutes"
+
+prerequisites:
+  - module:cpp
+
+objectives:
+  - cmake_configuration
+  - targets
+  - repeatable_builds
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Write a minimal CMake build for one C++ executable.
+
+  Your task: Create CMakeLists.txt, configure a separate build directory, and build an executable named hello.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: cmake-first
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - CMakeLists.txt
+  - README.md
+  - check
+  - main.cpp
+  - run
+
+expected_tools:
+  - cmake
+  - c++
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{cmake_first}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Create CMakeLists.txt, configure a separate build directory, and build an executable named hello.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Add `add_executable(hello main.cpp)`, then configure and build.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  A working configure/build cycle and hello prints `Pi SDR ready`. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

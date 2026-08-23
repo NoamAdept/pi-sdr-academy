@@ -1,0 +1,78 @@
+id: fft-leakage
+module: fft
+title: Measure Spectral Leakage
+difficulty: medium
+estimated_time: "45-70 minutes"
+
+prerequisites:
+  - fft-bin-challenge
+
+objectives:
+  - numpy_fft
+  - frequency_bins
+  - spectral_measurement
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Leakage spreads energy when a captured tone does not complete a whole number of cycles.
+
+  Your task: Compute the peak frequency and fraction of power outside the peak bin.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: fft-leakage
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - analyze.py
+  - check
+  - generate_data.py
+  - run
+
+expected_tools:
+  - python3
+  - numpy
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{fft_leakage}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Compute the peak frequency and fraction of power outside the peak bin.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Let p=abs(rfft(x))**2, k=argmax(p), and leakage=(p.sum()-p[k])/p.sum().
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  result.txt finds about 123 Hz and a leakage fraction between 0.1 and 0.9. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

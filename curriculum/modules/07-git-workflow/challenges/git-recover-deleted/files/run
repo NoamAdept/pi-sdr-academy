@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+if [ -d lab/.git ]; then
+  echo 'The local lab already exists; leaving your progress unchanged.'
+  exit 0
+fi
+rm -rf lab; mkdir lab; cd lab; git init -q; git config user.name Academy; git config user.email academy@local
+printf 'offset_ppm=-2\ngain_db=18\n' > calibration.ini; git add .; git commit -qm 'save calibration'
+git rm -q calibration.ini; git commit -qm 'remove old calibration'
+echo 'Recover calibration.ini from history and commit it.'

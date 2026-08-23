@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined app.cpp main.cpp -o receiver_app
+./receiver_app

@@ -1,0 +1,16 @@
+id: systems-programming
+slug: systems-programming
+title: Linux Systems Programming
+order: 8
+description: |
+  fork/exec, pipes, signals, threads, sockets, shared memory, and mmap.
+prerequisites:
+  - c
+  - debugging-gdb
+challenges:
+  - sys-file-descriptors
+  - sys-pipes
+  - sys-process-controller
+  - sys-tcp-client
+  - sys-threaded-server
+  - sys-ipc

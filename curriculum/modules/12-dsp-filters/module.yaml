@@ -1,0 +1,15 @@
+id: dsp-filters
+slug: dsp-filters
+title: DSP Filters
+order: 12
+description: |
+  FIR/IIR, convolution, mixing, frequency translation, decimation, interpolation.
+prerequisites:
+  - fft
+challenges:
+  - filt-lpf
+  - filt-hpf
+  - filt-bpf
+  - filt-fir-design
+  - filt-remove-interference
+  - filt-dsp-pipeline

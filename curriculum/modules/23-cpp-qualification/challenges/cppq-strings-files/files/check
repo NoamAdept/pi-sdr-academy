@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+from pathlib import Path
+
+build = subprocess.run(
+    ["g++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "config.cpp", "-o", "config"],
+    text=True, capture_output=True,
+)
+if build.returncode:
+    raise SystemExit("Not yet: compile failed:\n" + build.stderr)
+run = subprocess.run(["./config"], text=True, capture_output=True)
+if run.returncode or run.stdout.strip() != "streams_keep_configs_offline":
+    raise SystemExit("Not yet: save, reload, normalize, and print the token.")
+config = Path("radio.conf")
+if not config.exists() or "station=pi_sdr_lab" not in config.read_text():
+    raise SystemExit("Not yet: radio.conf was not written in key=value form.")
+
+marker = Path(".flagpath")
+target = Path(marker.read_text().strip()) if marker.exists() else Path(os.environ.get("ACADEMY_FLAG_PATH", "/home/flag.txt"))
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text('')
+print('CHECK_OK')

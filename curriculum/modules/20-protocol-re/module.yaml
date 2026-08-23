@@ -1,0 +1,15 @@
+id: protocol-re
+slug: protocol-re
+title: Digital Protocol Reverse Engineering
+order: 20
+description: |
+  Bits to bytes, headers, packet structure, CRC, and unknown protocol decoders.
+prerequisites:
+  - complete-receivers
+challenges:
+  - proto-bit-byte
+  - proto-header
+  - proto-packet
+  - proto-crc
+  - proto-unknown
+  - proto-decoder

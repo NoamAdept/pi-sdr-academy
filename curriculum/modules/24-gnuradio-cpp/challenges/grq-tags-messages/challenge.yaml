@@ -1,0 +1,61 @@
+id: grq-tags-messages
+module: gnuradio-cpp
+title: "Separate Tags from Messages"
+difficulty: medium
+estimated_time: "40-60 minutes"
+prerequisites: []
+objectives:
+  - stream_tags
+  - message_ports
+  - metadata_offsets
+mastery_evidence:
+  - understand
+  - implement
+  - apply
+description: |
+  ## Mission
+  Attach a secret tag to a stream, preserve it through a copy block, and
+  read it at the sink. Also send one asynchronous status message and prove
+  that it does not consume or alter stream items.
+
+  Work entirely offline with the bundled Python/NumPy simulator. GNU Radio is
+  optional; `OPTIONAL_GNURADIO.md` maps the exercise to real block APIs.
+  Run `./run`, edit the starter file, then run `./check`. A correct solution
+  writes the flag to `.flagpath`, `ACADEMY_FLAG_PATH`, or `/home/flag.txt`.
+environment:
+  type: flowgraph
+  workspace_subdir: grq-tags-messages
+  notes: Fully offline; GNU Radio and SDR hardware are not required.
+files:
+  - README.txt
+  - OPTIONAL_GNURADIO.md
+  - lib_flow.py
+  - tagged_flow.py
+  - starter.py
+  - run
+  - check
+  - checker.py
+expected_tools:
+  - ./run
+  - ./check
+  - python3
+  - numpy
+flags:
+  value: "flag{tags_ride_streams_messages_do_not}"
+  validation: session
+hints:
+  - level: 1
+    text: "Construct Tag(offset=2, key='secret', value=...)."
+  - level: 2
+    text: "Run the tagged source through CopyBlock before reading sink.tags."
+  - level: 3
+    text: "post_message stores a port/payload pair separately from stream data."
+solution: |
+  Place the secret in a Tag at offset two, run the stream through CopyBlock, post a status message to the sink, and return the matching tag value.
+explanation: |
+  Tags annotate a particular stream offset and travel with samples. Messages are asynchronous PMT-style events on named ports; they are deliberately stored outside the stream.
+extension:
+  title: "Try the real runtime"
+  description: "If GNU Radio is installed, recreate the graph using the block mapping in OPTIONAL_GNURADIO.md."
+performance_notes: "Deterministic arrays are small; checks normally finish in under five seconds on a Raspberry Pi."
+optional_hardware: []

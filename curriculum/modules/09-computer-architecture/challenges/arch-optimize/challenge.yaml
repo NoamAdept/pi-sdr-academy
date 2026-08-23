@@ -1,0 +1,78 @@
+id: arch-optimize
+module: computer-architecture
+title: Compare Optimized Code
+difficulty: hard
+estimated_time: "55-85 minutes"
+
+prerequisites:
+  - arch-disasm
+
+objectives:
+  - machine_representation
+  - compiler_output
+  - runtime_observation
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Compiler optimization transforms code while preserving observable results.
+
+  Your task: Build sum.c at -O0 and -O2, verify equal output, and record both binary sizes.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: arch-optimize
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - answer.txt
+  - check
+  - run
+  - sum.c
+
+expected_tools:
+  - cc
+  - assembly_or_disassembler
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{arch_optimize}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Build sum.c at -O0 and -O2, verify equal output, and record both binary sizes.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Run `wc -c < sum_o0` and `wc -c < sum_o2`; copy the exact positive sizes.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  Both builds return sum=499500 and answer.txt contains measured positive sizes. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

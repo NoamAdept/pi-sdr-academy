@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+if [ -d lab/.git ]; then
+  echo 'The local lab already exists; leaving your progress unchanged.'
+  exit 0
+fi
+rm -rf lab; mkdir lab; cd lab; git init -q; git config user.name Academy; git config user.email academy@local
+printf 'center_hz=100000000\nmode=FM\n' > radio.conf; git add .; git commit -qm 'working FM preset'
+printf 'center_hz=91500000\nmode=FM\n' > radio.conf; git commit -qam 'update regional preset'
+printf 'center_hz=91500000\nmode=FM\ngain=12\n' > radio.conf; git commit -qam 'add gain'
+cd ..; printf 'culprit=\n' > answer.txt

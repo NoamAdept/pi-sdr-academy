@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+from pathlib import Path
+
+source = Path("scanner.cpp").read_text()
+required = ("std::array", "enum class", "constexpr", "auto", "for (")
+if any(item not in source for item in required):
+    raise SystemExit("Not yet: use std::array, enum class, constexpr, auto, and a range-for.")
+if "for (int index" in source:
+    raise SystemExit("Not yet: replace the indexed loop with a range-based for loop.")
+
+build = subprocess.run(
+    ["g++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "scanner.cpp", "-o", "scanner"],
+    text=True, capture_output=True,
+)
+if build.returncode:
+    raise SystemExit("Not yet: compile failed:\n" + build.stderr)
+run = subprocess.run(["./scanner"], text=True, capture_output=True)
+if run.returncode or run.stdout.strip() != "2":
+    raise SystemExit("Not yet: exactly two levels should classify as strong.")
+
+marker = Path(".flagpath")
+target = Path(marker.read_text().strip()) if marker.exists() else Path(os.environ.get("ACADEMY_FLAG_PATH", "/home/flag.txt"))
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text('')
+print('CHECK_OK')

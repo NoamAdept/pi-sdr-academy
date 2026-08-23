@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 - <<'PY'
+from pathlib import Path
+import json
+import os
+from radio_record import RAW_RECORD, RadioRecord, RecordError, decode_status, pack_record, parse_record
+
+assert decode_status(0b101) == (True, False, True)
+record = parse_record(RAW_RECORD)
+expected = RadioRecord(1, True, False, True, 145_500_000, "pyq_bits_serialize")
+assert record == expected, "decoded record fields are incorrect"
+assert json.loads(record.to_json()) == {
+    "version": 1, "active": True, "locked": False, "calibrated": True,
+    "center_hz": 145_500_000, "flag_field": "pyq_bits_serialize",
+}
+assert pack_record(record) == RAW_RECORD, "packing must reverse parsing"
+other = RadioRecord(1, False, True, False, 433_920_000, "0123456789ABCDEFGH")
+assert parse_record(pack_record(other)) == other, "packing must work for new records"
+for bad in (b"short", b"XX" + RAW_RECORD[2:], RAW_RECORD[:2] + b"\x02" + RAW_RECORD[3:]):
+    try:
+        parse_record(bad)
+    except RecordError:
+        pass
+    else:
+        raise AssertionError("invalid records must raise RecordError")
+
+raw = Path(".flagpath").read_text().strip() if Path(".flagpath").exists() else os.environ.get("ACADEMY_FLAG_PATH", "~/flag.txt")
+path = Path(raw).expanduser()
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text('')
+print("Correct! Flag written to", path)
+PY

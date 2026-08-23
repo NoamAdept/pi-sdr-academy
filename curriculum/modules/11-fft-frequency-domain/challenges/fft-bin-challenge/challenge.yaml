@@ -1,0 +1,78 @@
+id: fft-bin-challenge
+module: fft
+title: Map Frequency to an FFT Bin
+difficulty: easy
+estimated_time: "35-55 minutes"
+
+prerequisites:
+  - fft-find-tone
+
+objectives:
+  - numpy_fft
+  - frequency_bins
+  - spectral_measurement
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  FFT bin spacing is sample_rate / sample_count.
+
+  Your task: Calculate bin spacing and the bin index for the tone in signal.npy.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: fft-bin-challenge
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - analyze.py
+  - check
+  - generate_data.py
+  - run
+
+expected_tools:
+  - python3
+  - numpy
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{fft_bin_challenge}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Calculate bin spacing and the bin index for the tone in signal.npy.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Compute bin_hz as fs/len(x) and bin_index as argmax(abs(rfft(x))).
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  result.txt reports bin_hz=1 and bin_index=321. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

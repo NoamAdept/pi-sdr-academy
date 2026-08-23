@@ -1,0 +1,5 @@
+{
+  "status": "ok",
+  "service": "beacon",
+  "flag": "flag{local_service_restored_on_loopback}"
+}

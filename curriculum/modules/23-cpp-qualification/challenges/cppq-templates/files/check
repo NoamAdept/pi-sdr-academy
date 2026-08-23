@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+from pathlib import Path
+
+source = Path("templates.cpp").read_text()
+if "template <typename T>" not in source or "template <typename T, std::size_t N>" not in source:
+    raise SystemExit("Not yet: retain both the function and class templates.")
+
+build = subprocess.run(
+    ["g++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "-fsanitize=address,undefined",
+     "templates.cpp", "-o", "templates"],
+    text=True, capture_output=True,
+)
+if build.returncode:
+    raise SystemExit("Not yet: compile failed:\n" + build.stderr)
+run = subprocess.run(
+    ["./templates"], text=True, capture_output=True,
+    env={**os.environ, "ASAN_OPTIONS": "detect_leaks=1"},
+)
+if run.returncode or run.stdout.strip() != "TEMPLATE":
+    raise SystemExit("Not yet: the newest eight clamped bytes must decode to TEMPLATE.\n" + run.stderr)
+
+marker = Path(".flagpath")
+target = Path(marker.read_text().strip()) if marker.exists() else Path(os.environ.get("ACADEMY_FLAG_PATH", "/home/flag.txt"))
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text('')
+print('CHECK_OK')

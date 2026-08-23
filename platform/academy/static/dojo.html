@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>道場 · Pi SDR Academy</title>
+  <style>
+    :root {
+      --bg: #040604;
+      --panel: #0c110c;
+      --fg: #f2f7f2;
+      --muted: #6f7f6f;
+      --lime: #c8ff00;
+      --cyan: #4ecdc4;
+      --ink: #061006;
+      --line: #1a241a;
+      --danger: #ff6b6b;
+      --font: "Avenir Next", "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      --mono: ui-monospace, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--fg);
+      background: var(--bg);
+      font-family: var(--font);
+      overflow-x: hidden;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(800px 420px at 10% -10%, rgba(200,255,0,0.14), transparent 55%),
+        radial-gradient(700px 380px at 100% 0%, rgba(78,205,196,0.1), transparent 50%),
+        #040604;
+    }
+    .bg::after {
+      content: "";
+      position: absolute; inset: 0; opacity: 0.06;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='56'%3E%3Cpath d='M24 0L48 14V42L24 56L0 42V14Z' fill='none' stroke='%23c8ff00' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 48px 56px;
+    }
+
+    .top {
+      position: sticky; top: 0; z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(4,6,4,0.85);
+      border-bottom: 1px solid var(--line);
+    }
+    .top-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0.7rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; color: inherit; font-weight: 800;
+    }
+    .brand i {
+      width: 30px; height: 30px; border-radius: 9px;
+      display: grid; place-items: center;
+      background: var(--lime); color: var(--ink);
+      box-shadow: 0 0 20px rgba(200,255,0,0.4);
+      font-style: normal; font-weight: 900;
+    }
+    .brand b { color: var(--lime); font-weight: 800; }
+    .score {
+      margin-left: auto;
+      font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+    }
+    .score strong { color: var(--lime); }
+
+    .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+
+    .hero {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+      margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: -0.03em; line-height: 1;
+    }
+    .hero h1 em { font-style: normal; color: var(--lime); text-shadow: 0 0 28px rgba(200,255,0,0.35); }
+    .hero p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.95rem; }
+    .go {
+      border: 0; border-radius: 12px;
+      background: var(--lime); color: var(--ink);
+      font-weight: 800; padding: 0.75rem 1.15rem;
+      box-shadow: 0 0 28px rgba(200,255,0,0.3);
+      transition: transform .12s ease;
+    }
+    .go:hover { transform: translateY(-2px); }
+
+    .how {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 0.85rem;
+      margin: 0 0 0.4rem;
+    }
+    @media (max-width: 760px) { .how { grid-template-columns: 1fr; } }
+    .how-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(200,255,0,0.05), transparent 45%),
+        var(--panel);
+      padding: 1rem 1.05rem;
+    }
+    .how-box .k {
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--cyan); margin-bottom: 0.4rem;
+    }
+    .how-box p {
+      margin: 0;
+      color: var(--fg);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+    .how-box p span { color: var(--lime); }
+    .path {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+    }
+    @media (max-width: 560px) { .path { grid-template-columns: 1fr 1fr; } }
+    .path i {
+      display: block;
+      font-style: normal;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 0.2rem;
+    }
+    .path span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+    .path > div {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.55rem 0.6rem;
+      background: rgba(0,0,0,0.28);
+    }
+
+    .sec {
+      display: flex; align-items: baseline; gap: 0.5rem;
+      margin: 1.4rem 0 0.7rem;
+      font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--cyan); font-family: var(--mono);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .card {
+      --c: var(--lime);
+      position: relative;
+      text-align: left; color: inherit; width: 100%;
+      border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line));
+      border-radius: 18px;
+      padding: 1.05rem 1rem 1rem;
+      min-height: 168px;
+      background:
+        radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c) 22%, transparent), transparent 55%),
+        linear-gradient(165deg, #121812, #080b08);
+      overflow: hidden;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s;
+    }
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45), 0 0 30px color-mix(in srgb, var(--c) 22%, transparent);
+      border-color: color-mix(in srgb, var(--c) 70%, var(--line));
+    }
+    .card.locked { opacity: 0.48; filter: grayscale(0.35); }
+    .card .icons {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.7rem;
+    }
+    .dojo-ico, .belt-ico {
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      display: grid; place-items: center;
+      border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+      background: rgba(0,0,0,0.35);
+      box-shadow: inset 0 0 18px color-mix(in srgb, var(--c) 12%, transparent);
+    }
+    .dojo-ico svg { width: 28px; height: 28px; }
+    .belt-ico {
+      width: 72px; height: 56px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+      padding: 4px;
+    }
+    .belt-ico svg { width: 64px; height: 48px; }
+    .dhero .beltbig {
+      width: 140px; height: 100px;
+      display: grid; place-items: center;
+      border-radius: 16px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+      padding: 0.4rem;
+    }
+    .dhero .beltbig svg { width: 120px; height: 88px; }
+    .belt-tag {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      margin-top: 0.35rem;
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--c, var(--lime)); letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .meta-row {
+      display: flex; flex-wrap: wrap; gap: 0.35rem;
+      margin-top: 0.45rem;
+    }
+    .pill-mini {
+      font-family: var(--mono); font-size: 0.68rem;
+      padding: 0.15rem 0.4rem; border-radius: 999px;
+      border: 1px solid #2a362a; color: var(--muted);
+    }
+    .pill-mini em { font-style: normal; color: var(--fg); }
+    .card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.15;
+    }
+    .card .meta {
+      margin-top: 0.35rem;
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+    }
+    .card .rail {
+      margin-top: 0.85rem; height: 5px; border-radius: 99px;
+      background: #182018; overflow: hidden;
+    }
+    .card .rail > i {
+      display: block; height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--c));
+      box-shadow: 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
+    }
+    .chip {
+      position: absolute; top: 0.75rem; right: 0.75rem;
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
+      text-transform: uppercase; font-weight: 800;
+      padding: 0.18rem 0.4rem; border-radius: 6px;
+      background: var(--c); color: var(--ink);
+    }
+    .chip.lock { background: #3a3a3a; color: #bbb; }
+    .chip.done { background: var(--cyan); color: #042; }
+
+    .back {
+      border: 1px solid var(--line); background: transparent; color: var(--lime);
+      border-radius: 10px; padding: 0.45rem 0.75rem; margin-bottom: 1rem;
+      font-family: var(--mono); font-size: 0.78rem;
+    }
+    .dhero {
+      --c: var(--lime);
+      display: grid; grid-template-columns: auto 1fr auto; gap: 1rem;
+      align-items: center;
+      padding: 1.1rem 1.15rem;
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line));
+      background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--c) 20%, transparent), transparent 45%),
+        var(--panel);
+      margin-bottom: 1rem;
+    }
+    .dhero .big {
+      width: 64px; height: 64px; border-radius: 18px;
+      display: grid; place-items: center;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--c) 25%, transparent);
+    }
+    .dhero .big svg { width: 36px; height: 36px; }
+    .dhero h1 { margin: 0; font-size: 1.55rem; }
+    .dhero .sub { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.88rem; }
+
+    /* pwn.college-style dojo body */
+    .dojo-intro {
+      max-width: 72ch;
+      margin: 0 0 1.25rem;
+      color: #a8b4a8;
+      font-size: 0.98rem;
+      line-height: 1.65;
+    }
+    .dojo-intro p { margin: 0 0 0.85rem; }
+    .dojo-intro p:last-child { margin-bottom: 0; }
+
+    .pc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      max-width: 920px;
+    }
+    .pc-item {
+      border: 1px solid #1e281e;
+      border-radius: 12px;
+      background: #101510;
+      overflow: hidden;
+      transition: border-color .15s, background .15s;
+    }
+    .pc-item:hover { border-color: #2a3a2a; background: #121912; }
+    .pc-item.open { border-color: color-mix(in srgb, var(--lime) 35%, #1e281e); }
+    .pc-item.module-item { background: #0e130e; }
+    .pc-row {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.9rem 1rem;
+      text-align: left;
+      cursor: pointer;
+    }
+    .pc-ico {
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      color: #6a7a6a;
+    }
+    .pc-ico svg { width: 22px; height: 22px; }
+    .pc-thumb {
+      width: 44px; height: 34px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid #1e281e;
+      background: #0a0f0a;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.35);
+    }
+    .pc-item.solved .pc-ico { color: var(--lime); }
+    .pc-item.solved .pc-ico svg { filter: drop-shadow(0 0 6px rgba(200,255,0,0.45)); }
+    .pc-item.solved .pc-thumb { border-color: color-mix(in srgb, var(--lime) 45%, #1e281e); }
+    .pc-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #7dd3fc;
+      letter-spacing: -0.01em;
+    }
+    .pc-item.module-item .pc-title { color: #a5d8ff; }
+    .pc-item.solved .pc-title { color: #4ecdc4; }
+    .pc-right {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #c8d0c8;
+      white-space: nowrap;
+      text-align: right;
+    }
+    .pc-right .dim { color: #6a7a6a; }
+    .pc-right .ok { color: #4ecdc4; }
+
+    .pc-body {
+      display: none;
+      padding: 0 1rem 1rem 3.4rem;
+      border-top: 1px solid #1a241a;
+    }
+    .pc-item.open .pc-body { display: block; padding-top: 0.85rem; }
+    .pc-mod-desc {
+      margin: 0;
+      color: #8a9a8a;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      max-width: 70ch;
+    }
+
+    .panel {
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 0.75rem;
+    }
+    @media (max-width: 760px) {
+      .panel { grid-template-columns: 1fr; }
+      .dhero { grid-template-columns: auto 1fr; }
+      .dhero .beltbig { display: none; }
+      .pc-body { padding-left: 1rem; }
+    }
+
+    .box {
+      border: 1px solid var(--line); border-radius: 14px;
+      background: rgba(0,0,0,0.28); padding: 0.85rem;
+    }
+    .box .k {
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--cyan); margin-bottom: 0.4rem;
+    }
+    .box .m { margin: 0; font-size: 0.92rem; line-height: 1.4; }
+    .box ol { margin: 0.5rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.84rem; }
+    .box ol li { margin: 0.15rem 0; }
+    .tools { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.55rem; }
+    .tool {
+      font-family: var(--mono); font-size: 0.68rem;
+      padding: 0.15rem 0.4rem; border-radius: 999px;
+      border: 1px solid #2a362a; color: var(--fg);
+    }
+    .ws { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.72rem; color: var(--cyan); word-break: break-all; }
+
+    .submit {
+      border: 1px solid color-mix(in srgb, var(--lime) 40%, var(--line));
+      border-radius: 14px;
+      background: radial-gradient(120% 100% at 0% 0%, rgba(200,255,0,0.1), transparent 55%), rgba(0,0,0,0.35);
+      padding: 0.85rem;
+    }
+    .submit .k { color: var(--lime); font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem; }
+    .row input {
+      border: 1px solid #2a362a; border-radius: 10px; background: #070a07;
+      color: var(--fg); padding: 0.65rem 0.7rem; font-family: var(--mono); font-size: 0.85rem; outline: none;
+    }
+    .row input:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(200,255,0,0.12); }
+    .btn {
+      border: 1px solid #2a362a; border-radius: 10px; background: rgba(0,0,0,0.3);
+      color: var(--fg); padding: 0.55rem 0.8rem; font-weight: 700; font-size: 0.85rem;
+    }
+    .btn:hover { border-color: #8ab000; }
+    .btn.pri { background: var(--lime); color: var(--ink); border-color: transparent; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .acts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
+    .fb { margin-top: 0.45rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-height: 1em; }
+    .fb.ok { color: var(--cyan); }
+    .fb.bad { color: var(--danger); }
+    .hints .h {
+      margin-top: 0.35rem; padding: 0.35rem 0.5rem;
+      border-left: 2px solid var(--cyan); background: rgba(78,205,196,0.05);
+      font-size: 0.82rem; color: var(--muted);
+    }
+
+    .toasts {
+      position: fixed; right: 1rem; bottom: 1rem; z-index: 50;
+      display: flex; flex-direction: column; gap: 0.4rem;
+      max-width: min(340px, calc(100vw - 2rem));
+    }
+    .toast {
+      border-radius: 12px; padding: 0.7rem 0.85rem;
+      background: rgba(10,14,10,0.95); border: 1px solid #2a362a;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+      animation: in .2s ease;
+    }
+    .toast.ok { border-color: color-mix(in srgb, var(--cyan) 50%, #2a362a); }
+    .toast.bad { border-color: color-mix(in srgb, var(--danger) 50%, #2a362a); }
+    .toast b { display: block; margin-bottom: 0.1rem; }
+    .toast span { color: var(--muted); font-size: 0.82rem; }
+    @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .burst {
+      position: fixed; inset: 0; pointer-events: none; z-index: 40; opacity: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(200,255,0,0.2), transparent 45%);
+    }
+    .burst.go { animation: burst .65s ease-out forwards; }
+    @keyframes burst { 0% { opacity: .85; } 100% { opacity: 0; } }
+
+    #view-home, #view-dojo { animation: fade .2s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="burst" id="burst"></div>
+
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#" id="home-link"><i>道</i> Pi SDR <b>Academy</b></a>
+      <div class="score">score <strong id="progress">…</strong></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="view-home">
+      <div class="hero">
+        <div>
+          <h1>Pick a <em>dojo</em>. Earn a belt.</h1>
+          <p>Offline · air-gapped · challenge-based</p>
+        </div>
+        <button type="button" class="go" id="btn-go">Continue →</button>
+      </div>
+      <div class="how">
+        <div class="how-box">
+          <div class="k">Goal</div>
+          <p>
+            Train people who can <span>investigate a system, process a signal, recover a message, and explain why</span> —
+            on air-gapped Raspberry Pi hardware. No cloud. One path from shell to working digital receivers.
+          </p>
+        </div>
+        <div class="how-box">
+          <div class="k">Structure</div>
+          <p>Karate-style dojos. Core belts unlock in order. Side quests are optional.</p>
+          <div class="path">
+            <div><i>01 Dojo</i><span>A belt: White → Black</span></div>
+            <div><i>02 Module</i><span>A skill cluster inside the belt</span></div>
+            <div><i>03 Challenge</i><span>Start · solve · submit flag</span></div>
+            <div><i>04 Capstone</i><span>End-to-end recovery under pressure</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sec">Core · 本道</div>
+      <div class="grid" id="core"></div>
+      <div class="sec">Side · 脇道</div>
+      <div class="grid" id="side"></div>
+    </div>
+
+    <div id="view-dojo" class="hidden">
+      <button type="button" class="back" id="btn-back">← Dojos</button>
+      <div class="dhero" id="dhero">
+        <div class="big" id="d-ico"></div>
+        <div>
+          <h1 id="d-title">—</h1>
+          <p class="sub" id="d-sub"></p>
+        </div>
+        <div class="beltbig" id="d-belt"></div>
+      </div>
+      <div class="dojo-intro" id="d-intro"></div>
+      <div class="pc-list" id="d-modules"></div>
+    </div>
+  </main>
+
+  <div class="toasts" id="toasts"></div>
+
+  <script>
+    const ICONS = {
+      'intro-lab': 'term',
+      'software-craft': 'code',
+      'systems-core': 'chip',
+      'dsp-foundations': 'wave',
+      'radio-path': 'radio',
+      'receivers-security': 'shield',
+      'blackout': 'eclipse',
+      'language-qualification': 'book',
+    };
+    const KANJI = { white:'白', yellow:'黄', orange:'橙', green:'緑', blue:'青', purple:'紫', black:'黒', brown:'茶' };
+
+    const home = document.getElementById('view-home');
+    const detail = document.getElementById('view-dojo');
+    let continueTarget = null;
+    let currentDojo = null;
+
+    function esc(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function toast(t, d, kind='ok') {
+      const el = document.createElement('div');
+      el.className = 'toast ' + kind;
+      el.innerHTML = `<b>${esc(t)}</b><span>${esc(d||'')}</span>`;
+      document.getElementById('toasts').appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    function celebrate() {
+      const b = document.getElementById('burst');
+      b.classList.remove('go'); void b.offsetWidth; b.classList.add('go');
+    }
+
+    async function api(path, opts) {
+      let res;
+      try {
+        res = await fetch(path, {
+          headers: { 'Content-Type': 'application/json', ...(opts && opts.headers || {}) },
+          ...opts,
+        });
+      } catch (_) {
+        throw new Error('Server down — run: python -m academy serve --port 8081');
+      }
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
+      if (!res.ok) throw new Error((data && data.error) || ('HTTP ' + res.status));
+      return data;
+    }
+
+    function dojoIcon(kind, color) {
+      const c = color || '#c8ff00';
+      const paths = {
+        term: `<rect x="3" y="5" width="18" height="13" rx="2" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M7 10h4M7 13h7" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/><path d="M8 20h8" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`,
+        code: `<path d="M8 7L3 12l5 5M16 7l5 5-5 5M13 5l-2 14" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>`,
+        chip: `<rect x="5" y="5" width="14" height="14" rx="2" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/><rect x="9" y="9" width="6" height="6" fill="${c}" opacity="0.35"/>`,
+        wave: `<path d="M2 12c2-6 4-6 6 0s4 6 6 0 4-6 6 0" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="${c}"/>`,
+        radio: `<path d="M12 14a3 3 0 100-6 3 3 0 000 6z" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M7 8a7 7 0 010 8M17 8a7 7 0 000 8M4 5a11 11 0 010 14M20 5a11 11 0 000 14" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/><path d="M12 14v6" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`,
+        shield: `<path d="M12 3l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M8 12c1.5 2 3 3 4 3s2.5-1 4-3" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>`,
+        eclipse: `<circle cx="12" cy="12" r="8" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M12 4a8 8 0 000 16 6 6 0 010-16z" fill="${c}" opacity="0.85"/>`,
+        book: `<path d="M5 4h6a3 3 0 013 3v13a3 3 0 00-3-3H5V4zm14 0h-6a3 3 0 00-3 3v13a3 3 0 013-3h6V4z" fill="none" stroke="${c}" stroke-width="1.7"/>`,
+      };
+      const g = paths[kind] || paths.term;
+      return `<svg viewBox="0 0 24 24" aria-hidden="true">${g}</svg>`;
+    }
+
+    function beltIcon(color, belt) {
+      const c = color || '#c8ff00';
+      const isBlack = (belt === 'black') || c === '#222222' || c === '#111' || c === '#000';
+      const cloth = isBlack ? '#141414' : c;
+      const edge = isBlack ? '#c8ff00' : 'rgba(0,0,0,0.28)';
+      const stitch = isBlack ? 'rgba(200,255,0,0.35)' : 'rgba(255,255,255,0.28)';
+      const tip = isBlack ? '#c8ff00' : cloth;
+      const gid = 'bg' + Math.random().toString(36).slice(2, 8);
+      return `<svg viewBox="0 0 160 110" aria-hidden="true">
+        <defs>
+          <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${cloth}" stop-opacity="0.92"/>
+            <stop offset="45%" stop-color="${cloth}"/>
+            <stop offset="100%" stop-color="${cloth}" stop-opacity="0.75"/>
+          </linearGradient>
+        </defs>
+        <path d="M8 34h144v18H8z" fill="url(#${gid})" stroke="${edge}" stroke-width="1.2"/>
+        <path d="M12 39h136M12 47h136" stroke="${stitch}" stroke-width="0.8" opacity="0.7"/>
+        <path d="M58 50l-10 48 14-4 8-44z" fill="${cloth}" stroke="${edge}" stroke-width="1"/>
+        <path d="M52 58l8 36" stroke="${stitch}" stroke-width="0.8"/>
+        ${isBlack ? '<path d="M50 88l12-3 2 8-14 4z" fill="'+tip+'"/>' : ''}
+        <path d="M102 50l10 48-14-4-8-44z" fill="${cloth}" stroke="${edge}" stroke-width="1"/>
+        <path d="M108 58l-8 36" stroke="${stitch}" stroke-width="0.8"/>
+        ${isBlack ? '<path d="M98 88l12 3-2 8-14-4z" fill="'+tip+'"/>' : ''}
+        <path d="M68 28h24v12H68z" fill="${cloth}" stroke="${edge}" stroke-width="1.2"/>
+        <path d="M62 36c0-10 8-16 18-16s18 6 18 16v8H62z" fill="${cloth}" stroke="${edge}" stroke-width="1.2"/>
+        <path d="M74 24c4-3 8-3 12 0" fill="none" stroke="${stitch}" stroke-width="1.2"/>
+        <path d="M70 40h20" stroke="${stitch}" stroke-width="1"/>
+        <circle cx="80" cy="36" r="2.2" fill="${isBlack ? '#c8ff00' : '#0a0e0a'}" opacity="0.85"/>
+      </svg>`;
+    }
+
+    function card(d, start) {
+      const done = d.challenges > 0 && d.solved >= d.challenges;
+      const pct = d.challenges ? Math.round(100 * d.solved / d.challenges) : 0;
+      const color = d.belt_color || '#c8ff00';
+      const kind = ICONS[d.id] || 'term';
+      let chip = '';
+      if (d.locked) chip = '<span class="chip lock">Locked</span>';
+      else if (done) chip = '<span class="chip done">Done</span>';
+      else if (start) chip = '<span class="chip">Start</span>';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'card' + (d.locked ? ' locked' : '');
+      btn.style.setProperty('--c', color);
+      btn.innerHTML = `
+        ${chip}
+        <div class="icons">
+          <div class="dojo-ico">${dojoIcon(kind, color)}</div>
+          <div class="belt-ico" title="${esc(d.belt_label)}">${beltIcon(color, d.belt)}</div>
+        </div>
+        <h3>${esc(d.title)}</h3>
+        <div class="meta">${d.solved}/${d.challenges} · ${esc(d.belt_label)}</div>
+        <div class="rail"><i style="width:${pct}%"></i></div>
+      `;
+      btn.onclick = () => openDojo(d.id);
+      return btn;
+    }
+
+    function flagIcon() {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 21V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M5 5h10l-2 3.5L15 12H5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>`;
+    }
+    function briefIcon() {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>`;
+    }
+
+    function moduleRow(mod) {
+      const item = document.createElement('div');
+      item.className = 'pc-item module-item';
+      const n = (mod.challenges || []).length;
+      const solved = (mod.challenges || []).filter(c => c.solved).length;
+      item.innerHTML = `
+        <button type="button" class="pc-row">
+          <span class="pc-ico">${briefIcon()}</span>
+          <h3 class="pc-title">${esc(mod.title)}</h3>
+          <div class="pc-right"><span class="dim">${solved}/${n} challenges</span></div>
+        </button>
+        <div class="pc-body">
+          <p class="pc-mod-desc">${esc(mod.description || 'Skill cluster in this belt.')}</p>
+        </div>
+      `;
+      item.querySelector('.pc-row').onclick = () => {
+        const open = item.classList.toggle('open');
+        if (open) document.querySelectorAll('.pc-item.open').forEach(el => {
+          if (el !== item) el.classList.remove('open');
+        });
+      };
+      return item;
+    }
+
+    function markChallengeSolved(wrap, ch) {
+      ch.solved = true;
+      wrap.classList.add('solved');
+      const ico = wrap.querySelector('.pc-ico');
+      if (ico) ico.innerHTML = flagIcon();
+      const right = wrap.querySelector('.pc-right');
+      if (right) right.innerHTML = '<span class="ok">cleared</span>';
+      wrap.querySelectorAll('input,[data-act="submit"],[data-act="check"]').forEach(el => el.disabled = true);
+    }
+
+    function challengeRow(ch, locked) {
+      const wrap = document.createElement('div');
+      wrap.className = 'pc-item' + (ch.solved ? ' solved' : '');
+      wrap.dataset.id = ch.id;
+
+      const rightBits = [];
+      if (ch.solved) rightBits.push('<span class="ok">cleared</span>');
+      else rightBits.push(`<span class="dim">${esc(ch.difficulty || '')}</span>`);
+      if (ch.estimated_time) rightBits.push(`<span class="dim"> · ${esc(ch.estimated_time)}</span>`);
+
+      const head = document.createElement('button');
+      head.type = 'button';
+      head.className = 'pc-row';
+      head.innerHTML = `
+        <span class="pc-ico">${ch.solved ? flagIcon() : `<img class="pc-thumb" src="/api/thumbs/${encodeURIComponent(ch.id)}.svg" alt="" loading="lazy"/>`}</span>
+        <h3 class="pc-title">${esc(ch.title)}</h3>
+        <div class="pc-right">${rightBits.join('')}</div>
+      `;
+
+      const body = document.createElement('div');
+      body.className = 'pc-body';
+      const steps = (ch.steps || []).slice(0, 4).map(s => `<li>${esc(s)}</li>`).join('');
+      const tools = (ch.expected_tools || []).slice(0, 8).map(t => `<span class="tool">${esc(t)}</span>`).join('');
+      const time = ch.estimated_time ? `<span class="pill-mini">time <em>${esc(ch.estimated_time)}</em></span>` : '';
+      const hints = ch.hints_total
+        ? `<span class="pill-mini">hints <em>${ch.hints_revealed||0}/${ch.hints_total}</em></span>`
+        : '';
+      body.innerHTML = `
+        <div class="panel">
+          <div class="box">
+            <div class="k">Mission</div>
+            <p class="m">${esc(ch.mission || ch.description || '')}</p>
+            <div class="meta-row">
+              <span class="pill-mini">level <em>${esc(ch.difficulty)}</em></span>
+              ${time}
+              ${hints}
+            </div>
+            ${steps ? `<div class="k" style="margin-top:0.7rem">Steps</div><ol>${steps}</ol>` : ''}
+            ${tools ? `<div class="k" style="margin-top:0.65rem">Tools</div><div class="tools">${tools}</div>` : ''}
+            <div class="ws" id="ws-${esc(ch.id)}"></div>
+          </div>
+          <div class="submit">
+            <div class="k">Flag</div>
+            <div class="row">
+              <input id="flag-${esc(ch.id)}" placeholder="flag{…} or leave empty after ./check" ${ch.solved||locked?'disabled':''}/>
+              <button type="button" class="btn pri" data-act="submit" ${ch.solved||locked?'disabled':''}>Go</button>
+            </div>
+            <div class="acts">
+              <button type="button" class="btn pri" data-act="start" ${locked?'disabled':''}>▶ Start</button>
+              <button type="button" class="btn" data-act="check" ${ch.solved||locked?'disabled':''}>Check</button>
+              <button type="button" class="btn" data-act="hint" ${locked?'disabled':''}>Hint</button>
+            </div>
+            <div class="hints" id="hints-${esc(ch.id)}"></div>
+            <div class="fb" id="fb-${esc(ch.id)}"></div>
+          </div>
+        </div>
+      `;
+
+      head.onclick = () => {
+        const open = wrap.classList.toggle('open');
+        if (open) document.querySelectorAll('.pc-item.open').forEach(el => {
+          if (el !== wrap) el.classList.remove('open');
+        });
+      };
+
+      body.addEventListener('click', async (ev) => {
+        const btn = ev.target.closest('[data-act]');
+        if (!btn) return;
+        const act = btn.dataset.act;
+        const fb = body.querySelector('#fb-' + CSS.escape(ch.id));
+        const input = body.querySelector('#flag-' + CSS.escape(ch.id));
+        try {
+          btn.disabled = true;
+          if (act === 'start') {
+            fb.className = 'fb'; fb.textContent = 'Starting…';
+            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/start', {
+              method: 'POST', body: JSON.stringify({ open_terminal: true }),
+            });
+            body.querySelector('#ws-' + CSS.escape(ch.id)).textContent = data.workspace;
+            const term = data.terminal || {};
+            fb.className = 'fb ok';
+            fb.textContent = term.ok ? 'Terminal opened (cleared).' : 'Started — open a terminal in the workspace.';
+            toast(term.ok ? 'Terminal ready' : 'Started', ch.id, 'ok');
+            refreshStatus();
+          } else if (act === 'submit') {
+            const flag = (input.value || '').trim();
+            fb.className = 'fb'; fb.textContent = flag ? 'Submitting…' : 'Checking…';
+            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/submit', {
+              method: 'POST', body: JSON.stringify({ flag }),
+            });
+            if (data.ok) {
+              celebrate(); fb.className = 'fb ok'; fb.textContent = 'Cleared.';
+              toast('Cleared', ch.title, 'ok'); input.value = '';
+              markChallengeSolved(wrap, ch);
+              refreshStatus(); if (currentDojo) openDojo(currentDojo, true);
+            } else {
+              fb.className = 'fb bad'; fb.textContent = data.error || data.detail || 'Not yet.';
+              toast('Keep going', data.error || data.detail || 'Not yet', 'bad');
+            }
+          } else if (act === 'check') {
+            fb.className = 'fb'; fb.textContent = 'Checking…';
+            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/check', {
+              method: 'POST', body: '{}',
+            });
+            if (data.ok) {
+              celebrate(); fb.className = 'fb ok'; fb.textContent = 'Cleared.';
+              toast('Check ok', ch.title, 'ok');
+              markChallengeSolved(wrap, ch);
+              refreshStatus(); if (currentDojo) openDojo(currentDojo, true);
+            } else {
+              fb.className = 'fb bad'; fb.textContent = data.error || 'Not yet.';
+              toast('Keep going', data.error || 'Check failed', 'bad');
+            }
+          } else if (act === 'hint') {
+            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/hint', {
+              method: 'POST', body: '{}',
+            });
+            const row = document.createElement('div');
+            row.className = 'h';
+            row.textContent = (data.text || 'No more hints.');
+            body.querySelector('#hints-' + CSS.escape(ch.id)).appendChild(row);
+          }
+        } catch (err) {
+          fb.className = 'fb bad'; fb.textContent = err.message || String(err);
+          toast('Error', err.message || String(err), 'bad');
+        } finally {
+          if (!ch.solved) btn.disabled = false;
+        }
+      });
+
+      const input = body.querySelector('input');
+      if (input) input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') body.querySelector('[data-act="submit"]')?.click();
+      });
+
+      wrap.appendChild(head);
+      wrap.appendChild(body);
+      return wrap;
+    }
+
+    async function openDojo(id, keep) {
+      const d = await api('/api/dojos/' + encodeURIComponent(id));
+      currentDojo = id;
+      const color = d.belt_color || '#c8ff00';
+      const kind = ICONS[d.id] || 'term';
+      const hero = document.getElementById('dhero');
+      hero.style.setProperty('--c', color);
+      document.getElementById('d-ico').innerHTML = dojoIcon(kind, color);
+      document.getElementById('d-belt').innerHTML = beltIcon(color, d.belt);
+      document.getElementById('d-title').textContent = d.title;
+      document.getElementById('d-sub').textContent =
+        (d.belt_label || '') + (d.locked ? ' · locked' : ` · ${d.solved}/${d.challenges}`);
+
+      const intro = document.getElementById('d-intro');
+      const paras = [];
+      if (d.tagline) paras.push(`<p>${esc(d.tagline)}</p>`);
+      paras.push(`<p>This dojo is a belt on the core path. Read each module briefing, then work the challenges in order. Start a challenge to open a terminal, solve it, and submit the flag here.</p>`);
+      if (d.locked) {
+        paras.push('<p>This belt is locked until you clear the previous core dojo.</p>');
+      }
+      intro.innerHTML = paras.join('');
+
+      const root = document.getElementById('d-modules');
+      root.innerHTML = '';
+      (d.modules_detail || []).forEach(mod => {
+        root.appendChild(moduleRow(mod));
+        (mod.challenges || []).forEach(ch => root.appendChild(challengeRow(ch, d.locked)));
+      });
+
+      home.classList.add('hidden');
+      detail.classList.remove('hidden');
+      if (!keep) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.pushState({ view: 'dojo', id }, '', '#dojo/' + id);
+      }
+    }
+
+    function showHome() {
+      currentDojo = null;
+      detail.classList.add('hidden');
+      home.classList.remove('hidden');
+      history.pushState({ view: 'home' }, '', '#');
+    }
+
+    async function refreshStatus() {
+      const s = await api('/api/status');
+      document.getElementById('progress').textContent = s.solved + '/' + s.total;
+    }
+
+    async function load() {
+      const [status, catalog] = await Promise.all([api('/api/status'), api('/api/dojos')]);
+      document.getElementById('progress').textContent = status.solved + '/' + status.total;
+      const core = (catalog.dojos || []).filter(d => d.kind === 'core');
+      const side = (catalog.dojos || []).filter(d => d.kind !== 'core');
+      continueTarget = core.find(d => !d.locked && d.solved < d.challenges) || null;
+      const coreEl = document.getElementById('core');
+      const sideEl = document.getElementById('side');
+      coreEl.innerHTML = ''; sideEl.innerHTML = '';
+      core.forEach(d => coreEl.appendChild(card(d, continueTarget && d.id === continueTarget.id)));
+      side.forEach(d => sideEl.appendChild(card(d, false)));
+
+      document.getElementById('btn-go').onclick = () => {
+        if (continueTarget) openDojo(continueTarget.id);
+      };
+
+      const m = (location.hash || '').match(/^#dojo\/(.+)$/);
+      if (m) openDojo(decodeURIComponent(m[1]));
+    }
+
+    document.getElementById('btn-back').onclick = showHome;
+    document.getElementById('home-link').onclick = (e) => { e.preventDefault(); showHome(); };
+    window.addEventListener('popstate', (e) => {
+      if (e.state && e.state.view === 'dojo' && e.state.id) openDojo(e.state.id);
+      else { detail.classList.add('hidden'); home.classList.remove('hidden'); }
+    });
+
+    load().catch(err => toast('Load failed', err.message || String(err), 'bad'));
+  </script>
+</body>
+</html>

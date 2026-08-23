@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pi-sdr-academy"
+version = "0.1.0"
+description = "Offline Raspberry Pi laboratory for systems, DSP, and SDR"
+readme = { text = "Offline dojo engine and CLI for Pi SDR Academy.", content-type = "text/plain" }
+license = { text = "MIT" }
+requires-python = ">=3.11"
+keywords = ["sdr", "dsp", "raspberry-pi", "education", "ctf", "offline"]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+academy = "academy.cli:main"
+next = "academy.cli:main_next"
+hint = "academy.cli:main_hint"
+submit = "academy.cli:main_submit"
+status = "academy.cli:main_status"
+list-challenges = "academy.cli:main_list"
+dojos = "academy.cli:main_list"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["academy*"]

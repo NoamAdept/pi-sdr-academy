@@ -1,0 +1,78 @@
+id: fft-multitone
+module: fft
+title: Find Multiple Tones
+difficulty: medium
+estimated_time: "50-75 minutes"
+
+prerequisites:
+  - fft-windowing
+
+objectives:
+  - numpy_fft
+  - frequency_bins
+  - spectral_measurement
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  A multi-tone spectrum has several separated local peaks.
+
+  Your task: Find the three strongest separated tones and write ascending frequencies.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: fft-multitone
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - analyze.py
+  - check
+  - generate_data.py
+  - run
+
+expected_tools:
+  - python3
+  - numpy
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{fft_multitone}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Find the three strongest separated tones and write ascending frequencies.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Visit magnitude bins strongest-first, accepting bins separated by more than two; convert three to frequencies and sort.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  result.txt reports 80, 205, and 333 Hz within one bin. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

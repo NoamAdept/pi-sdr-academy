@@ -1,0 +1,78 @@
+id: arch-c-to-asm
+module: computer-architecture
+title: Connect C to Assembly
+difficulty: medium
+estimated_time: "40-65 minutes"
+
+prerequisites:
+  - arch-endianness
+
+objectives:
+  - machine_representation
+  - compiler_output
+  - runtime_observation
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Assembly is the CPU-oriented text emitted by a compiler.
+
+  Your task: Generate mix.s from mix.c and identify the function label and arithmetic operation.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: arch-c-to-asm
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - answer.txt
+  - check
+  - mix.c
+  - run
+
+expected_tools:
+  - cc
+  - assembly_or_disassembler
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{arch_c_to_asm}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Generate mix.s from mix.c and identify the function label and arithmetic operation.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Generate mix.s and enter `function=mix` and `operation=multiply`; exact instruction names vary by CPU.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  The assembly exists and answer.txt identifies mix and multiplication. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

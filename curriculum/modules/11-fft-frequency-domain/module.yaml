@@ -1,0 +1,15 @@
+id: fft
+slug: fft
+title: FFT / Frequency Domain
+order: 11
+description: |
+  FFT bins, spectral leakage, windowing, multi-tone analysis, spectrum analyzer.
+prerequisites:
+  - dsp-fundamentals
+challenges:
+  - fft-find-tone
+  - fft-bin-challenge
+  - fft-leakage
+  - fft-windowing
+  - fft-multitone
+  - fft-spectrum-analyzer

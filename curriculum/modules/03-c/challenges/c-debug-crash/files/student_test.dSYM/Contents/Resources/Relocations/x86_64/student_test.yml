@@ -1,0 +1,13 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     student_test
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _average_positive, symObjAddr: 0x0, symBinAddr: 0x1000016F0, symSize: 0x2A0 }
+  - { offsetInCU: 0x3A, offset: 0x3A, size: 0x8, addend: 0x0, symName: _average_positive, symObjAddr: 0x0, symBinAddr: 0x1000016F0, symSize: 0x2A0 }
+  - { offsetInCU: 0x26, offset: 0xE3, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x1000019A0, symSize: 0x300 }
+  - { offsetInCU: 0x3B, offset: 0xF8, size: 0x8, addend: 0x0, symName: ___func__.main, symObjAddr: 0x3E0, symBinAddr: 0x100001EA0, symSize: 0x0 }
+  - { offsetInCU: 0x6B, offset: 0x128, size: 0x8, addend: 0x0, symName: _.str.1, symObjAddr: 0x400, symBinAddr: 0x100001EC0, symSize: 0x0 }
+  - { offsetInCU: 0x88, offset: 0x145, size: 0x8, addend: 0x0, symName: _.str.2, symObjAddr: 0x440, symBinAddr: 0x100001F00, symSize: 0x0 }
+  - { offsetInCU: 0xA5, offset: 0x162, size: 0x8, addend: 0x0, symName: _.str.3, symObjAddr: 0x480, symBinAddr: 0x100001F40, symSize: 0x0 }
+  - { offsetInCU: 0xAE, offset: 0x16B, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x1000019A0, symSize: 0x300 }
+...

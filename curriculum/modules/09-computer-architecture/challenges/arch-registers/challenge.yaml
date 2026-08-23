@@ -1,0 +1,78 @@
+id: arch-registers
+module: computer-architecture
+title: Trace Register-Like Values
+difficulty: easy
+estimated_time: "30-45 minutes"
+
+prerequisites:
+  - module:debugging-gdb
+
+objectives:
+  - machine_representation
+  - compiler_output
+  - runtime_observation
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Registers are tiny CPU storage locations used for active values and arguments.
+
+  Your task: Trace the three assignments in trace.c and put the final decimal values in answer.txt.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: arch-registers
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - answer.txt
+  - check
+  - run
+  - trace.c
+
+expected_tools:
+  - cc
+  - assembly_or_disassembler
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{arch_registers}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Trace the three assignments in trace.c and put the final decimal values in answer.txt.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Trace in order: r2=7+3=10, r0=10*2=20, r1=20-3=17.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  The answer correctly tracks r0, r1, and r2 through arithmetic. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

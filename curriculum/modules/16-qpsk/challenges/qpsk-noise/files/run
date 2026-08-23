@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+echo "=== qpsk-noise ==="
+python3 inspect_capture.py
+echo
+echo "Read README.txt, create the requested answer/output, then run ./check"

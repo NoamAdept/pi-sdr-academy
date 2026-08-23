@@ -1,0 +1,61 @@
+id: grq-vector-dataflow
+module: gnuradio-cpp
+title: "Understand Vector Item Flow"
+difficulty: medium
+estimated_time: "40-60 minutes"
+prerequisites: []
+objectives:
+  - vector_items
+  - item_size_and_type
+  - stream_type_conversion
+mastery_evidence:
+  - understand
+  - implement
+  - apply
+description: |
+  ## Mission
+  Configure a float32 vector source with vector length four, convert its
+  stream to uint8, and recover an ASCII message at the sink. Record the
+  source item size and number of scheduler items.
+
+  Work entirely offline with the bundled Python/NumPy simulator. GNU Radio is
+  optional; `OPTIONAL_GNURADIO.md` maps the exercise to real block APIs.
+  Run `./run`, edit the starter file, then run `./check`. A correct solution
+  writes the flag to `.flagpath`, `ACADEMY_FLAG_PATH`, or `/home/flag.txt`.
+environment:
+  type: flowgraph
+  workspace_subdir: grq-vector-dataflow
+  notes: Fully offline; GNU Radio and SDR hardware are not required.
+files:
+  - README.txt
+  - OPTIONAL_GNURADIO.md
+  - lib_flow.py
+  - vector_flow.py
+  - starter.py
+  - run
+  - check
+  - checker.py
+expected_tools:
+  - ./run
+  - ./check
+  - python3
+  - numpy
+flags:
+  value: "flag{vlen_changes_items_not_bytes}"
+  validation: session
+hints:
+  - level: 1
+    text: "A float32 is four bytes, so vlen=4 makes a 16-byte item."
+  - level: 2
+    text: "The source has len(data)/vlen scheduler items."
+  - level: 3
+    text: "Run FloatToU8 before decoding sink.data as bytes."
+solution: |
+  Create VectorSource(encoded, np.float32, vlen=4), run it through FloatToU8 into a uint8 VectorSink, and return decoded text plus item metadata.
+explanation: |
+  GNU Radio schedules items, not arbitrary bytes. Vector length changes the shape and byte size of one item while converters establish explicit stream types at block boundaries.
+extension:
+  title: "Try the real runtime"
+  description: "If GNU Radio is installed, recreate the graph using the block mapping in OPTIONAL_GNURADIO.md."
+performance_notes: "Deterministic arrays are small; checks normally finish in under five seconds on a Raspberry Pi."
+optional_hardware: []

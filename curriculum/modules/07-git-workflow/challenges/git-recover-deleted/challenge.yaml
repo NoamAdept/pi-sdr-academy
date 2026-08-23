@@ -1,0 +1,76 @@
+id: git-recover-deleted
+module: git-workflow
+title: Recover a Deleted File
+difficulty: medium
+estimated_time: "35-55 minutes"
+
+prerequisites:
+  - git-commit-invest
+
+objectives:
+  - local_git_history
+  - inspect_changes
+  - safe_recovery
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Git can restore a file from an earlier commit without contacting a server.
+
+  Your task: Recover calibration.ini into the current worktree and commit the restoration.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: git-recover-deleted
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - check
+  - run
+
+expected_tools:
+  - git
+  - bash
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{git_recover_deleted}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Recover calibration.ini into the current worktree and commit the restoration.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Run `git -C lab restore --source=HEAD^ calibration.ini`, then add and commit it.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  The exact calibration file is present in the latest commit. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

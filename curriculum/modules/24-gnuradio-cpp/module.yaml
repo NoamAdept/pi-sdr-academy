@@ -1,0 +1,19 @@
+id: gnuradio-cpp
+slug: gnuradio-cpp
+title: GNU Radio C++ / Flowgraph Qualification
+order: 24
+prerequisites:
+  - gnu-radio
+  - cpp
+description: |
+  GNU Radio qualification topics — block lifecycle, flowgraph connections,
+  vector/stream data flow, and a small signal-processing chain. Completable
+  offline with a Python/NumPy flowgraph simulator if GNU Radio is not installed;
+  optional real GNU Radio paths are documented.
+challenges:
+  - grq-cpp-blocks
+  - grq-flowgraph-connect
+  - grq-vector-dataflow
+  - grq-tags-messages
+  - grq-signal-chain
+  - grq-complete-topblock

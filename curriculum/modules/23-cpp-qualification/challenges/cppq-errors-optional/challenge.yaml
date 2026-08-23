@@ -1,0 +1,66 @@
+id: cppq-errors-optional
+module: cpp-qualification
+title: "Make Failure Modes Explicit"
+difficulty: hard
+estimated_time: "90-130 minutes"
+
+prerequisites:
+  - cppq-templates
+
+objectives:
+  - exceptions
+  - nodiscard-return-codes
+  - std-optional
+
+mastery_evidence:
+  - understand
+  - debug
+  - integrate
+
+description: |
+  Repair unsafe decoder code that confuses absent values, routine failures, and
+  exceptional failures. Use `std::optional` for lookup, a `[[nodiscard]]` return
+  code for expected validation failure, and an exception for malformed input.
+
+environment:
+  type: workspace
+  workspace_subdir: cppq-errors-optional
+  notes: Software-only; no external hardware or network required.
+
+files:
+  - README.md
+  - errors.cpp
+  - check
+
+expected_tools:
+  - bash
+  - g++
+
+flags:
+  value: "flag{failure_is_part_of_the_interface}"
+  validation: session
+
+hints:
+  - level: 1
+    text: Do not call `.value()` until you have tested whether an optional contains a value.
+  - level: 2
+    text: Return false for an ordinary checksum mismatch and require callers to inspect it.
+  - level: 3
+    text: Throw `std::invalid_argument` when hexadecimal input is structurally malformed.
+
+solution: |
+  Parse valid byte strings or throw, return an empty optional when a requested
+  marker is absent, annotate checksum validation `[[nodiscard]]`, and handle all
+  three outcomes explicitly in main.
+
+explanation: |
+  Different failure mechanisms express different contracts. Optional represents
+  absence, status codes represent expected branching, and exceptions unwind from
+  operations that cannot fulfill their contract.
+
+extension:
+  title: "Add an error enum"
+  description: Replace the bool status with a scoped enum that distinguishes validation failures.
+
+performance_notes: Uses only C++17 standard-library facilities and small inputs.
+optional_hardware: []

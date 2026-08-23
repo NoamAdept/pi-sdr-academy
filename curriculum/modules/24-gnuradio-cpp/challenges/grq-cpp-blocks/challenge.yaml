@@ -1,0 +1,61 @@
+id: grq-cpp-blocks
+module: gnuradio-cpp
+title: "Blocks, Handles, and Top Blocks"
+difficulty: easy
+estimated_time: "25-40 minutes"
+prerequisites: []
+objectives:
+  - block_factory_pattern
+  - shared_block_handles
+  - top_block_lifecycle
+mastery_evidence:
+  - understand
+  - implement
+description: |
+  ## Mission
+  Use gr-like `.make()` factories to obtain block handles, place them in a
+  `top_block`, connect vector source → gain → vector sink, and run it.
+  Python references model C++ `std::shared_ptr` block handles: assigning a
+  second name does not copy the block.
+
+  Work entirely offline with the bundled Python/NumPy simulator. GNU Radio is
+  optional; `OPTIONAL_GNURADIO.md` maps the exercise to real block APIs.
+  Run `./run`, edit the starter file, then run `./check`. A correct solution
+  writes the flag to `.flagpath`, `ACADEMY_FLAG_PATH`, or `/home/flag.txt`.
+environment:
+  type: flowgraph
+  workspace_subdir: grq-cpp-blocks
+  notes: Fully offline; GNU Radio and SDR hardware are not required.
+files:
+  - README.txt
+  - OPTIONAL_GNURADIO.md
+  - lib_flow.py
+  - build_flowgraph.py
+  - starter.py
+  - run
+  - check
+  - checker.py
+expected_tools:
+  - ./run
+  - ./check
+  - python3
+  - numpy
+flags:
+  value: "flag{factory_handles_build_a_top_block}"
+  validation: session
+hints:
+  - level: 1
+    text: "Keep the exact source and sink objects returned by make()."
+  - level: 2
+    text: "Call tb.connect(source, gain, sink), then tb.run()."
+  - level: 3
+    text: "The expected sink values are [3, 6, 9, 12]."
+solution: |
+  Create source, gain, and sink with their factories. Connect them in one call, run the top block, and return both the top block and sink handle.
+explanation: |
+  GNU Radio block factories return shared handles because the scheduler participates in block lifetime. A top block owns the connection graph and starts the finite simulation when `run()` is called.
+extension:
+  title: "Try the real runtime"
+  description: "If GNU Radio is installed, recreate the graph using the block mapping in OPTIONAL_GNURADIO.md."
+performance_notes: "Deterministic arrays are small; checks normally finish in under five seconds on a Raspberry Pi."
+optional_hardware: []

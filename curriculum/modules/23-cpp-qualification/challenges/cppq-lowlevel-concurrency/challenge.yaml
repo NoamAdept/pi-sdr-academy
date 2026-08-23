@@ -1,0 +1,67 @@
+id: cppq-lowlevel-concurrency
+module: cpp-qualification
+title: "Recover an ISR Packet"
+difficulty: hard
+estimated_time: "110-160 minutes"
+
+prerequisites:
+  - cppq-errors-optional
+
+objectives:
+  - bitwise-masks-and-shifts
+  - packed-wire-format-and-endianness
+  - thread-safe-isr-simulation
+
+mastery_evidence:
+  - understand
+  - debug
+  - integrate
+
+description: |
+  Decode a packed big-endian packet, extract bit fields with masks and shifts,
+  and safely transfer it from a simulated `extern "C"` interrupt callback to the
+  main thread. The starter's volatile flag is intentionally unsafe; replace the
+  synchronization with an atomic flag and protect the packet with a mutex.
+
+environment:
+  type: workspace
+  workspace_subdir: cppq-lowlevel-concurrency
+  notes: ISR and radio input are simulated in software; no hardware or network required.
+
+files:
+  - README.md
+  - receiver.cpp
+  - check
+
+expected_tools:
+  - bash
+  - g++
+
+flags:
+  value: "flag{mask_swap_lock_then_decode}"
+  validation: session
+
+hints:
+  - level: 1
+    text: A big-endian 16-bit value is `(high << 8) | low`.
+  - level: 2
+    text: Extract the low three bits with `value & 0x07`; shift before masking upper fields.
+  - level: 3
+    text: Lock while copying shared packet bytes, then publish readiness with a release-store and observe it with an acquire-load.
+
+solution: |
+  Decode multi-byte fields explicitly from bytes, mask the mode and sequence
+  fields, use a mutex around shared packet access, and use an atomic bool with
+  release/acquire ordering between the callback and consumer.
+
+explanation: |
+  Wire formats require explicit byte-order and bit-layout handling. Volatile does
+  not prevent data races; atomics and mutexes establish synchronization and
+  protect shared state in the simulated callback boundary.
+
+extension:
+  title: "Queue multiple packets"
+  description: Replace the single shared packet with a bounded producer/consumer queue.
+
+performance_notes: Runs one short-lived thread and compiles with pthread support.
+optional_hardware: []

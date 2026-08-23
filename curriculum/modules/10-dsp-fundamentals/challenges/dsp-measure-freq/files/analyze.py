@@ -1,0 +1,3 @@
+import numpy as np
+x=np.load("signal.npy"); fs=1024
+# TODO: use np.fft.rfft/rfftfreq; write strongest frequency as frequency_hz=...

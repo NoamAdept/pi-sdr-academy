@@ -1,0 +1,77 @@
+id: sys-ipc
+module: systems-programming
+title: Share Data Between Processes
+difficulty: hard
+estimated_time: "60-90 minutes"
+
+prerequisites:
+  - sys-threaded-server
+
+objectives:
+  - operating_system_apis
+  - error_handling
+  - resource_lifetimes
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  IPC means inter-process communication; shared mmap pages can be seen after fork.
+
+  Your task: Complete ipc.c so the child stores 42 in shared memory and the parent prints shared=42.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: sys-ipc
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - check
+  - ipc.c
+  - run
+
+expected_tools:
+  - cc
+  - python3
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{sys_ipc}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Complete ipc.c so the child stores 42 in shared memory and the parent prints shared=42.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  mmap one int with MAP_SHARED|MAP_ANONYMOUS. The child writes 42; the parent waits, prints it, and munmaps.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  The mapping is shared, the parent waits, and the value crosses the process boundary. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+echo "=== grq-vector-dataflow ==="
+python3 starter.py
+echo
+echo "Read README.txt, edit vector_flow.py, then run ./check"

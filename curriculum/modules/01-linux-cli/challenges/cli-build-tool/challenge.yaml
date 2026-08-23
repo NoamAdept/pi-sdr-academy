@@ -1,0 +1,79 @@
+id: cli-build-tool
+module: linux-cli
+title: "Build a Small C Program with Make"
+difficulty: medium
+estimated_time: "35-60 minutes"
+
+prerequisites:
+  - cli-multistage-pipeline
+
+objectives:
+  - make
+  - dependencies
+  - compilation
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Complete the `Makefile` for a two-source C program. `make` must
+  build an executable named `analyzer`, `make clean` must remove generated object
+  files and the executable, and changing `signal.h` must cause the needed sources
+  to rebuild. Run the resulting program; it should print `average=15`.
+
+environment:
+  type: workspace
+  workspace_subdir: cli-build-tool
+  notes: Software-only; any networking stays on localhost.
+
+files:
+  - README.txt
+  - signal.h
+  - signal.c
+  - main.c
+  - Makefile
+  - check
+  - check.py
+
+expected_tools:
+  - bash
+  - make
+  - gcc
+
+flags:
+  value: "flag{make_tracks_dependencies}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Compile each `.c` file to a matching `.o` with `gcc -c`.
+  - level: 2
+    text: |
+      The executable depends on both object files and is linked from them.
+  - level: 3
+    text: |
+      List `signal.h` as a dependency of each object whose source includes it. Recipe lines begin with a real tab.
+
+solution: |
+  Define `analyzer: main.o signal.o`, link with `$(CC) $(CFLAGS) -o $@ $^`,
+  add object rules with the header dependencies, and make `clean` run
+  `rm -f analyzer *.o`. Mark `clean` phony.
+
+explanation: |
+  Make compares file modification times. A target is rebuilt when
+  one of its dependencies is newer. Accurate header dependencies prevent stale
+  object files after an interface changes.
+
+extension:
+  title: "Go further"
+  description: |
+    Change the input data and make your solution handle the new case without
+    changing its output format.
+
+performance_notes: |
+  Inputs are intentionally tiny and run comfortably on a Raspberry Pi.
+
+optional_hardware: []

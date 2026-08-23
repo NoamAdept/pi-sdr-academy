@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import subprocess
+from pathlib import Path
+
+from pathlib import Path
+import os
+def award():
+    print('CHECK_OK')
+
+repo=Path("lab")
+def sh(cmd,cwd):
+    return subprocess.check_output(cmd,cwd=cwd,shell=True,text=True,stderr=subprocess.DEVNULL).strip()
+try:
+    assert 'mode=FM' in (repo/'radio.conf').read_text()
+    assert sh('git log -1 --format=%s',repo).lower().startswith('revert')
+    assert int(sh('git rev-list --count HEAD',repo))>=3
+except Exception as e:
+    print("Not ready:", e); raise SystemExit(1)
+award()

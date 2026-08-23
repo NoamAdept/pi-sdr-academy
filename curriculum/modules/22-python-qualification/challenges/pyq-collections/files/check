@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 - <<'PY'
+from pathlib import Path
+import ast
+import os
+from events import EVENTS, summarize
+
+expected = {
+    "station_counts": {"alpha": 2, "bravo": 2, "charlie": 1},
+    "frequencies": [99_900_000, 100_000_000, 101_500_000],
+    "strong_ids": ["e1", "e4", "e5"],
+    "average_dbm": {"alpha": -60.0, "bravo": -65.0, "charlie": -48.0},
+}
+before = repr(EVENTS)
+assert summarize(EVENTS) == expected, "summary does not match the requested result"
+assert repr(EVENTS) == before, "summarize must not modify EVENTS"
+tree = ast.parse(Path("events.py").read_text())
+assert any(isinstance(n, ast.comprehension) for n in ast.walk(tree)), "use a comprehension"
+assert "defaultdict" in Path("events.py").read_text(), "use defaultdict"
+
+raw = Path(".flagpath").read_text().strip() if Path(".flagpath").exists() else os.environ.get("ACADEMY_FLAG_PATH", "~/flag.txt")
+path = Path(raw).expanduser()
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text('')
+print("Correct! Flag written to", path)
+PY

@@ -1,0 +1,76 @@
+id: cpp-raii
+module: cpp
+title: "Manage a File with RAII"
+difficulty: medium
+estimated_time: "45-70 minutes"
+
+prerequisites:
+  - cpp-stl
+
+objectives:
+  - raii
+  - destructors
+  - move-semantics
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Complete `TextFile`, a small owner of a C `FILE*`. Construction
+  opens a path for writing or throws `std::runtime_error`. Destruction closes it.
+  Copying stays disabled; moving transfers ownership and leaves the source empty.
+  `write` throws if called on an empty object.
+
+environment:
+  type: workspace
+  workspace_subdir: cpp-raii
+  notes: Software-only; no external hardware or network required.
+
+files:
+  - README.txt
+  - text_file.hpp
+  - text_file.cpp
+  - check
+  - check.py
+
+expected_tools:
+  - bash
+  - g++
+
+flags:
+  value: "flag{destructors_release_resources}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      The destructor may call `std::fclose(file_)` only when the pointer is non-null.
+  - level: 2
+    text: |
+      A move constructor takes the pointer and sets `other.file_ = nullptr`.
+  - level: 3
+    text: |
+      Move assignment must close the current file before taking the other pointer; guard self-assignment.
+
+solution: |
+  Open with `std::fopen`, throw on failure, close conditionally in the
+  destructor, and implement move operations by transferring the pointer and
+  nulling the source. `write` validates ownership and checks `fputs` for failure.
+
+explanation: |
+  RAII means resource acquisition is initialization: an object's
+  lifetime controls a resource's lifetime. This makes cleanup automatic on normal
+  returns and exceptions. Move operations transfer unique ownership safely.
+
+extension:
+  title: "Go further"
+  description: |
+    Add one more test case of your own and confirm the program still behaves
+    correctly.
+
+performance_notes: |
+  Sources and test data are intentionally small and compile quickly on a Raspberry Pi.
+
+optional_hardware: []

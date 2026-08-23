@@ -1,0 +1,65 @@
+id: cppq-templates
+module: cpp-qualification
+title: "Build a Generic Decoder Buffer"
+difficulty: medium
+estimated_time: "65-90 minutes"
+
+prerequisites:
+  - cppq-modern-cpp
+
+objectives:
+  - function-templates
+  - class-templates
+  - fixed-capacity-ring-buffer
+
+mastery_evidence:
+  - understand
+  - implement
+  - integrate
+
+description: |
+  Implement a generic clamp function and a fixed-capacity `RingBuffer<T, N>`.
+  Use both templates to bound decoded byte values and preserve the newest samples
+  needed to recover the token.
+
+environment:
+  type: workspace
+  workspace_subdir: cppq-templates
+  notes: Software-only; no external hardware or network required.
+
+files:
+  - README.md
+  - templates.cpp
+  - check
+
+expected_tools:
+  - bash
+  - g++
+
+flags:
+  value: "flag{templates_reuse_checked_shapes}"
+  validation: session
+
+hints:
+  - level: 1
+    text: Template definitions must be visible where they are instantiated.
+  - level: 2
+    text: Track the oldest element, current size, and wrap indexes with `% N`.
+  - level: 3
+    text: When full, overwrite the oldest slot and advance the oldest index.
+
+solution: |
+  Implement inclusive generic clamp comparisons. Store ring values in
+  `std::array<T, N>`, wrap indexes, throw on invalid access, and overwrite the
+  oldest value at capacity.
+
+explanation: |
+  Function and class templates capture algorithms and data structures once while
+  retaining static type checking for every instantiated value type and capacity.
+
+extension:
+  title: "Support iteration"
+  description: Add const iterators that traverse values from oldest to newest.
+
+performance_notes: Template instances are small and compile quickly on a Raspberry Pi.
+optional_hardware: []

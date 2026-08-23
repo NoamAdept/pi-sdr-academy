@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+mkdir -p lab; cd lab
+git init -q
+printf 'center_hz=100000000\n' > radio.txt
+echo 'Now set a repository-local user.name/user.email, add radio.txt, and commit.'

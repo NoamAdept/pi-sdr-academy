@@ -1,0 +1,72 @@
+# Pinned conceptual lock — exact .deb versions are recorded by prepare_offline_bundle.sh
+# on a matching Debian bookworm/arm64 builder into offline_bundle/manifests/dpkg-versions.txt
+#
+# Format: package | status | notes
+#
+# status: required | recommended | optional-hardware
+
+bash | required | shell
+coreutils | required | ls/cat/etc
+util-linux | required | 
+procps | required | ps/top
+findutils | required | find/xargs
+grep | required | 
+sed | required | 
+gawk | required | 
+less | required | 
+file | required | 
+tree | required | 
+tar | required | 
+gzip | required | 
+xz-utils | required | 
+zip | required | 
+unzip | required | 
+rsync | required | install sync
+curl | required | local HTTP demos
+wget | required | local demos only
+openssh-server | required | local lab access
+openssh-client | required | 
+iproute2 | required | ss/ip
+iputils-ping | required | 
+net-tools | recommended | legacy netstat
+netcat-openbsd | required | 
+lsof | required | 
+man-db | required | offline man
+manpages | required | 
+manpages-dev | required | 
+tmux | required | 
+vim-tiny | required | 
+nano | required | 
+build-essential | required | 
+gcc | required | 
+g++ | required | 
+libc6-dev | required | 
+binutils | required | objdump/readelf/nm
+make | required | 
+cmake | required | 
+ninja-build | required | 
+pkg-config | required | 
+gdb | required | 
+strace | required | 
+ltrace | recommended | 
+bsdmainutils | required | hexdump
+xxd | required | 
+valgrind | recommended | where supported on Pi
+git | required | local only
+python3 | required | 
+python3-pip | required | offline wheels
+python3-venv | required | 
+python3-setuptools | required | 
+python3-wheel | required | 
+python3-dev | required | 
+python3-numpy | required | DSP
+python3-scipy | required | DSP
+python3-matplotlib | required | plotting
+python3-yaml | required | platform
+python3-pytest | required | tests
+python3-pandas | recommended | datasets
+gnuradio | required | Module 13+
+gnuradio-dev | required | 
+gr-osmosdr | optional-hardware | RTL-SDR track
+rtl-sdr | optional-hardware | 
+librtlsdr-dev | optional-hardware | 

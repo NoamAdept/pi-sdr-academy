@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+from pathlib import Path
+
+source = Path("qualification.cpp").read_text()
+required = ("namespace radio", "namespace diagnostics", "radio::channel", "diagnostics::channel", "volatile")
+if any(item not in source for item in required):
+    raise SystemExit("Not yet: keep both namespaces, qualified calls, and the volatile demonstration.")
+
+build = subprocess.run(
+    ["g++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "qualification.cpp", "-o", "qualification"],
+    text=True, capture_output=True,
+)
+if build.returncode:
+    raise SystemExit("Not yet: compile failed:\n" + build.stderr)
+run = subprocess.run(["./qualification"], text=True, capture_output=True)
+if run.returncode or run.stdout.strip() != "145":
+    raise SystemExit("Not yet: the program must print exactly 145.")
+
+marker = Path(".flagpath")
+target = Path(marker.read_text().strip()) if marker.exists() else Path(os.environ.get("ACADEMY_FLAG_PATH", "/home/flag.txt"))
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text('')
+print('CHECK_OK')

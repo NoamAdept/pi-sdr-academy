@@ -1,0 +1,79 @@
+id: c-debug-crash
+module: c
+title: "Repair an Array Crash"
+difficulty: medium
+estimated_time: "45-70 minutes"
+
+prerequisites:
+  - c-binary-parser
+
+objectives:
+  - debugging
+  - memory-safety
+  - sanitizers
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  `average_positive` crashes or reports bad results on edge cases.
+  Repair it without changing its signature. It should average only positive
+  values, return `0.0` when none are positive, and perform no out-of-bounds or
+  null-pointer access. Use the supplied `run` to see sanitizer diagnostics.
+
+environment:
+  type: workspace
+  workspace_subdir: c-debug-crash
+  notes: Software-only; no external hardware or network required.
+
+files:
+  - README.txt
+  - crash.h
+  - crash.c
+  - demo.c
+  - run
+  - check
+  - check.py
+
+expected_tools:
+  - bash
+  - gcc
+  - gdb
+
+flags:
+  value: "flag{indexes_stop_before_length}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      The last valid index of an array with `count` items is `count - 1`.
+  - level: 2
+    text: |
+      A loop over `count` items uses `i < count`, not `i <= count`.
+  - level: 3
+    text: |
+      Check for `values == NULL`, and divide by the number of positive values rather than the total count.
+
+solution: |
+  Return zero for a null pointer. Iterate with `i < count`, add only
+  values greater than zero while counting them, and return zero if that positive
+  count remains zero; otherwise divide the sum by the positive count.
+
+explanation: |
+  An array length is a count, while indexes begin at zero. Confusing
+  the two creates an off-by-one access. Sanitizers turn invisible invalid memory
+  accesses into useful diagnostics near the source.
+
+extension:
+  title: "Go further"
+  description: |
+    Add one more test case of your own and confirm the program still behaves
+    correctly.
+
+performance_notes: |
+  Sources and test data are intentionally small and compile quickly on a Raspberry Pi.
+
+optional_hardware: []

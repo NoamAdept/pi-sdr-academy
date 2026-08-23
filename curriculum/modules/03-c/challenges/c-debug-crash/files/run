@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+gcc -std=c11 -g -fsanitize=address,undefined crash.c demo.c -o crash_demo
+./crash_demo

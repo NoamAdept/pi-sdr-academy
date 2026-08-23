@@ -1,0 +1,78 @@
+id: arch-stack
+module: computer-architecture
+title: Measure Stack Direction
+difficulty: medium
+estimated_time: "40-65 minutes"
+
+prerequisites:
+  - arch-c-to-asm
+
+objectives:
+  - machine_representation
+  - compiler_output
+  - runtime_observation
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  The call stack stores active function state; nested calls usually move its address.
+
+  Your task: Run stack_probe.c and record whether deeper calls use higher or lower addresses.
+
+  Start with `./run`, read `README.md`, edit the starter files, and use
+  `./check` whenever you want feedback. Everything runs in this one workspace;
+  no hardware, network download, or remote Git repository is needed.
+
+environment:
+  type: workspace
+  workspace_subdir: arch-stack
+  notes: Software-only, offline, and suitable for Raspberry Pi and macOS where applicable.
+
+files:
+  - README.md
+  - answer.txt
+  - check
+  - run
+  - stack_probe.c
+
+expected_tools:
+  - cc
+  - assembly_or_disassembler
+  - ./run
+  - ./check
+
+flags:
+  value: "flag{arch_stack}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Run `./run` first and read its output. Then inspect the starter file and README.
+  - level: 2
+    text: |
+      Work on one observable result at a time; rerun `./check` after each change.
+  - level: 3
+    text: |
+      Run stack_probe.c and record whether deeper calls use higher or lower addresses.
+  - level: 4
+    text: |
+      The solution section names the key command or API if you need a final nudge.
+
+solution: |
+  Run the probe and copy the word after `direction=` so the answer reflects this host.
+
+  After making the change, run `./run` and then `./check`.
+
+explanation: |
+  The answer matches the measured direction rather than assuming an architecture. The checker validates behavior, not a particular editing style, so an
+  equivalent correct implementation is accepted.
+
+extension:
+  title: "Change one parameter"
+  description: |
+    After earning the flag, change one input value, predict the result, and update
+    your implementation so it remains correct rather than hard-coding the answer.

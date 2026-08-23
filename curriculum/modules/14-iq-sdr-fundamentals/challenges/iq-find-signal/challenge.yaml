@@ -1,0 +1,68 @@
+id: iq-find-signal
+module: iq-sdr-fundamentals
+title: "Find a Signal in Spectrum"
+difficulty: medium
+estimated_time: "40-75 minutes"
+prerequisites: []
+objectives:
+  - inspect_iq_data
+  - implement_a_small_dsp_step
+  - verify_the_result
+mastery_evidence:
+  - understand
+  - implement
+  - apply
+description: |
+  ## Mission
+  Locate a hidden narrowband signal.
+
+  Digital signal processing (DSP) changes or measures sampled signals with
+  arithmetic. IQ samples are complex numbers: I is the real (in-phase) part
+  and Q is the imaginary (quadrature) part. Read `README.txt`, then run
+  `./run`. It reports the exact deliverable and useful starter measurements.
+  Finish by running `./check`; a correct result writes the flag to `.flagpath`
+  (or `ACADEMY_FLAG_PATH`, with `/home/flag.txt` as the Pi fallback).
+environment:
+  type: iq
+  workspace_subdir: iq-find-signal
+  notes: Fully offline, software-only, and sized for Raspberry Pi.
+files:
+  - README.txt
+  - capture.iq
+  - check
+  - checker.py
+  - inspect_capture.py
+  - run
+  - sample_rate.txt
+expected_tools:
+  - ./run
+  - ./check
+  - python3
+  - numpy
+  - scipy
+flags:
+  value: "flag{fft_finds_hidden_iq_energy}"
+  validation: session
+hints:
+  - level: 1
+    text: "Run ./run and inspect README.txt. Start with the printed sample count and spectrum."
+  - level: 2
+    text: "Load IQ with np.fromfile(..., dtype='<f4').reshape(-1, 2), then use a[:,0] + 1j*a[:,1]."
+  - level: 3
+    text: "Use np.fft.fftfreq/fftshift for frequency; average all samples in one symbol before slicing."
+  - level: 4
+    text: "Build the solution one measured stage at a time; the instructor reference uses fewer than 25 lines of Python."
+solution: |
+  The challenge's hidden `solution/reference_solution.py` is executable
+  documentation. Run it from a copy of the staged files, inspect the generated
+  answer or output, and then run `./check`. It shows a compact NumPy/SciPy
+  implementation and comments the important DSP operation.
+explanation: |
+  Locate a hidden narrowband signal. The key habit is to verify every stage numerically: inspect the
+  spectrum, apply one operation, and measure again. This is the same workflow
+  used for live SDR receivers, only with a short repeatable capture.
+extension:
+  title: "Stress the receiver"
+  description: "Change one parameter in a copy of the generator or add noise, then find where your method fails."
+performance_notes: "Captures contain fewer than 200,000 complex float32 samples and checks normally finish in seconds."
+optional_hardware: []

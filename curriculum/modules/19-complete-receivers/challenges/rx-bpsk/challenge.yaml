@@ -1,0 +1,65 @@
+id: rx-bpsk
+module: complete-receivers
+title: "Build a BPSK Receiver"
+difficulty: easy
+estimated_time: "45-75 minutes"
+prerequisites:
+  - module:synchronization
+objectives:
+  - inspect_offline_signal_data
+  - implement_and_verify_a_small_receiver_stage
+  - recover_a_validated_result
+mastery_evidence:
+  - understand
+  - implement
+  - apply
+description: |
+  ## Mission
+  Build a complete rectangular-pulse BPSK receiver. Parameters: 8000 Hz, 8 sps, zero offsets.
+
+  Work entirely offline in the supplied workspace. Run `./run`, read
+  `README.txt`, create `answer.txt`, and finish with `./check`. A successful
+  check writes the challenge flag to `.flagpath` or `$ACADEMY_FLAG_PATH`.
+environment:
+  type: iq
+  workspace_subdir: rx-bpsk
+  notes: Fully offline, fictional data, and sized for Raspberry Pi.
+files:
+  - README.txt
+  - capture.iq
+  - capture_info.txt
+  - check
+  - checker.py
+  - inspect.py
+  - run
+expected_tools:
+  - ./run
+  - ./check
+  - python3
+  - numpy
+  - scipy
+flags:
+  value: "flag{a_receiver_is_a_chain_of_verified_stages}"
+  validation: session
+hints:
+  - level: 1
+    text: "Run ./run and inspect array lengths, spectra, or repeated byte patterns before decoding."
+  - level: 2
+    text: "Turn the mission into measured stages; print one intermediate result after every transformation."
+  - level: 3
+    text: "IQ is little-endian interleaved float32. Bits are packed MSB first. Known or repeated preambles resolve ambiguity."
+  - level: 4
+    text: "The reference solution documents a compact path, but try to reproduce each inferred parameter yourself."
+solution: |
+  `solution/reference_solution.py` is executable instructor documentation. It
+  loads the shipped artifact, performs the required DSP or protocol parsing,
+  and writes `answer.txt`. Run it from a copy of the staged files.
+explanation: |
+  This exercise isolates a real receiver skill while keeping the capture small
+  and repeatable. Reliable SDR analysis measures assumptions, corrects one
+  layer at a time, and validates the recovered framing or plaintext.
+extension:
+  title: "Stress your decoder"
+  description: "Perturb noise, timing, or one packet and measure where your method stops working."
+performance_notes: "Artifacts contain at most 32768 complex samples; normal checks finish in seconds on a Raspberry Pi."
+optional_hardware: []

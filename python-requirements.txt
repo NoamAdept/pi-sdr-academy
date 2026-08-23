@@ -1,0 +1,13 @@
+# Python packages for academy platform + DSP curriculum.
+# Install offline via: pip install --no-index --find-links=offline_bundle/python_wheels -r python-requirements.txt
+#
+# Prefer distro python3-* packages on the Pi when available; wheels fill gaps.
+
+PyYAML==6.0.2
+numpy==1.26.4
+scipy==1.13.1
+matplotlib==3.8.4
+pandas==2.2.2
+pytest==8.2.2
+# IPython optional — include only if Jupyter-less interactive REPL is desired
+# ipython==8.25.0

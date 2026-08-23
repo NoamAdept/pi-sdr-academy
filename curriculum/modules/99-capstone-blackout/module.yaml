@@ -1,0 +1,10 @@
+id: capstone-blackout
+slug: capstone-blackout
+title: Final Capstone — Blackout
+order: 99
+description: |
+  Unknown IQ capture combining the full curriculum into one ≤6h focused session.
+prerequisites:
+  - sdr-security-ctf
+challenges:
+  - capstone-blackout

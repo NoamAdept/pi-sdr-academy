@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+cc -S -O0 mix.c -o mix.s
+echo 'Generated mix.s; instruction spelling depends on the CPU.'

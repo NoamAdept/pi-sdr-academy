@@ -1,0 +1,62 @@
+id: grq-signal-chain
+module: gnuradio-cpp
+title: "Build a Translating Signal Chain"
+difficulty: hard
+estimated_time: "70-110 minutes"
+prerequisites: []
+objectives:
+  - throttle_concept
+  - frequency_xlating_fir
+  - complex_magnitude
+  - spectrum_peak_analysis
+mastery_evidence:
+  - implement
+  - apply
+  - integrate
+description: |
+  ## Mission
+  Process a deterministic complex capture: model a throttle rate, translate
+  the 2200 Hz channel to baseband with an FIR low-pass, convert complex
+  samples to magnitude, then find the 80 Hz amplitude-envelope peak.
+
+  Work entirely offline with the bundled Python/NumPy simulator. GNU Radio is
+  optional; `OPTIONAL_GNURADIO.md` maps the exercise to real block APIs.
+  Run `./run`, edit the starter file, then run `./check`. A correct solution
+  writes the flag to `.flagpath`, `ACADEMY_FLAG_PATH`, or `/home/flag.txt`.
+environment:
+  type: flowgraph
+  workspace_subdir: grq-signal-chain
+  notes: Fully offline; GNU Radio and SDR hardware are not required.
+files:
+  - README.txt
+  - OPTIONAL_GNURADIO.md
+  - dsp_flow.py
+  - signal_chain.py
+  - starter.py
+  - run
+  - check
+  - checker.py
+expected_tools:
+  - ./run
+  - ./check
+  - python3
+  - numpy
+flags:
+  value: "flag{xlating_fir_reveals_80hz_envelope}"
+  validation: session
+hints:
+  - level: 1
+    text: "Use center_freq=2200 and a low-pass cutoff near 500 Hz."
+  - level: 2
+    text: "Discard filter edge transients before averaging or taking an FFT."
+  - level: 3
+    text: "Subtract magnitude mean before finding the non-DC envelope peak."
+solution: |
+  Generate low-pass taps, call freq_xlating_fir at 2200 Hz, take np.abs, trim 256 edge samples, and measure the non-DC spectral peak of the centered magnitude.
+explanation: |
+  A frequency-xlating FIR combines mixing and channel filtering. Magnitude removes carrier phase but preserves amplitude modulation, exposing the 80 Hz envelope. A throttle only models real-time pacing when no hardware source provides it.
+extension:
+  title: "Try the real runtime"
+  description: "If GNU Radio is installed, recreate the graph using the block mapping in OPTIONAL_GNURADIO.md."
+performance_notes: "Deterministic arrays are small; checks normally finish in under five seconds on a Raspberry Pi."
+optional_hardware: []

@@ -1,0 +1,15 @@
+id: sdr-security-ctf
+slug: sdr-security-ctf
+title: SDR Security CTF
+order: 21
+description: |
+  RF/security CTF using software-simulated IQ captures — find, demod, and reverse.
+prerequisites:
+  - protocol-re
+challenges:
+  - ctf-hidden-tx
+  - ctf-identify-mod
+  - ctf-recover-bits
+  - ctf-correct-impair
+  - ctf-re-protocol
+  - ctf-complete-capture

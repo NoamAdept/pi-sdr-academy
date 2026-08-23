@@ -1,0 +1,54 @@
+# Toolchain / platform manifest for Pi SDR Academy
+# Record exact versions on the builder host after installing the offline bundle.
+
+target_os: Debian bookworm / Raspberry Pi OS (64-bit)
+target_arch: arm64 (aarch64)
+baseline_hardware: Raspberry Pi 4/5 + SD card only
+network_mode: offline end-user; online developer prepare step only
+
+compilers:
+  - gcc (Debian package)
+  - g++ (Debian package)
+  - binutils
+
+build_systems:
+  - make
+  - cmake
+  - ninja
+
+debuggers_analyzers:
+  - gdb
+  - valgrind (recommended)
+  - AddressSanitizer (-fsanitize=address)
+  - UndefinedBehaviorSanitizer (-fsanitize=undefined)
+  - strace
+  - ltrace
+  - objdump / readelf / nm / strings / hexdump / xxd / ldd / size / ar
+
+languages:
+  - bash
+  - python3 (>= 3.11 preferred)
+  - C17
+  - C++17/20 (modern C++ curriculum)
+
+dsp_stack:
+  - NumPy / SciPy / Matplotlib
+  - GNU Radio + GNU Radio Companion
+  - software IQ file workflows (no SDR dongle required)
+
+optional_hardware_track:
+  - rtl-sdr
+  - gr-osmosdr
+  - GPIO experiments (future)
+
+version_capture_commands: |
+  uname -a
+  cat /etc/os-release
+  dpkg --print-architecture
+  gcc --version
+  g++ --version
+  cmake --version
+  gdb --version
+  python3 --version
+  gnuradio-config-info --version || true
+  dpkg-query -W -f='${Package}\t${Version}\n' > offline_bundle/manifests/dpkg-versions.txt

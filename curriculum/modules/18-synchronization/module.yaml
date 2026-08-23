@@ -1,0 +1,15 @@
+id: synchronization
+slug: synchronization
+title: Synchronization
+order: 18
+description: |
+  Phase/frequency correction, timing recovery, Costas, Gardner, Mueller & Müller.
+prerequisites:
+  - pulse-shaping
+challenges:
+  - sync-static-phase
+  - sync-identify-freq
+  - sync-correct-phase
+  - sync-correct-freq
+  - sync-timing
+  - sync-carrier-timing

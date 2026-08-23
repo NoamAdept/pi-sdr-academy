@@ -1,0 +1,15 @@
+id: git-workflow
+slug: git-workflow
+title: Git / Engineering Workflow
+order: 7
+description: |
+  Local Git workflows: commits, recovery, branches, merges, and history repair.
+prerequisites:
+  - linux-cli
+challenges:
+  - git-first-repo
+  - git-commit-invest
+  - git-recover-deleted
+  - git-branch-merge
+  - git-debug-history
+  - git-repair-history

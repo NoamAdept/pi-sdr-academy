@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+cc -O0 stack_probe.c -o stack_probe
+./stack_probe
