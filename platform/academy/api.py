@@ -10,6 +10,18 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from .admin import (
+    admin_enabled,
+    apply_proposal,
+    build_challenge_yaml,
+    create_challenge,
+    curriculum_overview,
+    default_challenge_draft,
+    list_proposals,
+    module_detail,
+    save_proposal,
+    validate_challenge_draft,
+)
 from .dojos import catalog_payload, dojo_detail
 from .engine import AcademyEngine
 from .grading import award_flag
@@ -19,6 +31,7 @@ from .ui_flavor import challenge_thumb_svg, display_title
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DOJO_HTML = STATIC_DIR / "dojo.html"
+ADMIN_HTML = STATIC_DIR / "admin.html"
 
 
 def _find_check(ws: Path) -> Path | None:
@@ -88,10 +101,32 @@ def _run_workspace_check(engine: AcademyEngine, challenge_id: str) -> dict:
     return payload
 
 
-def serve_api(curriculum_root: Path, data_dir: Path, host: str = "127.0.0.1", port: int = 8080) -> None:
+def serve_api(
+    curriculum_root: Path,
+    data_dir: Path,
+    host: str = "127.0.0.1",
+    port: int = 8080,
+    *,
+    admin: bool = False,
+) -> None:
     engine = AcademyEngine(curriculum_root=curriculum_root, data_dir=data_dir)
+    if admin:
+        os.environ["ACADEMY_ADMIN"] = "1"
 
     class Handler(BaseHTTPRequestHandler):
+        def _admin_required(self):
+            if admin_enabled():
+                return None
+            return self._json(403, {"error": "Admin mode disabled. Run: academy admin"})
+
+        def _read_body(self) -> dict:
+            length = int(self.headers.get("Content-Length", "0"))
+            raw = self.rfile.read(length) if length else b"{}"
+            try:
+                body = json.loads(raw.decode("utf-8") or "{}")
+            except json.JSONDecodeError:
+                body = {}
+            return body if isinstance(body, dict) else {}
         def _json(self, code: int, payload) -> None:
             data = json.dumps(payload).encode("utf-8")
             self.send_response(code)
@@ -133,6 +168,42 @@ def serve_api(curriculum_root: Path, data_dir: Path, host: str = "127.0.0.1", po
 
             if path in ("/", "/index.html", "/dojo"):
                 return self._html_file(DOJO_HTML)
+            if path in ("/admin", "/admin/"):
+                if not admin_enabled():
+                    return self._json(403, {"error": "Admin mode disabled. Run: academy admin"})
+                return self._html_file(ADMIN_HTML)
+            if path == "/api/admin/overview":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                return self._json(200, curriculum_overview(engine))
+            if path == "/api/admin/proposals":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                return self._json(200, list_proposals(engine.curriculum_root))
+            if path.startswith("/api/admin/modules/"):
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                slug = unquote(path[len("/api/admin/modules/") :].strip("/"))
+                detail = module_detail(engine, slug)
+                if detail is None:
+                    return self._json(404, {"error": "module not found"})
+                return self._json(200, detail)
+            if path.startswith("/api/admin/challenges/draft"):
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                from urllib.parse import parse_qs
+
+                qs = parse_qs(parsed.query or "")
+                module_slug = (qs.get("module") or ["orientation"])[0]
+                title = (qs.get("title") or [""])[0]
+                return self._json(
+                    200,
+                    {"draft": default_challenge_draft(module_slug, title)},
+                )
             if path == "/api/status":
                 return self._json(200, engine.status_summary())
             if path == "/api/dojos":
@@ -211,12 +282,38 @@ def serve_api(curriculum_root: Path, data_dir: Path, host: str = "127.0.0.1", po
 
         def do_POST(self) -> None:  # noqa: N802
             parsed = urlparse(self.path)
-            length = int(self.headers.get("Content-Length", "0"))
-            raw = self.rfile.read(length) if length else b"{}"
-            try:
-                body = json.loads(raw.decode("utf-8") or "{}")
-            except json.JSONDecodeError:
-                body = {}
+            body = self._read_body()
+
+            if parsed.path == "/api/admin/challenges/validate":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                normalized = build_challenge_yaml(body)
+                errors = validate_challenge_draft(normalized)
+                return self._json(200, {"ok": not errors, "errors": errors, "normalized": normalized})
+
+            if parsed.path == "/api/admin/challenges/create":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                return self._json(200, create_challenge(engine, body))
+
+            if parsed.path == "/api/admin/proposals":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                kind = str(body.get("kind", "challenge")).strip()
+                title = str(body.get("title", "Untitled")).strip() or "Untitled"
+                notes = str(body.get("notes", "")).strip()
+                payload = {k: v for k, v in body.items() if k not in ("kind", "title", "notes")}
+                return self._json(200, save_proposal(engine.curriculum_root, kind=kind, title=title, body=payload, notes=notes))
+
+            if parsed.path.startswith("/api/admin/proposals/") and parsed.path.endswith("/apply"):
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                filename = unquote(parsed.path[len("/api/admin/proposals/") : -len("/apply")].strip("/"))
+                return self._json(200, apply_proposal(engine, filename))
 
             if parsed.path.endswith("/hint"):
                 cid = parsed.path.split("/")[-2]

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin · Pi SDR Academy</title>
+  <style>
+    :root {
+      --bg: #040604;
+      --panel: #0c110c;
+      --fg: #f2f7f2;
+      --muted: #6f7f6f;
+      --lime: #c8ff00;
+      --cyan: #4ecdc4;
+      --ink: #061006;
+      --line: #1a241a;
+      --danger: #ff6b6b;
+      --warn: #ffd166;
+      --font: "Avenir Next", "Segoe UI", "Hiragino Sans", sans-serif;
+      --mono: ui-monospace, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { color: var(--fg); background: var(--bg); font-family: var(--font); }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(800px 420px at 10% -10%, rgba(200,255,0,0.12), transparent 55%),
+        radial-gradient(700px 380px at 100% 0%, rgba(78,205,196,0.08), transparent 50%),
+        #040604;
+    }
+
+    .top {
+      position: sticky; top: 0; z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(4,6,4,0.9);
+      border-bottom: 1px solid var(--line);
+    }
+    .top-inner {
+      max-width: 960px; margin: 0 auto;
+      padding: 0.7rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; }
+    .brand i {
+      width: 30px; height: 30px; border-radius: 9px;
+      display: grid; place-items: center;
+      background: var(--cyan); color: var(--ink);
+      font-style: normal; font-weight: 900;
+    }
+    .brand b { color: var(--cyan); }
+    .top-links { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; }
+    .top-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      border: 1px solid var(--line); border-radius: 8px; padding: 0.35rem 0.65rem;
+    }
+    .top-links a:hover { color: var(--lime); border-color: var(--lime); }
+
+    .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+
+    h1 { margin: 0 0 0.35rem; font-size: clamp(1.6rem, 3.5vw, 2.2rem); letter-spacing: -0.03em; }
+    h1 em { font-style: normal; color: var(--cyan); }
+    .sub { color: var(--muted); margin: 0 0 1.25rem; line-height: 1.45; }
+
+    .steps {
+      display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .step-pill {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 0.35rem 0.55rem; border-radius: 999px;
+      border: 1px solid var(--line); color: var(--muted);
+    }
+    .step-pill.active { color: var(--ink); background: var(--lime); border-color: var(--lime); }
+    .step-pill.done { color: var(--lime); border-color: color-mix(in srgb, var(--lime) 40%, var(--line)); }
+
+    .panel {
+      border: 1px solid var(--line); border-radius: 16px;
+      background: linear-gradient(145deg, rgba(78,205,196,0.04), transparent 45%), var(--panel);
+      padding: 1.1rem 1.15rem; margin-bottom: 1rem;
+    }
+    .panel h2 { margin: 0 0 0.65rem; font-size: 1.05rem; }
+    .panel p.hint { margin: 0 0 0.85rem; color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
+
+    label {
+      display: block; font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--cyan);
+      margin: 0.75rem 0 0.35rem;
+    }
+    label:first-child { margin-top: 0; }
+
+    input[type=text], input[type=number], textarea, select {
+      width: 100%; border: 1px solid var(--line); border-radius: 10px;
+      background: rgba(0,0,0,0.35); color: var(--fg); padding: 0.6rem 0.7rem;
+    }
+    textarea { min-height: 120px; resize: vertical; line-height: 1.45; font-family: var(--mono); font-size: 0.88rem; }
+    textarea.tall { min-height: 220px; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.35rem; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(200,255,0,0.08); border: 1px solid color-mix(in srgb, var(--lime) 35%, var(--line));
+      border-radius: 999px; padding: 0.2rem 0.55rem; font-size: 0.82rem;
+    }
+    .tag button {
+      border: 0; background: transparent; color: var(--muted); padding: 0; line-height: 1;
+    }
+
+    .hint-row {
+      border: 1px solid var(--line); border-radius: 12px; padding: 0.65rem;
+      margin-bottom: 0.55rem; background: rgba(0,0,0,0.22);
+    }
+    .hint-row .row { align-items: start; }
+
+    .actions { display: flex; gap: 0.55rem; flex-wrap: wrap; margin-top: 1rem; }
+    .btn {
+      border: 0; border-radius: 10px; font-weight: 700; padding: 0.65rem 1rem;
+    }
+    .btn-primary { background: var(--lime); color: var(--ink); }
+    .btn-secondary { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line)); }
+    .btn:hover { filter: brightness(1.05); }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+    .card {
+      text-align: left; border: 1px solid var(--line); border-radius: 14px;
+      padding: 0.9rem; background: rgba(0,0,0,0.25); color: inherit;
+      transition: border-color .12s, transform .12s;
+    }
+    .card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+    .card h3 { margin: 0 0 0.35rem; font-size: 0.98rem; }
+    .card p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.4; }
+
+    .review {
+      font-family: var(--mono); font-size: 0.78rem; white-space: pre-wrap;
+      background: rgba(0,0,0,0.35); border: 1px solid var(--line); border-radius: 10px;
+      padding: 0.75rem; max-height: 320px; overflow: auto;
+    }
+
+    .errors {
+      border: 1px solid color-mix(in srgb, var(--danger) 50%, var(--line));
+      background: rgba(255,107,107,0.08); border-radius: 10px;
+      padding: 0.65rem 0.75rem; margin-top: 0.75rem; color: var(--danger); font-size: 0.88rem;
+    }
+    .errors ul { margin: 0.35rem 0 0; padding-left: 1.1rem; }
+
+    .toast {
+      position: fixed; bottom: 1rem; right: 1rem; z-index: 50;
+      background: var(--panel); border: 1px solid var(--lime); color: var(--fg);
+      border-radius: 12px; padding: 0.75rem 1rem; max-width: 360px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+      animation: pop .2s ease;
+    }
+    @keyframes pop { from { transform: translateY(8px); opacity: 0; } }
+
+    .proposal-list { display: grid; gap: 0.55rem; }
+    .proposal-item {
+      border: 1px solid var(--line); border-radius: 12px; padding: 0.7rem 0.8rem;
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      background: rgba(0,0,0,0.22);
+    }
+    .proposal-item .meta { flex: 1; min-width: 180px; }
+    .proposal-item .k { font-family: var(--mono); font-size: 0.65rem; color: var(--cyan); text-transform: uppercase; }
+    .proposal-item .t { font-weight: 700; }
+    .proposal-item .s { color: var(--muted); font-size: 0.82rem; }
+
+    .disabled-screen {
+      text-align: center; padding: 4rem 1rem;
+    }
+    .disabled-screen code {
+      background: rgba(0,0,0,0.35); padding: 0.15rem 0.4rem; border-radius: 6px;
+      font-family: var(--mono); color: var(--lime);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><i>管</i> <span>Pi SDR <b>Admin</b></span></div>
+      <div class="top-links">
+        <a href="/dojo">Student dojo</a>
+        <a href="#" id="link-proposals">Proposals</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="screen-disabled" class="disabled-screen hidden">
+      <h1>Admin mode is off</h1>
+      <p class="sub">Start the server with admin enabled:</p>
+      <p><code>academy admin</code> &nbsp; or &nbsp; <code>ACADEMY_ADMIN=1 academy serve</code></p>
+    </div>
+
+    <div id="screen-home" class="hidden">
+      <h1>Curriculum <em>admin</em></h1>
+      <p class="sub">Add challenges with a guided wizard, or save curriculum suggestions for later review.</p>
+      <div class="panel">
+        <div class="cards">
+          <button type="button" class="card" id="btn-new-challenge">
+            <h3>+ New challenge</h3>
+            <p>Write a description, hints, and flag — create files under an existing module.</p>
+          </button>
+          <button type="button" class="card" id="btn-suggest-module">
+            <h3>Suggest module / dojo change</h3>
+            <p>Propose a new module or belt placement without editing YAML by hand.</p>
+          </button>
+          <button type="button" class="card" id="btn-view-proposals">
+            <h3>Review proposals</h3>
+            <p>See saved drafts and curriculum notes waiting to be applied.</p>
+          </button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Curriculum snapshot</h2>
+        <p class="hint" id="overview-stats">Loading…</p>
+        <div id="overview-modules"></div>
+      </div>
+    </div>
+
+    <div id="screen-wizard" class="hidden">
+      <h1 id="wizard-title">New <em>challenge</em></h1>
+      <p class="sub" id="wizard-sub">Step-by-step authoring for curriculum files.</p>
+      <div class="steps" id="step-pills"></div>
+
+      <!-- Step 0: module -->
+      <div class="panel wizard-step" data-step="0">
+        <h2>1 · Choose module</h2>
+        <p class="hint">Pick where this challenge belongs. The wizard registers it in that module's <code>module.yaml</code>.</p>
+        <label for="field-module">Module</label>
+        <select id="field-module"></select>
+        <label for="field-dojo-note">Curriculum suggestion (optional)</label>
+        <textarea id="field-dojo-note" placeholder="e.g. Consider moving this module to the Radio Path dojo after iq-sdr…"></textarea>
+      </div>
+
+      <!-- Step 1: identity -->
+      <div class="panel wizard-step hidden" data-step="1">
+        <h2>2 · Identity</h2>
+        <div class="row">
+          <div>
+            <label for="field-title">Title</label>
+            <input type="text" id="field-title" placeholder="Find the Hidden Signal"/>
+          </div>
+          <div>
+            <label for="field-id">Challenge ID (kebab-case)</label>
+            <input type="text" id="field-id" placeholder="iq-find-signal"/>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="field-difficulty">Difficulty</label>
+            <select id="field-difficulty">
+              <option value="easy">easy</option>
+              <option value="medium">medium</option>
+              <option value="hard">hard</option>
+            </select>
+          </div>
+          <div>
+            <label for="field-time">Estimated time</label>
+            <input type="text" id="field-time" placeholder="30-60 minutes"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: description -->
+      <div class="panel wizard-step hidden" data-step="2">
+        <h2>3 · Description</h2>
+        <p class="hint">Markdown-friendly text shown to students. A <code>README.txt</code> stub is generated from this.</p>
+        <label for="field-description">Challenge description</label>
+        <textarea class="tall" id="field-description"></textarea>
+      </div>
+
+      <!-- Step 3: learning -->
+      <div class="panel wizard-step hidden" data-step="3">
+        <h2>4 · Learning details</h2>
+        <label>Objectives (one tag per line or comma-separated)</label>
+        <input type="text" id="field-objectives-input" placeholder="use_fft, identify_peak"/>
+        <div class="tags" id="objectives-tags"></div>
+        <label for="field-explanation">Post-solve explanation</label>
+        <textarea id="field-explanation"></textarea>
+        <label for="field-solution">Instructor solution walkthrough</label>
+        <textarea id="field-solution"></textarea>
+        <h2 style="margin-top:1rem;font-size:0.95rem;">Hints (minimum 2)</h2>
+        <div id="hints-list"></div>
+        <button type="button" class="btn btn-secondary" id="btn-add-hint">+ Add hint</button>
+      </div>
+
+      <!-- Step 4: flag -->
+      <div class="panel wizard-step hidden" data-step="4">
+        <h2>5 · Flag &amp; files</h2>
+        <div class="row">
+          <div>
+            <label for="field-flag-value">Flag template</label>
+            <input type="text" id="field-flag-value" placeholder="flag{my_challenge_template}"/>
+          </div>
+          <div>
+            <label for="field-flag-validation">Validation</label>
+            <select id="field-flag-validation">
+              <option value="session">session (recommended)</option>
+              <option value="exact">exact</option>
+              <option value="regex">regex</option>
+              <option value="case_insensitive">case_insensitive</option>
+              <option value="script">script</option>
+            </select>
+          </div>
+        </div>
+        <label for="field-files">Staged files (comma-separated)</label>
+        <input type="text" id="field-files" value="README.txt"/>
+        <label for="field-tools">Expected tools (comma-separated)</label>
+        <input type="text" id="field-tools" placeholder="python, numpy, fft"/>
+      </div>
+
+      <!-- Step 5: review -->
+      <div class="panel wizard-step hidden" data-step="5">
+        <h2>6 · Review &amp; publish</h2>
+        <p class="hint">Validate against the challenge schema, then create curriculum files or save as a proposal for review.</p>
+        <div class="review" id="review-box"></div>
+        <div id="validation-errors" class="errors hidden"></div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-create-now">Create challenge files</button>
+          <button type="button" class="btn btn-secondary" id="btn-save-proposal">Save as proposal</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" id="btn-wizard-back">Back</button>
+        <button type="button" class="btn btn-primary" id="btn-wizard-next">Next</button>
+        <button type="button" class="btn btn-secondary" id="btn-wizard-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <div id="screen-module-suggest" class="hidden">
+      <h1>Suggest <em>curriculum</em> change</h1>
+      <p class="sub">Save a proposal for a new module or dojo placement. An maintainer can create the module folder and update dojos.yaml.</p>
+      <div class="panel">
+        <label for="suggest-title">Proposal title</label>
+        <input type="text" id="suggest-title" placeholder="Add OFDM fundamentals module"/>
+        <label for="suggest-module-slug">Suggested module slug</label>
+        <input type="text" id="suggest-module-slug" placeholder="ofdm-fundamentals"/>
+        <label for="suggest-module-title">Module title</label>
+        <input type="text" id="suggest-module-title" placeholder="OFDM Fundamentals"/>
+        <label for="suggest-dojo">Target dojo</label>
+        <select id="suggest-dojo"></select>
+        <label for="suggest-description">Module description</label>
+        <textarea class="tall" id="suggest-description"></textarea>
+        <label for="suggest-notes">Notes for maintainers</label>
+        <textarea id="suggest-notes"></textarea>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-save-module-proposal">Save proposal</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel-suggest">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-proposals" class="hidden">
+      <h1>Saved <em>proposals</em></h1>
+      <p class="sub">Pending curriculum suggestions and challenge drafts.</p>
+      <div class="panel">
+        <div class="proposal-list" id="proposal-list">Loading…</div>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" id="btn-proposals-back">Back to home</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const STEP_LABELS = ["Module", "Identity", "Description", "Learning", "Flag", "Review"];
+    let overview = null;
+    let wizardStep = 0;
+    let draft = {};
+    let objectives = [];
+    let hints = [];
+
+    async function api(path, opts = {}) {
+      const res = await fetch(path, {
+        headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+        ...opts,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || data.detail || res.statusText);
+      return data;
+    }
+
+    function toast(msg) {
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4200);
+    }
+
+    function show(id) {
+      for (const screen of ["screen-disabled", "screen-home", "screen-wizard", "screen-module-suggest", "screen-proposals"]) {
+        document.getElementById(screen).classList.toggle("hidden", screen !== id);
+      }
+    }
+
+    function slugify(text) {
+      return text.toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    function renderObjectives() {
+      const box = document.getElementById("objectives-tags");
+      box.innerHTML = objectives.map((o, i) =>
+        `<span class="tag">${o}<button type="button" data-i="${i}" aria-label="Remove">×</button></span>`
+      ).join("");
+      box.querySelectorAll("button").forEach(btn => {
+        btn.onclick = () => { objectives.splice(+btn.dataset.i, 1); renderObjectives(); };
+      });
+    }
+
+    function renderHints() {
+      const box = document.getElementById("hints-list");
+      box.innerHTML = hints.map((h, i) => `
+        <div class="hint-row">
+          <div class="row">
+            <div style="max-width:90px">
+              <label>Level</label>
+              <input type="number" min="1" value="${h.level}" data-hint="${i}" data-field="level"/>
+            </div>
+            <div>
+              <label>Hint text</label>
+              <textarea data-hint="${i}" data-field="text">${h.text || ""}</textarea>
+            </div>
+          </div>
+          ${hints.length > 2 ? `<button type="button" class="btn btn-danger" data-remove-hint="${i}" style="margin-top:0.4rem;padding:0.3rem 0.55rem;font-size:0.78rem">Remove</button>` : ""}
+        </div>
+      `).join("");
+      box.querySelectorAll("[data-hint]").forEach(el => {
+        el.oninput = () => {
+          const i = +el.dataset.hint;
+          const field = el.dataset.field;
+          hints[i][field] = field === "level" ? +el.value : el.value;
+        };
+      });
+      box.querySelectorAll("[data-remove-hint]").forEach(btn => {
+        btn.onclick = () => { hints.splice(+btn.dataset.removeHint, 1); renderHints(); };
+      });
+    }
+
+    function renderStepPills() {
+      const box = document.getElementById("step-pills");
+      box.innerHTML = STEP_LABELS.map((label, i) => {
+        let cls = "step-pill";
+        if (i === wizardStep) cls += " active";
+        else if (i < wizardStep) cls += " done";
+        return `<span class="${cls}">${i + 1}. ${label}</span>`;
+      }).join("");
+      document.querySelectorAll(".wizard-step").forEach(el => {
+        el.classList.toggle("hidden", +el.dataset.step !== wizardStep);
+      });
+      document.getElementById("btn-wizard-next").classList.toggle("hidden", wizardStep >= STEP_LABELS.length - 1);
+      document.getElementById("btn-wizard-back").disabled = wizardStep === 0;
+    }
+
+    async function loadDraftForModule(slug) {
+      const data = await api(`/api/admin/challenges/draft?module=${encodeURIComponent(slug)}`);
+      draft = data.draft || {};
+      document.getElementById("field-title").value = draft.title || "";
+      document.getElementById("field-id").value = draft.id || "";
+      document.getElementById("field-difficulty").value = draft.difficulty || "easy";
+      document.getElementById("field-time").value = draft.estimated_time || "";
+      document.getElementById("field-description").value = draft.description || "";
+      document.getElementById("field-explanation").value = draft.explanation || "";
+      document.getElementById("field-solution").value = draft.solution || "";
+      document.getElementById("field-flag-value").value = (draft.flags && draft.flags.value) || "";
+      document.getElementById("field-flag-validation").value = (draft.flags && draft.flags.validation) || "session";
+      document.getElementById("field-files").value = (draft.files || ["README.txt"]).join(", ");
+      document.getElementById("field-tools").value = (draft.expected_tools || []).join(", ");
+      objectives = [...(draft.objectives || [])];
+      hints = (draft.hints || []).map(h => ({ level: h.level, text: h.text }));
+      renderObjectives();
+      renderHints();
+    }
+
+    function collectDraft() {
+      const module = document.getElementById("field-module").value;
+      return {
+        id: document.getElementById("field-id").value.trim(),
+        module,
+        title: document.getElementById("field-title").value.trim(),
+        difficulty: document.getElementById("field-difficulty").value,
+        estimated_time: document.getElementById("field-time").value.trim(),
+        prerequisites: [],
+        objectives: [...objectives],
+        description: document.getElementById("field-description").value,
+        environment: { type: "workspace", notes: "Offline workspace challenge." },
+        files: document.getElementById("field-files").value.split(",").map(s => s.trim()).filter(Boolean),
+        expected_tools: document.getElementById("field-tools").value.split(",").map(s => s.trim()).filter(Boolean),
+        flags: {
+          value: document.getElementById("field-flag-value").value.trim(),
+          validation: document.getElementById("field-flag-validation").value,
+        },
+        hints: hints.map((h, i) => ({ level: h.level || i + 1, text: h.text || "" })),
+        solution: document.getElementById("field-solution").value,
+        explanation: document.getElementById("field-explanation").value,
+        curriculum_note: document.getElementById("field-dojo-note").value.trim(),
+      };
+    }
+
+    async function validateDraft() {
+      const payload = collectDraft();
+      const result = await api("/api/admin/challenges/validate", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      document.getElementById("review-box").textContent = JSON.stringify(result.normalized || payload, null, 2);
+      const errBox = document.getElementById("validation-errors");
+      if (result.errors && result.errors.length) {
+        errBox.classList.remove("hidden");
+        errBox.innerHTML = "<strong>Fix before publishing:</strong><ul>" +
+          result.errors.map(e => `<li>${e}</li>`).join("") + "</ul>";
+      } else {
+        errBox.classList.add("hidden");
+        errBox.innerHTML = "";
+      }
+      return result;
+    }
+
+    function fillModuleSelect(selectEl, selected) {
+      selectEl.innerHTML = "";
+      if (!overview) return;
+      for (const dojo of overview.dojos || []) {
+        const group = document.createElement("optgroup");
+        group.label = `${dojo.title} (${dojo.belt})`;
+        for (const mod of dojo.modules || []) {
+          if (mod.missing) continue;
+          const opt = document.createElement("option");
+          opt.value = mod.slug;
+          opt.textContent = `${mod.title} (${mod.challenge_count} challenges)`;
+          group.appendChild(opt);
+        }
+        if (group.children.length) selectEl.appendChild(group);
+      }
+      if (selected) selectEl.value = selected;
+    }
+
+    async function loadOverview() {
+      overview = await api("/api/admin/overview");
+      if (!overview.admin_enabled) {
+        show("screen-disabled");
+        return;
+      }
+      show("screen-home");
+      document.getElementById("overview-stats").textContent =
+        `${overview.module_count} modules · ${overview.challenge_count} challenges · ${overview.curriculum_root}`;
+      const mods = overview.modules.slice().sort((a, b) => a.order - b.order);
+      document.getElementById("overview-modules").innerHTML =
+        `<div class="tags">${mods.map(m =>
+          `<span class="tag">${m.title} <span style="color:var(--muted)">(${m.challenge_count})</span></span>`
+        ).join("")}</div>`;
+
+      fillModuleSelect(document.getElementById("field-module"));
+      fillModuleSelect(document.getElementById("suggest-dojo"), null);
+      const dojoSelect = document.getElementById("suggest-dojo");
+      dojoSelect.innerHTML = "";
+      for (const dojo of overview.dojos || []) {
+        const opt = document.createElement("option");
+        opt.value = dojo.id;
+        opt.textContent = `${dojo.title} — ${dojo.belt} belt`;
+        dojoSelect.appendChild(opt);
+      }
+    }
+
+    async function loadProposals() {
+      const rows = await api("/api/admin/proposals");
+      const box = document.getElementById("proposal-list");
+      if (!rows.length) {
+        box.innerHTML = "<p class='hint'>No proposals yet.</p>";
+        return;
+      }
+      box.innerHTML = rows.map(p => `
+        <div class="proposal-item">
+          <div class="meta">
+            <div class="k">${p.kind} · ${p.status}</div>
+            <div class="t">${p.title}</div>
+            <div class="s">${p.created_at || ""} ${p.notes ? "— " + p.notes : ""}</div>
+          </div>
+          ${p.kind === "challenge" && p.status === "pending" ?
+            `<button type="button" class="btn btn-primary" data-apply="${p.filename}">Apply</button>` : ""}
+        </div>
+      `).join("");
+      box.querySelectorAll("[data-apply]").forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            const res = await api(`/api/admin/proposals/${encodeURIComponent(btn.dataset.apply)}/apply`, { method: "POST", body: "{}" });
+            toast(res.ok ? "Proposal applied." : (res.error || "Apply failed"));
+            await loadProposals();
+            await loadOverview();
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    function startWizard() {
+      wizardStep = 0;
+      document.getElementById("field-dojo-note").value = "";
+      const mod = document.getElementById("field-module").value;
+      loadDraftForModule(mod);
+      renderStepPills();
+      show("screen-wizard");
+    }
+
+    document.getElementById("btn-new-challenge").onclick = startWizard;
+    document.getElementById("btn-suggest-module").onclick = () => show("screen-module-suggest");
+    document.getElementById("btn-view-proposals").onclick = async () => {
+      show("screen-proposals");
+      await loadProposals();
+    };
+    document.getElementById("link-proposals").onclick = (e) => {
+      e.preventDefault();
+      document.getElementById("btn-view-proposals").click();
+    };
+
+    document.getElementById("field-module").onchange = () => loadDraftForModule(document.getElementById("field-module").value);
+    document.getElementById("field-title").oninput = () => {
+      const title = document.getElementById("field-title").value;
+      const mod = document.getElementById("field-module").value;
+      const prefix = mod.split("-")[0];
+      const base = slugify(title);
+      document.getElementById("field-id").value = base.startsWith(prefix + "-") ? base : `${prefix}-${base}`;
+    };
+
+    document.getElementById("field-objectives-input").onkeydown = (e) => {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        const val = e.target.value.replace(/,/g, "").trim();
+        if (val && !objectives.includes(val)) objectives.push(val);
+        e.target.value = "";
+        renderObjectives();
+      }
+    };
+
+    document.getElementById("btn-add-hint").onclick = () => {
+      hints.push({ level: hints.length + 1, text: "" });
+      renderHints();
+    };
+
+    document.getElementById("btn-wizard-next").onclick = async () => {
+      if (wizardStep === 1) {
+        const title = document.getElementById("field-title").value.trim();
+        if (!title) { toast("Enter a title."); return; }
+      }
+      if (wizardStep < STEP_LABELS.length - 1) {
+        wizardStep += 1;
+        renderStepPills();
+        if (wizardStep === STEP_LABELS.length - 1) await validateDraft();
+      }
+    };
+    document.getElementById("btn-wizard-back").onclick = () => {
+      if (wizardStep > 0) { wizardStep -= 1; renderStepPills(); }
+    };
+    document.getElementById("btn-wizard-cancel").onclick = () => show("screen-home");
+
+    document.getElementById("btn-create-now").onclick = async () => {
+      const v = await validateDraft();
+      if (v.errors && v.errors.length) { toast("Fix validation errors first."); return; }
+      try {
+        const payload = collectDraft();
+        const note = payload.curriculum_note;
+        delete payload.curriculum_note;
+        const res = await api("/api/admin/challenges/create", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        if (note) {
+          await api("/api/admin/proposals", {
+            method: "POST",
+            body: JSON.stringify({
+              kind: "curriculum_note",
+              title: `Note for ${payload.id}`,
+              notes: note,
+              challenge_id: payload.id,
+            }),
+          });
+        }
+        toast(`Created ${res.challenge_id}`);
+        show("screen-home");
+        await loadOverview();
+      } catch (e) { toast(e.message); }
+    };
+
+    document.getElementById("btn-save-proposal").onclick = async () => {
+      const v = await validateDraft();
+      if (v.errors && v.errors.length) { toast("Fix validation errors first."); return; }
+      try {
+        const payload = collectDraft();
+        const note = payload.curriculum_note || "";
+        delete payload.curriculum_note;
+        await api("/api/admin/proposals", {
+          method: "POST",
+          body: JSON.stringify({
+            kind: "challenge",
+            title: payload.title,
+            notes: note,
+            challenge: v.normalized || payload,
+          }),
+        });
+        toast("Proposal saved.");
+        show("screen-home");
+      } catch (e) { toast(e.message); }
+    };
+
+    document.getElementById("btn-save-module-proposal").onclick = async () => {
+      try {
+        await api("/api/admin/proposals", {
+          method: "POST",
+          body: JSON.stringify({
+            kind: "module",
+            title: document.getElementById("suggest-title").value.trim() || "New module proposal",
+            notes: document.getElementById("suggest-notes").value.trim(),
+            module: {
+              slug: document.getElementById("suggest-module-slug").value.trim(),
+              title: document.getElementById("suggest-module-title").value.trim(),
+              description: document.getElementById("suggest-description").value,
+              dojo_id: document.getElementById("suggest-dojo").value,
+            },
+          }),
+        });
+        toast("Module proposal saved.");
+        show("screen-home");
+      } catch (e) { toast(e.message); }
+    };
+
+    document.getElementById("btn-cancel-suggest").onclick = () => show("screen-home");
+    document.getElementById("btn-proposals-back").onclick = () => show("screen-home");
+
+    loadOverview().catch(err => {
+      if (String(err.message).includes("403") || String(err.message).includes("Admin")) {
+        show("screen-disabled");
+      } else {
+        toast(err.message);
+      }
+    });
+  </script>
+</body>
+</html>
