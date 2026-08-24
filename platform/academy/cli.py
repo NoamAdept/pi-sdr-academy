@@ -601,6 +601,17 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_admin(args: argparse.Namespace) -> int:
+    from .api import serve_api
+
+    curriculum, data_dir = _paths()
+    url = f"http://{args.host}:{args.port}/admin"
+    print(f"{_tag('+')} admin console {url}  (Ctrl+C gtfo)")
+    print(f"{_tag('!')} student dojo still at http://{args.host}:{args.port}/dojo")
+    serve_api(curriculum, data_dir, host=args.host, port=args.port, admin=True)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="academy",
@@ -674,6 +685,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_serve.add_argument("--host", default="127.0.0.1")
     p_serve.add_argument("--port", type=int, default=8080)
     p_serve.set_defaults(func=cmd_serve)
+
+    p_admin = sub.add_parser("admin", help="Curriculum admin UI (writes to curriculum/)")
+    p_admin.add_argument("--host", default="127.0.0.1")
+    p_admin.add_argument("--port", type=int, default=8080)
+    p_admin.set_defaults(func=cmd_admin)
 
     return parser
 
