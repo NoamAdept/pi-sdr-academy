@@ -99,9 +99,90 @@
 
     .sticker {
       width: min(220px, 42vw); height: auto; flex-shrink: 0;
-      filter: drop-shadow(2px 2px 0 #000);
+      filter: drop-shadow(3px 3px 0 #111);
     }
     @media (max-width: 640px) { .sticker { width: 140px; } }
+
+    /* Cartoon overall progress */
+    .xp {
+      margin: 0 0 1.25rem;
+      border: 3px solid #111;
+      border-radius: 16px;
+      background: #f4efe6;
+      padding: 0.75rem 0.9rem 0.85rem;
+      box-shadow: 4px 4px 0 #111;
+      color: #1a1512;
+    }
+    .xp-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      margin-bottom: 0.55rem; flex-wrap: wrap;
+    }
+    .xp-top .lbl {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #5a5048;
+    }
+    .xp-top .val {
+      font-family: var(--mono); font-weight: 800; font-size: 0.95rem; color: #1a1512;
+    }
+    .xp-top .val em { font-style: normal; color: #c45a1a; }
+    .xp-track {
+      position: relative;
+      height: 28px;
+      border: 3px solid #111;
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(90deg, #ebe4d8 0 10px, #e2d9ca 10px 20px);
+      overflow: hidden;
+    }
+    .xp-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          #e08a4f 0 8px,
+          #f0a86a 8px 16px
+        );
+      border-right: 3px solid #111;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15);
+      transition: width .35s cubic-bezier(.2,.8,.2,1);
+      min-width: 0;
+    }
+    .xp-fill.empty { border-right: 0; }
+    .xp-belts {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+    }
+    .xp-belt {
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+      font-family: var(--mono); font-size: 0.62rem; color: #5a5048;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .xp-belt img {
+      width: 42px; height: 34px; object-fit: contain;
+      filter: grayscale(0.15);
+    }
+    .xp-belt.done img { filter: none; }
+    .xp-belt.active img {
+      filter: none;
+      animation: bob .9s ease-in-out infinite;
+    }
+    .xp-belt .pip {
+      width: 100%; height: 8px; border: 2px solid #111; border-radius: 999px;
+      background: #ddd6c8; overflow: hidden;
+    }
+    .xp-belt .pip > i {
+      display: block; height: 100%; width: 0%;
+      background: var(--bc, #e08a4f);
+      transition: width .3s ease;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
 
     .how {
       display: grid;
@@ -249,13 +330,15 @@
       font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
     }
     .card .rail {
-      margin-top: 0.85rem; height: 5px; border-radius: 99px;
-      background: var(--line); overflow: hidden;
+      margin-top: 0.75rem; height: 10px; border-radius: 999px;
+      border: 2px solid #111;
+      background: #2a241f;
+      overflow: hidden;
     }
     .card .rail > i {
       display: block; height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--c));
-      box-shadow: 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
+      background: repeating-linear-gradient(-45deg, var(--c) 0 6px, color-mix(in srgb, var(--c) 72%, #fff) 6px 12px);
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
     }
     .chip {
       position: absolute; top: 0.75rem; right: 0.75rem;
@@ -263,7 +346,9 @@
       text-transform: uppercase; font-weight: 800;
       padding: 0.18rem 0.4rem; border-radius: 6px;
       background: var(--c); color: var(--ink);
+      display: inline-flex; align-items: center; gap: 0.2rem;
     }
+    .chip img { width: 14px; height: 14px; object-fit: contain; }
     .chip.lock { background: #3a3a3a; color: #bbb; }
     .chip.done { background: var(--cyan); color: #042; }
 
@@ -497,6 +582,14 @@
         <!-- cartoony sticker -->
         <img class="sticker" src="/icons/ponytail.png" alt="" width="220" height="220"/>
         <button type="button" class="go" id="btn-go"><img class="ico" src="/icons/play.png" alt=""/> Continue</button>
+      </div>
+      <div class="xp" id="xp" aria-label="Overall progress">
+        <div class="xp-top">
+          <span class="lbl">Progress bar</span>
+          <span class="val"><em id="xp-count">0</em> / <span id="xp-total">50</span> cleared</span>
+        </div>
+        <div class="xp-track"><div class="xp-fill empty" id="xp-fill"></div></div>
+        <div class="xp-belts" id="xp-belts"></div>
       </div>
       <div class="how">
         <div class="how-box">
@@ -861,6 +954,41 @@
     async function refreshStatus() {
       const s = await api('/api/status');
       document.getElementById('progress').textContent = s.solved + '/' + s.total;
+      paintXp(s.solved, s.total);
+    }
+
+    function paintXp(solved, total, dojos) {
+      const pct = total ? Math.round(100 * solved / total) : 0;
+      const fill = document.getElementById('xp-fill');
+      if (!fill) return;
+      fill.style.width = pct + '%';
+      fill.classList.toggle('empty', pct === 0);
+      document.getElementById('xp-count').textContent = solved;
+      document.getElementById('xp-total').textContent = total;
+      const box = document.getElementById('xp-belts');
+      if (!box || !dojos) return;
+      box.innerHTML = '';
+      dojos.filter(d => d.kind === 'core').forEach(d => {
+        const done = d.challenges > 0 && d.solved >= d.challenges;
+        const active = !d.locked && !done && d.solved > 0;
+        const p = d.challenges ? Math.round(100 * d.solved / d.challenges) : 0;
+        const el = document.createElement('div');
+        el.className = 'xp-belt' + (done ? ' done' : '') + (active || (!d.locked && !done && d.solved === 0 && !d.locked) ? ' active' : '');
+        // only bob the first unlocked incomplete
+        el.innerHTML = `
+          <img src="/icons/${BELT_ICON[d.belt] || 'belt-white'}.png" alt=""/>
+          <div class="pip" style="--bc:${esc(d.belt_color || '#e08a4f')}"><i style="width:${p}%"></i></div>
+          <span>${esc((d.belt_label || d.belt || '').replace(/ Belt$/i,''))}</span>
+        `;
+        box.appendChild(el);
+      });
+      // mark only the continue target as active bob
+      const cores = [...box.children];
+      cores.forEach(el => el.classList.remove('active'));
+      if (continueTarget) {
+        const idx = dojos.filter(d => d.kind === 'core').findIndex(d => d.id === continueTarget.id);
+        if (idx >= 0 && cores[idx]) cores[idx].classList.add('active');
+      }
     }
 
     async function load() {
@@ -869,6 +997,7 @@
       const core = (catalog.dojos || []).filter(d => d.kind === 'core');
       const side = (catalog.dojos || []).filter(d => d.kind !== 'core');
       continueTarget = core.find(d => !d.locked && d.solved < d.challenges) || null;
+      paintXp(status.solved, status.total, catalog.dojos || []);
       const coreEl = document.getElementById('core');
       const sideEl = document.getElementById('side');
       coreEl.innerHTML = ''; sideEl.innerHTML = '';
