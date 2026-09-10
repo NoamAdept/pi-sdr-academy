@@ -200,22 +200,22 @@
     }
     .dojo-ico svg { width: 28px; height: 28px; }
     .belt-ico {
-      width: 72px; height: 56px;
+      width: 84px; height: 70px;
       border-radius: 12px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+      background: #f4f0ea;
+      border: 2px solid #111;
       padding: 4px;
     }
-    .belt-ico svg { width: 64px; height: 48px; }
+    .belt-ico svg { width: 76px; height: 62px; }
     .dhero .beltbig {
-      width: 140px; height: 100px;
+      width: 160px; height: 120px;
       display: grid; place-items: center;
-      border-radius: 16px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+      border-radius: 14px;
+      background: #f4f0ea;
+      border: 2px solid #111;
       padding: 0.4rem;
     }
-    .dhero .beltbig svg { width: 120px; height: 88px; }
+    .dhero .beltbig svg { width: 148px; height: 108px; }
     .belt-tag {
       display: inline-flex; align-items: center; gap: 0.35rem;
       margin-top: 0.35rem;
@@ -618,34 +618,38 @@
     }
 
     function beltIcon(color, belt) {
-      const c = color || '#e08a4f';
-      const isBlack = (belt === 'black') || c === '#222222' || c === '#111' || c === '#000';
-      const cloth = isBlack ? '#141414' : c;
-      const edge = isBlack ? '#e08a4f' : 'rgba(0,0,0,0.28)';
-      const stitch = isBlack ? 'rgba(224,138,79,0.35)' : 'rgba(255,255,255,0.28)';
-      const tip = isBlack ? '#e08a4f' : cloth;
-      const gid = 'bg' + Math.random().toString(36).slice(2, 8);
-      return `<svg viewBox="0 0 160 110" aria-hidden="true">
+      // Cartoon tied martial-arts belt (waist + knot + hanging ends).
+      const fill = (belt === 'black' || color === '#222222') ? '#1a1a1a' : (color || '#3f9e5a');
+      const stitch = (belt === 'white' || fill === '#f2f2f2' || fill === '#ffffff')
+        ? 'rgba(0,0,0,0.22)'
+        : 'rgba(0,0,0,0.35)';
+      const ink = '#111111';
+      const gid = 'bt' + Math.random().toString(36).slice(2, 8);
+      return `<svg viewBox="0 0 200 140" aria-hidden="true">
         <defs>
-          <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${cloth}" stop-opacity="0.92"/>
-            <stop offset="45%" stop-color="${cloth}"/>
-            <stop offset="100%" stop-color="${cloth}" stop-opacity="0.75"/>
-          </linearGradient>
+          <pattern id="${gid}" patternUnits="userSpaceOnUse" width="6" height="6">
+            <path d="M0 3h6" stroke="${stitch}" stroke-width="1.1"/>
+          </pattern>
         </defs>
-        <path d="M8 34h144v18H8z" fill="url(#${gid})" stroke="${edge}" stroke-width="1.2"/>
-        <path d="M12 39h136M12 47h136" stroke="${stitch}" stroke-width="0.8" opacity="0.7"/>
-        <path d="M58 50l-10 48 14-4 8-44z" fill="${cloth}" stroke="${edge}" stroke-width="1"/>
-        <path d="M52 58l8 36" stroke="${stitch}" stroke-width="0.8"/>
-        ${isBlack ? '<path d="M50 88l12-3 2 8-14 4z" fill="'+tip+'"/>' : ''}
-        <path d="M102 50l10 48-14-4-8-44z" fill="${cloth}" stroke="${edge}" stroke-width="1"/>
-        <path d="M108 58l-8 36" stroke="${stitch}" stroke-width="0.8"/>
-        ${isBlack ? '<path d="M98 88l12 3-2 8-14-4z" fill="'+tip+'"/>' : ''}
-        <path d="M68 28h24v12H68z" fill="${cloth}" stroke="${edge}" stroke-width="1.2"/>
-        <path d="M62 36c0-10 8-16 18-16s18 6 18 16v8H62z" fill="${cloth}" stroke="${edge}" stroke-width="1.2"/>
-        <path d="M74 24c4-3 8-3 12 0" fill="none" stroke="${stitch}" stroke-width="1.2"/>
-        <path d="M70 40h20" stroke="${stitch}" stroke-width="1"/>
-        <circle cx="80" cy="36" r="2.2" fill="${isBlack ? '#e08a4f' : 'var(--bg)'}" opacity="0.85"/>
+        <path d="M8 42h62v22H8z" fill="${fill}" stroke="${ink}" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M8 42h62v22H8z" fill="url(#${gid})" opacity="0.55"/>
+        <path d="M130 42h62v22h-62z" fill="${fill}" stroke="${ink}" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M130 42h62v22h-62z" fill="url(#${gid})" opacity="0.55"/>
+        <path d="M70 34c6-8 18-12 30-12s24 4 30 12c4 5 6 12 4 20l-8 10H74l-8-10c-2-8 0-15 4-20z"
+              fill="${fill}" stroke="${ink}" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M70 34c6-8 18-12 30-12s24 4 30 12c4 5 6 12 4 20l-8 10H74l-8-10c-2-8 0-15 4-20z"
+              fill="url(#${gid})" opacity="0.45"/>
+        <path d="M78 48h44v22H78z" fill="${fill}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M78 48h44v22H78z" fill="url(#${gid})" opacity="0.5"/>
+        <path d="M86 52h28M86 58h28M86 64h22" stroke="${ink}" stroke-width="1.4" opacity="0.35"/>
+        <path d="M78 68l-18 58 22-6 12-52z" fill="${fill}" stroke="${ink}" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M78 68l-18 58 22-6 12-52z" fill="url(#${gid})" opacity="0.5"/>
+        <path d="M72 78l-10 40" stroke="${ink}" stroke-width="1.5" opacity="0.35"/>
+        <path d="M122 68l18 58-22-6-12-52z" fill="${fill}" stroke="${ink}" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M122 68l18 58-22-6-12-52z" fill="url(#${gid})" opacity="0.5"/>
+        <path d="M128 78l10 40" stroke="${ink}" stroke-width="1.5" opacity="0.35"/>
+        <path d="M88 28c4-10 20-10 24 0v14H88z" fill="${fill}" stroke="${ink}" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M88 28c4-10 20-10 24 0v14H88z" fill="url(#${gid})" opacity="0.45"/>
       </svg>`;
     }
 
