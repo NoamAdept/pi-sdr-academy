@@ -172,6 +172,15 @@ def serve_api(
                 if not admin_enabled():
                     return self._json(403, {"error": "Admin mode disabled. Run: academy admin"})
                 return self._html_file(ADMIN_HTML)
+            if path.startswith("/icons/"):
+                # Offline icon pack (PNG). Keep paths under static/icons only.
+                name = unquote(path[len("/icons/") :].lstrip("/"))
+                if "/" in name or "\\" in name or name.startswith(".") or not name.endswith(".png"):
+                    return self._json(404, {"error": "not found"})
+                icon = STATIC_DIR / "icons" / name
+                if not icon.is_file():
+                    return self._json(404, {"error": "not found"})
+                return self._bytes(200, icon.read_bytes(), "image/png")
             if path == "/api/admin/overview":
                 denied = self._admin_required()
                 if denied:
