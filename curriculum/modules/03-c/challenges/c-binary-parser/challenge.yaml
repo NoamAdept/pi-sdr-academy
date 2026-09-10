@@ -1,0 +1,81 @@
+id: c-binary-parser
+module: c
+title: Parse Length-Prefixed Records
+difficulty: medium
+estimated_time: 50-75 minutes
+prerequisites:
+- c-memory-layout
+objectives:
+- binary-parsing
+- bounds-checking
+- callbacks
+mastery_evidence:
+- understand
+- observe
+- apply
+description: 'Implement a parser for repeated records. Each record begins with
+
+  one type byte and one payload-length byte, followed by that many payload bytes.
+
+  Call the supplied callback for every complete record. Return false for truncated
+
+  input and never read beyond the buffer.
+
+  '
+environment:
+  type: workspace
+  workspace_subdir: c-binary-parser
+  notes: Software-only; no external hardware or network required.
+files:
+- README.txt
+- records.h
+- records.c
+- check
+- check.py
+expected_tools:
+- bash
+- gcc
+flags:
+  value: flag{bounds_checks_keep_parsers_safe}
+  validation: session
+hints:
+- level: 1
+  text: 'Keep an offset and require at least two bytes before reading a header.
+
+    '
+- level: 2
+  text: 'After reading length, verify `length <= size - offset` before touching payload.
+
+    '
+- level: 3
+  text: 'Advance by payload length after the callback; empty payloads are valid.
+
+    '
+solution: 'Loop while offset is below size. Validate the two-byte header, read
+
+  type and length, validate remaining bytes, invoke `visit(type, data+offset,
+
+  length, context)`, and advance. Return true exactly when all bytes form complete
+
+  records.
+
+  '
+explanation: 'Length fields are promises made by input, not guarantees. Checking
+
+  the remaining byte count before every access is the central rule of safe binary
+
+  parsing.
+
+  '
+extension:
+  title: Go further
+  description: 'Add one more test case of your own and confirm the program still behaves
+
+    correctly.
+
+    '
+performance_notes: 'Sources and test data are intentionally small and compile quickly
+  on a Raspberry Pi.
+
+  '
+optional_hardware: []

@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+cc -Wall -Wextra controller.c -o controller
+./controller

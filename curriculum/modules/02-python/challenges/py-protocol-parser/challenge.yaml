@@ -1,0 +1,80 @@
+id: py-protocol-parser
+module: python
+title: Parse Noisy Radio Frames
+difficulty: medium
+estimated_time: 50-75 minutes
+prerequisites:
+- py-socket-client
+objectives:
+- stateful-parsing
+- checksums
+- error-recovery
+mastery_evidence:
+- understand
+- observe
+- apply
+description: 'Complete a parser for frames embedded in noise. A frame is marker
+
+  `AA 55`, one length byte, that many payload bytes, and one checksum byte equal
+
+  to XOR of the payload. Return valid payloads and continue searching after bad
+
+  markers, impossible lengths, incomplete data, or wrong checksums.
+
+  '
+environment:
+  type: workspace
+  workspace_subdir: py-protocol-parser
+  notes: Software-only; any networking stays on localhost.
+files:
+- README.txt
+- protocol.py
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{checksums_reject_bad_frames}
+  validation: session
+hints:
+- level: 1
+  text: 'Search for `b''\xAA\x55''` starting at a moving index.
+
+    '
+- level: 2
+  text: 'After a marker, the complete frame size is `2 + 1 + length + 1`.
+
+    '
+- level: 3
+  text: 'On an invalid frame, move forward by one byte so a later marker is still
+    discoverable.
+
+    '
+solution: 'Scan with an index. Find the marker, read length only if available,
+
+  calculate the frame end, and stop if incomplete. XOR all payload bytes and
+
+  append `bytes(payload)` only when it equals the checksum. Advance past a valid
+
+  frame; advance one byte after an invalid one.
+
+  '
+explanation: 'A protocol parser turns a byte stream into messages while treating
+
+  input as untrusted. Length fields locate boundaries and checksums detect damage.
+
+  Careful resynchronization allows one bad frame without losing later good data.
+
+  '
+extension:
+  title: Go further
+  description: 'Change the input data and make your solution handle the new case without
+
+    changing its output format.
+
+    '
+performance_notes: 'Inputs are intentionally tiny and run comfortably on a Raspberry
+  Pi.
+
+  '
+optional_hardware: []

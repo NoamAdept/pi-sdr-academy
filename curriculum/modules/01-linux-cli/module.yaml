@@ -10,3 +10,5 @@ prerequisites:
 challenges:
 - cli-pipeline
 - cli-text-extraction
+- cli-log-detective
+- cli-shell-automation

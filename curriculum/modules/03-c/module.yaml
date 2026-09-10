@@ -1,0 +1,14 @@
+id: c
+slug: c
+title: C
+order: 3
+description: 'Compile, pointers, memory layout, and debugging C without advanced exploitation.
+
+  '
+prerequisites:
+- python
+challenges:
+- c-compile-it
+- c-pointer-basics
+- c-memory-layout
+- c-binary-parser

@@ -10,3 +10,7 @@ prerequisites:
 challenges:
 - py-control-flow
 - py-file-parser
+- py-binary-decoder
+- py-socket-client
+- py-protocol-parser
+- py-auto-investigator

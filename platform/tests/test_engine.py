@@ -22,7 +22,7 @@ def engine(tmp_path):
 
 def test_modules_loaded(engine):
     modules = engine.modules
-    assert len(modules) == 5
+    assert len(modules) == 10
     assert modules[0].slug == "orientation"
 
 
@@ -30,7 +30,7 @@ def test_orientation_challenges(engine):
     chs = engine.module_challenges("orientation")
     ids = {c.id for c in chs}
     assert "orient-find-flag" in ids
-    assert len(chs) == 2
+    assert len(chs) == 6
 
 
 def test_start_and_submit_find_flag(engine):
@@ -79,7 +79,7 @@ def test_hints_progressive(engine):
 
 def test_challenge_yaml_count():
     n = len(list(CURRICULUM.glob("modules/*/challenges/*/challenge.yaml")))
-    assert n == 10
+    assert n == 50
 
 
 def test_session_flag_randomized_and_flag_file_cleared(engine, tmp_path):

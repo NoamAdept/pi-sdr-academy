@@ -1,0 +1,1 @@
+Front-end decimation output was configured for 12 ksamples/s; symbol period is 8 samples.

@@ -1,0 +1,84 @@
+id: cli-shell-automation
+module: linux-cli
+title: Automate a Capture Inventory
+difficulty: medium
+estimated_time: 35-55 minutes
+prerequisites:
+- cli-log-detective
+objectives:
+- bash-scripting
+- loops
+- sha256
+mastery_evidence:
+- understand
+- observe
+- apply
+description: 'Write `inventory.sh` so an operator can inventory any directory of
+
+  capture files. It receives one directory argument and creates `manifest.txt`
+
+  in the current directory. Include only `.iq` files. Each line is
+
+  `filename,size,sha256`, sorted by filename. The checker uses fresh files, so do
+
+  not hard-code the supplied examples.
+
+  '
+environment:
+  type: workspace
+  workspace_subdir: cli-shell-automation
+  notes: Software-only; any networking stays on localhost.
+files:
+- README.txt
+- inventory.sh
+- check
+- check.py
+expected_tools:
+- bash
+- sha256sum
+flags:
+  value: flag{scripts_repeat_work_safely}
+  validation: session
+hints:
+- level: 1
+  text: 'Start with `#!/bin/bash` and read the directory from `$1`.
+
+    '
+- level: 2
+  text: '`stat -c %s "$file"` reports bytes on Linux; `sha256sum` prints the hash
+    first.
+
+    '
+- level: 3
+  text: 'Use `find ... -print0` or a glob, and sort the completed lines. Remember
+    filenames may contain spaces.
+
+    '
+solution: 'A robust script loops over `"$dir"/*.iq`, gets the basename, byte
+
+  count, and first field from `sha256sum`, prints CSV lines into a temporary file,
+
+  then sorts it into `manifest.txt`. Enable `nullglob` so an empty directory is
+
+  handled cleanly.
+
+  '
+explanation: 'Scripts preserve a repeatable procedure. Quoting variables keeps
+
+  spaces in filenames from splitting one path into several arguments. Computing
+
+  the manifest from the provided directory makes the automation reusable.
+
+  '
+extension:
+  title: Go further
+  description: 'Change the input data and make your solution handle the new case without
+
+    changing its output format.
+
+    '
+performance_notes: 'Inputs are intentionally tiny and run comfortably on a Raspberry
+  Pi.
+
+  '
+optional_hardware: []

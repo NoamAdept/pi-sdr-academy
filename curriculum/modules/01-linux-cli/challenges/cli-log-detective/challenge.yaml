@@ -1,0 +1,83 @@
+id: cli-log-detective
+module: linux-cli
+title: Investigate a Receiver Log
+difficulty: easy
+estimated_time: 25-40 minutes
+prerequisites:
+- cli-text-extraction
+objectives:
+- log-analysis
+- counting
+- command-line-tools
+mastery_evidence:
+- understand
+- observe
+- apply
+description: 'The receiver had warnings during a short test. Build `report.txt`
+
+  with warning counts by component in alphabetical order. Each line must use
+
+  `component=count`, for example `audio=2`. Only lines whose level is exactly
+
+  `WARN` count.
+
+  '
+environment:
+  type: workspace
+  workspace_subdir: cli-log-detective
+  notes: Software-only; any networking stays on localhost.
+files:
+- README.txt
+- receiver.log
+- check
+- check.py
+expected_tools:
+- bash
+- grep
+- cut
+- sort
+- uniq
+flags:
+  value: flag{logs_tell_a_story}
+  validation: session
+hints:
+- level: 1
+  text: 'First isolate lines containing ` level=WARN `.
+
+    '
+- level: 2
+  text: 'The component is the third space-separated field, such as `component=audio`.
+
+    '
+- level: 3
+  text: '`sort | uniq -c` counts identical adjacent lines; a small loop or `awk` can
+    format the result.
+
+    '
+solution: 'One solution is:
+
+  `grep '' level=WARN '' receiver.log | cut -d'' '' -f3 | cut -d= -f2 | sort | uniq
+  -c | awk ''{print $2 "=" $1}'' > report.txt`
+
+  Then run `./check`.
+
+  '
+explanation: 'Logs are structured text even when they look like sentences.
+
+  Filtering by the exact level prevents ERROR and INFO records from being counted.
+
+  Sorting groups equal component names so `uniq -c` can count them.
+
+  '
+extension:
+  title: Go further
+  description: 'Change the input data and make your solution handle the new case without
+
+    changing its output format.
+
+    '
+performance_notes: 'Inputs are intentionally tiny and run comfortably on a Raspberry
+  Pi.
+
+  '
+optional_hardware: []

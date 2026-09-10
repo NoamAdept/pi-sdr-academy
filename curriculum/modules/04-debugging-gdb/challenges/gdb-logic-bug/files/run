@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+gcc -std=c11 -Wall -Wextra -g -O0 target.c -o target
+./target

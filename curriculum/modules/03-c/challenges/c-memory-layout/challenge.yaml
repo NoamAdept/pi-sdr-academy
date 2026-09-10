@@ -1,0 +1,79 @@
+id: c-memory-layout
+module: c
+title: Read Fields from Raw Memory
+difficulty: medium
+estimated_time: 40-60 minutes
+prerequisites:
+- c-pointer-basics
+objectives:
+- memory-layout
+- endianness
+- bit-operations
+mastery_evidence:
+- understand
+- observe
+- apply
+description: 'A device header is six bytes: two ASCII tag bytes, a 16-bit
+
+  little-endian sequence number, one flags byte, and one payload-length byte.
+
+  Implement `decode_header` using byte reads and shifts. Do not cast the buffer to
+
+  a struct: padding and host byte order could make that non-portable.
+
+  '
+environment:
+  type: workspace
+  workspace_subdir: c-memory-layout
+  notes: Software-only; no external hardware or network required.
+files:
+- README.txt
+- layout.h
+- layout.c
+- check
+- check.py
+expected_tools:
+- bash
+- gcc
+flags:
+  value: flag{memory_is_ordered_bytes}
+  validation: session
+hints:
+- level: 1
+  text: 'Copy the first two bytes directly into `out->tag`.
+
+    '
+- level: 2
+  text: 'Little-endian means `sequence = data[2] | (data[3] << 8)`.
+
+    '
+- level: 3
+  text: 'Check both pointers and require at least 6 bytes before reading.
+
+    '
+solution: 'Return false for null pointers or a length below six. Assign each
+
+  field explicitly, combining bytes 2 and 3 with a cast to `uint16_t` and an
+
+  8-bit left shift.
+
+  '
+explanation: 'Memory is a sequence of bytes. Multi-byte values need a defined
+
+  byte order. Explicit decoding avoids assumptions about the compiler''s struct
+
+  padding and the computer''s native endianness.
+
+  '
+extension:
+  title: Go further
+  description: 'Add one more test case of your own and confirm the program still behaves
+
+    correctly.
+
+    '
+performance_notes: 'Sources and test data are intentionally small and compile quickly
+  on a Raspberry Pi.
+
+  '
+optional_hardware: []

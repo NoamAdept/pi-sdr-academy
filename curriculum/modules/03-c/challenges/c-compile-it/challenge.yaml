@@ -1,0 +1,78 @@
+id: c-compile-it
+module: c
+title: Compile and Repair a C Program
+difficulty: easy
+estimated_time: 25-40 minutes
+prerequisites: []
+objectives:
+- gcc
+- compiler-errors
+- warnings
+mastery_evidence:
+- understand
+- observe
+- apply
+description: '`meter.c` is intended to print the average of three readings, but
+
+  it has several beginner-sized compile errors. Use GCC diagnostics to repair it.
+
+  The finished program must compile cleanly with strict warnings and print
+
+  `average=20.0`.
+
+  '
+environment:
+  type: workspace
+  workspace_subdir: c-compile-it
+  notes: Software-only; no external hardware or network required.
+files:
+- README.txt
+- meter.c
+- check
+- check.py
+expected_tools:
+- bash
+- gcc
+flags:
+  value: flag{compiler_messages_are_clues}
+  validation: session
+hints:
+- level: 1
+  text: 'Run `gcc -Wall -Wextra -Werror -std=c11 meter.c -o meter` and start with
+    the first message.
+
+    '
+- level: 2
+  text: 'C statements end with semicolons, and names must be declared before use.
+
+    '
+- level: 3
+  text: '`printf` needs a format matching a double, such as `%.1f`.
+
+    '
+solution: 'Declare all three readings as `double`, add the missing semicolon,
+
+  calculate `(first + second + third) / 3.0`, and print it with
+
+  `printf("average=%.1f\n", average);`.
+
+  '
+explanation: 'Compiler diagnostics name a line and describe what could not be
+
+  understood. Fixing the first error often removes later follow-on errors.
+
+  Warnings treated as errors also catch suspicious code before it runs.
+
+  '
+extension:
+  title: Go further
+  description: 'Add one more test case of your own and confirm the program still behaves
+
+    correctly.
+
+    '
+performance_notes: 'Sources and test data are intentionally small and compile quickly
+  on a Raspberry Pi.
+
+  '
+optional_hardware: []

@@ -10,3 +10,7 @@ prerequisites: []
 challenges:
 - orient-find-flag
 - orient-permissions
+- orient-process-hunt
+- orient-environment
+- orient-broken-service
+- orient-system-investigation

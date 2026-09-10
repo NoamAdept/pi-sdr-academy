@@ -52,10 +52,10 @@ def main() -> int:
             fails.append(msg)
 
     yaml_files = sorted(CURRICULUM.glob("modules/*/challenges/*/challenge.yaml"))
-    check(len(yaml_files) == 10, f"expected 10 challenge.yaml files, got {len(yaml_files)}")
+    check(len(yaml_files) == 50, f"expected 50 challenge.yaml files, got {len(yaml_files)}")
 
     modules = sorted((CURRICULUM / "modules").glob("*/module.yaml"))
-    check(len(modules) == 5, f"expected 5 modules, got {len(modules)}")
+    check(len(modules) == 10, f"expected 10 modules, got {len(modules)}")
     check((CURRICULUM / "dojos.yaml").is_file(), "dojos.yaml missing")
 
     registered: dict[str, set[str]] = {}

@@ -1,0 +1,17 @@
+id: iq-sdr
+slug: iq-sdr
+title: IQ / SDR Fundamentals
+order: 8
+description: 'Complex baseband, wideband IQ analysis, bandwidth, and unknown captures
+  — software-only.
+
+  '
+prerequisites:
+- fft
+challenges:
+- iq-identify
+- iq-complex-analysis
+- iq-find-signal
+- iq-bandwidth
+- iq-recover-baseband
+- iq-unknown-capture
