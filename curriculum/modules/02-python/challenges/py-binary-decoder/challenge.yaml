@@ -1,76 +1,81 @@
 id: py-binary-decoder
 module: python
-title: "Decode Binary Sensor Records"
+title: Decode Binary Sensor Records
 difficulty: medium
-estimated_time: "40-60 minutes"
-
+estimated_time: 40-60 minutes
 prerequisites:
-  - py-file-parser
-
+- py-file-parser
 objectives:
-  - binary-data
-  - struct-module
-  - endianness
-
+- binary-data
+- struct-module
+- endianness
 mastery_evidence:
-  - understand
-  - observe
-  - apply
+- understand
+- observe
+- apply
+description: '`samples.bin` contains repeated 7-byte records: a little-endian
 
-description: |
-  `samples.bin` contains repeated 7-byte records: a little-endian
   unsigned 32-bit frequency, a little-endian signed 16-bit power, and one status
+
   byte. Complete `decode.py` so `decode_records(path)` returns tuples and raises
+
   `ValueError` if trailing bytes do not form a complete record. The program must
+
   write the supplied file as CSV.
 
+  '
 environment:
   type: workspace
   workspace_subdir: py-binary-decoder
   notes: Software-only; any networking stays on localhost.
-
 files:
-  - README.txt
-  - samples.bin
-  - decode.py
-  - check
-  - check.py
-
+- README.txt
+- samples.bin
+- decode.py
+- check
+- check.py
 expected_tools:
-  - python3
-
+- python3
 flags:
-  value: "flag{bytes_have_structure}"
+  value: flag{bytes_have_structure}
   validation: session
-
 hints:
-  - level: 1
-    text: |
-      The `struct` format starts with `<` for little-endian.
-  - level: 2
-    text: |
-      Unsigned int, signed short, and unsigned byte are `I`, `h`, and `B`.
-  - level: 3
-    text: |
-      `struct.iter_unpack('<IhB', data)` handles repeated fixed-size records after you validate the length.
+- level: 1
+  text: 'The `struct` format starts with `<` for little-endian.
 
-solution: |
-  Read in binary mode, ensure `len(data) % struct.calcsize('<IhB') == 0`,
-  then return `list(struct.iter_unpack('<IhB', data))`. Write a CSV header and one
+    '
+- level: 2
+  text: 'Unsigned int, signed short, and unsigned byte are `I`, `h`, and `B`.
+
+    '
+- level: 3
+  text: '`struct.iter_unpack(''<IhB'', data)` handles repeated fixed-size records
+    after you validate the length.
+
+    '
+solution: 'Read in binary mode, ensure `len(data) % struct.calcsize(''<IhB'') == 0`,
+
+  then return `list(struct.iter_unpack(''<IhB'', data))`. Write a CSV header and one
+
   row per tuple.
 
-explanation: |
-  Binary files do not carry visible separators. A format definition
+  '
+explanation: 'Binary files do not carry visible separators. A format definition
+
   tells Python how many bytes belong to each field, whether integers are signed,
+
   and which byte comes first in multi-byte values.
 
+  '
 extension:
-  title: "Go further"
-  description: |
-    Change the input data and make your solution handle the new case without
+  title: Go further
+  description: 'Change the input data and make your solution handle the new case without
+
     changing its output format.
 
-performance_notes: |
-  Inputs are intentionally tiny and run comfortably on a Raspberry Pi.
+    '
+performance_notes: 'Inputs are intentionally tiny and run comfortably on a Raspberry
+  Pi.
 
+  '
 optional_hardware: []

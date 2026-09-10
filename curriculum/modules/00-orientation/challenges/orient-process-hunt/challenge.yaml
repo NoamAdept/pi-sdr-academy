@@ -2,161 +2,116 @@ id: orient-process-hunt
 module: orientation
 title: Process Hunt
 difficulty: medium
-estimated_time: "1-2 hours"
-
+estimated_time: 1-2 hours
 prerequisites:
-  - orient-permissions
-
+- orient-permissions
 objectives:
-  - understand_what_a_process_is
-  - find_a_process_with_ps
-  - read_command_and_folder
-  - open_a_path_from_the_command
-  - complete_a_report
-
+- understand_what_a_process_is
+- find_a_process_with_ps
+- read_command_and_folder
+- open_a_path_from_the_command
+- complete_a_report
 mastery_evidence:
-  - observe
-  - debug
-  - apply
-
-description: |
-  ## Simple idea
-
-  When a program is running, the computer calls it a **process**.
-  Every process has a **process number** (also called a PID).
-
-  You can ask the computer about a running process:
-  - What command started it?
-  - What folder is it using?
-  - Did that command mention a file path you can open?
-
-  ## Your mission
-
-  1. Go to the challenge folder and start the program:
-     ```
-     ./run
-     ```
-     A helper program starts in the background. It will **not** print its
-     process number. That is on purpose.
-
-  2. Find the helper in the list of running programs:
-     ```
-     ps aux | grep helper
-     ```
-     Write down its **process number**.
-
-  3. Learn the **full command** that started it, and the **folder** it uses.
-
-     On Raspberry Pi / Linux:
-     ```
-     tr '\0' ' ' < /proc/PROCESS_NUMBER/cmdline ; echo
-     readlink /proc/PROCESS_NUMBER/cwd
-     ```
-
-     On a Mac:
-     ```
-     ps -p PROCESS_NUMBER -o command=
-     lsof -a -p PROCESS_NUMBER -d cwd -Fn
-     ```
-     (On Mac, the folder is on the line that starts with the letter `n`.)
-
-  4. In the full command you will see something like:
-     `--notes /tmp/some/path/note.txt`
-     Open that file:
-     ```
-     cat /tmp/some/path/note.txt
-     ```
-     Inside is a **secret code**. Copy it.
-
-  5. Fill in **every** blank in `report.txt`, then run:
-     ```
-     ./check
-     ```
-     If your report is correct, the flag is written to the flag file
-     (usually `/home/flag.txt`). Then submit it with:
-     ```
-     academy submit
-     ```
-
-  You need all five answers. Missing or wrong answers fail the check.
-
+- observe
+- debug
+- apply
+description: "## Simple idea\n\nWhen a program is running, the computer calls it a\
+  \ **process**.\nEvery process has a **process number** (also called a PID).\n\n\
+  You can ask the computer about a running process:\n- What command started it?\n\
+  - What folder is it using?\n- Did that command mention a file path you can open?\n\
+  \n## Your mission\n\n1. Go to the challenge folder and start the program:\n   ```\n\
+  \   ./run\n   ```\n   A helper program starts in the background. It will **not**\
+  \ print its\n   process number. That is on purpose.\n\n2. Find the helper in the\
+  \ list of running programs:\n   ```\n   ps aux | grep helper\n   ```\n   Write down\
+  \ its **process number**.\n\n3. Learn the **full command** that started it, and\
+  \ the **folder** it uses.\n\n   On Raspberry Pi / Linux:\n   ```\n   tr '\\0' '\
+  \ ' < /proc/PROCESS_NUMBER/cmdline ; echo\n   readlink /proc/PROCESS_NUMBER/cwd\n\
+  \   ```\n\n   On a Mac:\n   ```\n   ps -p PROCESS_NUMBER -o command=\n   lsof -a\
+  \ -p PROCESS_NUMBER -d cwd -Fn\n   ```\n   (On Mac, the folder is on the line that\
+  \ starts with the letter `n`.)\n\n4. In the full command you will see something\
+  \ like:\n   `--notes /tmp/some/path/note.txt`\n   Open that file:\n   ```\n   cat\
+  \ /tmp/some/path/note.txt\n   ```\n   Inside is a **secret code**. Copy it.\n\n\
+  5. Fill in **every** blank in `report.txt`, then run:\n   ```\n   ./check\n   ```\n\
+  \   If your report is correct, the flag is written to the flag file\n   (usually\
+  \ `/home/flag.txt`). Then submit it with:\n   ```\n   academy submit\n   ```\n\n\
+  You need all five answers. Missing or wrong answers fail the check.\n"
 environment:
   type: mixed
   notes: Beginner process inspection. Linux/Pi and macOS. Flag written to flag file.
-
 files:
-  - README.txt
-  - report.template
-  - run.c
-
+- README.txt
+- report.template
+- run.c
 expected_tools:
-  - ps
-  - pgrep
-  - cat
-  - ls
-  - ./run
-  - ./check
-
+- ps
+- pgrep
+- cat
+- ls
+- ./run
+- ./check
 flags:
-  value: "flag{proc_cmdline_reveals_launch}"
+  value: flag{proc_cmdline_reveals_launch}
   validation: session
-
 hints:
-  - level: 1
-    text: |
-      After ./run, try: ps aux | grep helper
-      The process number is the number in the second column of ps
-      (or the number printed by pgrep).
-  - level: 2
-    text: |
-      Replace PROCESS_NUMBER with your number.
+- level: 1
+  text: 'After ./run, try: ps aux | grep helper
 
-      Linux/Pi — see the full start command:
-        tr '\0' ' ' < /proc/PROCESS_NUMBER/cmdline ; echo
+    The process number is the number in the second column of ps
 
-      Mac — see the full start command:
-        ps -p PROCESS_NUMBER -o command=
-  - level: 3
-    text: |
-      Find the folder the process is using:
+    (or the number printed by pgrep).
 
-      Linux/Pi:
-        readlink /proc/PROCESS_NUMBER/cwd
+    '
+- level: 2
+  text: "Replace PROCESS_NUMBER with your number.\n\nLinux/Pi — see the full start\
+    \ command:\n  tr '\\0' ' ' < /proc/PROCESS_NUMBER/cmdline ; echo\n\nMac — see\
+    \ the full start command:\n  ps -p PROCESS_NUMBER -o command=\n"
+- level: 3
+  text: "Find the folder the process is using:\n\nLinux/Pi:\n  readlink /proc/PROCESS_NUMBER/cwd\n\
+    \nMac:\n  lsof -a -p PROCESS_NUMBER -d cwd -Fn\n  (copy the path after the letter\
+    \ n)\n\nIn the start command, find --notes and copy the path after it.\n"
+- level: 4
+  text: 'Open that notes file with cat. Copy the secret_code= value into
 
-      Mac:
-        lsof -a -p PROCESS_NUMBER -d cwd -Fn
-        (copy the path after the letter n)
+    report.txt with the other four answers, then run ./check
 
-      In the start command, find --notes and copy the path after it.
-  - level: 4
-    text: |
-      Open that notes file with cat. Copy the secret_code= value into
-      report.txt with the other four answers, then run ./check
-      After that: cat the flag file and run academy submit
+    After that: cat the flag file and run academy submit
 
-solution: |
-  ```bash
+    '
+solution: '```bash
+
   ./run
-  PID=$(pgrep -f 'helper --work' | head -n1)
+
+  PID=$(pgrep -f ''helper --work'' | head -n1)
+
   # Linux: CMD=... /proc; FOLDER=readlink /proc/$PID/cwd
+
   # Mac:   CMD=ps ...; FOLDER=lsof ...
+
   # notes path after --notes; secret_code inside that file
+
   # fill report.txt → ./check → academy submit
+
   ```
 
-explanation: |
-  A running program is a process with a process number. The system can tell
+  '
+explanation: 'A running program is a process with a process number. The system can
+  tell
+
   you how it was started and which folder it uses. On Linux that information
+
   is under /proc; on a Mac you use tools like ps and lsof. Command arguments
+
   often include file paths worth opening.
 
+  '
 extension:
   title: Another look
-  description: |
-    On Linux try: ls -l /proc/PROCESS_NUMBER/fd
+  description: 'On Linux try: ls -l /proc/PROCESS_NUMBER/fd
+
     On a Mac try: lsof -p PROCESS_NUMBER
 
-performance_notes: |
-  Tiny background program.
+    '
+performance_notes: 'Tiny background program.
 
+  '
 optional_hardware: []

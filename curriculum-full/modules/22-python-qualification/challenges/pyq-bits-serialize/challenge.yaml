@@ -1,0 +1,36 @@
+id: pyq-bits-serialize
+module: python-qualification
+title: "Decode the Binary Radio Record"
+difficulty: hard
+estimated_time: "2-4 hours"
+prerequisites:
+  - python
+objectives:
+  - extract_bit_fields_with_bitwise_operators
+  - pack_and_unpack_network_order_binary_data
+  - serialize_a_dataclass_as_json
+  - recover_an_encoded_record_field
+mastery_evidence: [implement, apply, integrate]
+description: |
+  Decode a fixed network-order receiver record, interpret its status bits,
+  recover an XOR-obscured flag field, and support lossless packing plus JSON.
+environment: {type: workspace, workspace_subdir: pyq-bits-serialize}
+files: [README.txt, radio_record.py, check]
+expected_tools: [python3, ./check]
+flags: {value: "flag{pyq_bits_unpack_records}", validation: session}
+hints:
+  - {level: 1, text: "The format >2sBBI18s is big-endian: magic, version, status, frequency, payload."}
+  - {level: 2, text: "Test bit n with bool(status & (1 << n))."}
+  - {level: 3, text: "Recover each payload byte with byte ^ 0x5A."}
+  - {level: 4, text: "asdict(record) produces a JSON-friendly dictionary for this dataclass."}
+  - {level: 5, text: "Packing reverses parsing: encode text, XOR it, then struct.pack the same fields."}
+solution: |
+  Unpack with `struct.unpack(FORMAT, data)`, validate magic/version, decode bits
+  0-2 with `&`, XOR each payload byte with `0x5A`, and build `RadioRecord`.
+  Serialize `asdict(record)` with `json.dumps`; reverse those operations in
+  `pack_record`.
+explanation: |
+  Bit masks compact independent booleans into one byte. `struct` gives an
+  explicit, portable binary layout; the `>` prefix chooses network byte order.
+  Dataclasses represent the decoded domain object, while JSON provides a
+  readable interchange form. XOR here is encoding, not secure encryption.

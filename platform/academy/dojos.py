@@ -17,7 +17,7 @@ BELT_COLORS = {
     "white": "#f2f2f2",
     "yellow": "#e6c84a",
     "orange": "#e08a3c",
-    "green": "#3f9e5a",
+    "green": "#2f6b3a",
     "blue": "#3b7dd8",
     "purple": "#8b5cf6",
     "brown": "#8b5a2b",

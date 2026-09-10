@@ -1,52 +1,10 @@
-# Local academy state (progress, session flags, workspaces)
 .academy-data/
-.academy-data-*/
-.academy-smoke*/
-.academy-dojo*/
-.challenge-*/
-.challenge-demo/
-.challenge-smoke*/
-.flag-*.txt
-/challenge/
-/flag.txt
-
-# Python
+dist/
+.DS_Store
+*.egg-info/
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
 .venv/
 venv/
-__pycache__/
-**/__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-.eggs/
-dist/
-build/
-.pytest_cache/
-.coverage
-htmlcov/
-.mypy_cache/
-.ruff_cache/
-
-# Instructor unlock artifacts (encrypted pack stays in git)
-instructor/guides/
-instructor/INDEX.md
-instructor/.instructor_password
-
-# Offline payloads populated on a builder host
-offline_bundle/deb_packages/*.deb
-offline_bundle/python_wheels/*.whl
-offline_bundle/logs/
-offline_bundle/manifests/dpkg-versions.txt
-
-# Captures / binaries (keep curriculum starter files)
-*.iq
-*.bin
-!curriculum/**/files/**
-
-# OS / editor
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
-*.swp
-*~

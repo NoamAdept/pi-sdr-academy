@@ -2,109 +2,127 @@ id: orient-system-investigation
 module: orientation
 title: System Investigation
 difficulty: hard
-estimated_time: "3-5 hours"
-
+estimated_time: 3-5 hours
 prerequisites:
-  - orient-broken-service
-
+- orient-broken-service
 objectives:
-  - correlate_proc_logs_permissions_networking
-  - form_and_test_hypotheses
-  - repair_multi_fault_local_system
-  - extract_flag_from_restored_pipeline
-
+- correlate_proc_logs_permissions_networking
+- form_and_test_hypotheses
+- repair_multi_fault_local_system
+- extract_flag_from_restored_pipeline
 mastery_evidence:
-  - understand
-  - observe
-  - debug
-  - apply
-  - integrate
+- understand
+- observe
+- debug
+- apply
+- integrate
+description: 'Start in the challenge folder and read `README.txt`.
 
-description: |
-  Start in the challenge folder and read `README.txt`.
 
   EchoRelay is a small local service with more than one problem. It needs
+
   to read a token file, start a worker, and listen on the port expected by
+
   its verification script.
 
+
   Try the start and verify commands, read the logs, inspect permissions, and
+
   compare the current configuration with the example. Fix each problem, then
+
   run `./echorelay/verify.sh` again.
 
+
   A successful verify prints the flag. Submit it with quotes:
+
   ```
-  academy submit 'flag{...}'
+
+  academy submit ''flag{...}''
+
   ```
+
   You do not need root or the Internet.
 
+  '
 environment:
   type: mixed
   services:
-    - name: echorelay
-      start: ./echorelay/relayctl.sh start
+  - name: echorelay
+    start: ./echorelay/relayctl.sh start
   notes: Single challenge folder. Multi-fault investigation; software-only.
-
 files:
-  - echorelay/
-  - BRIEFING.md
-  - README.txt
-
+- echorelay/
+- BRIEFING.md
+- README.txt
 expected_tools:
-  - ps
-  - cat
-  - chmod
-  - ls
-  - ss
-  - nc
-  - grep
-  - tail
-  - python3
-  - bash
-
+- ps
+- cat
+- chmod
+- ls
+- ss
+- nc
+- grep
+- tail
+- python3
+- bash
 flags:
-  value: "flag{multi_signal_systems_triage}"
+  value: flag{multi_signal_systems_triage}
   validation: session
   plant_files:
-    - echorelay/bin/relay_worker.py
-    - echorelay/verify.sh
-
+  - echorelay/bin/relay_worker.py
+  - echorelay/verify.sh
 hints:
-  - level: 1
-    text: |
-      Read `BRIEFING.md`, then run `./echorelay/relayctl.sh start` and `./echorelay/verify.sh`.
-  - level: 2
-    text: |
-      Triage separately: process up? port listening? dropbox readable? config paths valid?
-  - level: 3
-    text: |
-      Check `echorelay/logs/` and compare `config/relay.conf` to `.example`.
-  - level: 4
-    text: |
-      The dropbox file mode may block the worker; the listen port in config may disagree with verify.
-  - level: 5
-    text: |
-      Worker argv / `/proc/<pid>/environ` may reveal which config it actually loaded.
+- level: 1
+  text: 'Read `BRIEFING.md`, then run `./echorelay/relayctl.sh start` and `./echorelay/verify.sh`.
 
-solution: |
-  Typical fault set:
+    '
+- level: 2
+  text: 'Triage separately: process up? port listening? dropbox readable? config paths
+    valid?
+
+    '
+- level: 3
+  text: 'Check `echorelay/logs/` and compare `config/relay.conf` to `.example`.
+
+    '
+- level: 4
+  text: 'The dropbox file mode may block the worker; the listen port in config may
+    disagree with verify.
+
+    '
+- level: 5
+  text: 'Worker argv / `/proc/<pid>/environ` may reveal which config it actually loaded.
+
+    '
+solution: 'Typical fault set:
+
   1. `listen_port` mismatch between config and verify expectation (align to 9471)
-  2. `dropbox` path wrong or mode `000` — `chmod u+r`
-  3. stale PID / worker not running — restart via `relayctl.sh`
-  4. Then `./echorelay/verify.sh` prints the flag
-  5. `academy submit 'flag{multi_signal_systems_triage}'`
 
-explanation: |
-  Real systems fail for stacked reasons. Expert operators isolate each
+  2. `dropbox` path wrong or mode `000` — `chmod u+r`
+
+  3. stale PID / worker not running — restart via `relayctl.sh`
+
+  4. Then `./echorelay/verify.sh` prints the flag
+
+  5. `academy submit ''flag{multi_signal_systems_triage}''`
+
+  '
+explanation: 'Real systems fail for stacked reasons. Expert operators isolate each
+
   subsystem (process, config, permissions, network, data) and verify
+
   independently before recombining. This habit transfers directly to DSP
+
   receiver debugging: spectrum OK? timing OK? constellation OK? CRC OK?
 
+  '
 extension:
   title: Write a postmortem
-  description: |
-    Create `POSTMORTEM.md` listing each root cause, evidence, and fix in ≤1 page.
+  description: 'Create `POSTMORTEM.md` listing each root cause, evidence, and fix
+    in ≤1 page.
 
-performance_notes: |
-  Tiny localhost TCP worker.
+    '
+performance_notes: 'Tiny localhost TCP worker.
 
+  '
 optional_hardware: []

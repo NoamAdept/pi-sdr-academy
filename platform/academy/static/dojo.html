@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>道場 · Pi SDR Academy</title>
+  <title>Pi SDR Academy</title>
   <style>
     :root {
-      --bg: #040604;
-      --panel: #0c110c;
-      --fg: #f2f7f2;
-      --muted: #6f7f6f;
-      --lime: #c8ff00;
-      --cyan: #4ecdc4;
-      --ink: #061006;
-      --line: #1a241a;
-      --danger: #ff6b6b;
-      --font: "Avenir Next", "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
-      --mono: ui-monospace, Menlo, Consolas, monospace;
+      --bg: #1a1512;
+      --panel: #221c18;
+      --fg: #e8e4df;
+      --muted: #8a8278;
+      --lime: #e08a4f;
+      --cyan: #c4a484;
+      --ink: #1a1512;
+      --line: #3a322c;
+      --danger: #e06a5c;
+      --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
@@ -33,23 +33,21 @@
     .bg {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(800px 420px at 10% -10%, rgba(200,255,0,0.14), transparent 55%),
-        radial-gradient(700px 380px at 100% 0%, rgba(78,205,196,0.1), transparent 50%),
-        #040604;
-    }
-    .bg::after {
-      content: "";
-      position: absolute; inset: 0; opacity: 0.06;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='56'%3E%3Cpath d='M24 0L48 14V42L24 56L0 42V14Z' fill='none' stroke='%23c8ff00' stroke-width='1'/%3E%3C/svg%3E");
-      background-size: 48px 56px;
+        radial-gradient(900px 480px at 12% -8%, rgba(224,138,79,0.08), transparent 55%),
+        #1a1512;
     }
 
     .top {
       position: sticky; top: 0; z-index: 30;
-      backdrop-filter: blur(14px);
-      background: rgba(4,6,4,0.85);
+      background: rgba(26,21,18,0.94);
       border-bottom: 1px solid var(--line);
     }
+    .dots { display: flex; gap: 6px; margin-right: 0.35rem; }
+    .dots i { width: 10px; height: 10px; border-radius: 50%; display: block; font-style: normal; }
+    .dots .r { background: #e06a5c; }
+    .dots .y { background: #e08a4f; }
+    .dots .g { background: #6a9e6a; }
+    .pathhint { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
     .top-inner {
       max-width: 1100px; margin: 0 auto;
       padding: 0.7rem 1rem;
@@ -60,11 +58,10 @@
       text-decoration: none; color: inherit; font-weight: 800;
     }
     .brand i {
-      width: 30px; height: 30px; border-radius: 9px;
+      width: 28px; height: 28px; border-radius: 8px;
       display: grid; place-items: center;
       background: var(--lime); color: var(--ink);
-      box-shadow: 0 0 20px rgba(200,255,0,0.4);
-      font-style: normal; font-weight: 900;
+      font-style: normal; font-weight: 900; font-family: var(--mono); font-size: 0.75rem;
     }
     .brand b { color: var(--lime); font-weight: 800; }
     .score {
@@ -84,16 +81,112 @@
       font-size: clamp(1.8rem, 4vw, 2.6rem);
       letter-spacing: -0.03em; line-height: 1;
     }
-    .hero h1 em { font-style: normal; color: var(--lime); text-shadow: 0 0 28px rgba(200,255,0,0.35); }
-    .hero p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.95rem; }
-    .go {
-      border: 0; border-radius: 12px;
-      background: var(--lime); color: var(--ink);
-      font-weight: 800; padding: 0.75rem 1.15rem;
-      box-shadow: 0 0 28px rgba(200,255,0,0.3);
-      transition: transform .12s ease;
+    .hero h1 em { font-style: normal; color: var(--lime); }
+    .hero p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.95rem; font-family: var(--mono); }
+    .eyebrow {
+      display: flex; align-items: center; gap: 0.45rem;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--lime); margin-bottom: 0.55rem;
     }
-    .go:hover { transform: translateY(-2px); }
+    .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+    .go {
+      border: 0; border-radius: 8px;
+      background: var(--lime); color: var(--ink);
+      font-family: var(--mono); font-weight: 800; padding: 0.75rem 1.15rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .go:hover { filter: brightness(1.06); }
+
+    .sticker {
+      width: min(220px, 42vw); height: auto; flex-shrink: 0;
+      border-radius: 22px;
+      background: #f4f0ea;
+      border: 3px solid #111;
+      box-shadow: 4px 4px 0 #111;
+      object-fit: cover;
+    }
+    @media (max-width: 640px) { .sticker { width: 140px; } }
+
+    /* Cartoon overall progress */
+    .xp {
+      margin: 0 0 1.25rem;
+      border: 3px solid #111;
+      border-radius: 16px;
+      background: #f4efe6;
+      padding: 0.75rem 0.9rem 0.85rem;
+      box-shadow: 4px 4px 0 #111;
+      color: #1a1512;
+    }
+    .xp-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      margin-bottom: 0.55rem; flex-wrap: wrap;
+    }
+    .xp-top .lbl {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #5a5048;
+    }
+    .xp-top .val {
+      font-family: var(--mono); font-weight: 800; font-size: 0.95rem; color: #1a1512;
+    }
+    .xp-top .val em { font-style: normal; color: #c45a1a; }
+    .xp-track {
+      position: relative;
+      height: 28px;
+      border: 3px solid #111;
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(90deg, #ebe4d8 0 10px, #e2d9ca 10px 20px);
+      overflow: hidden;
+    }
+    .xp-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          #e08a4f 0 8px,
+          #f0a86a 8px 16px
+        );
+      border-right: 3px solid #111;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15);
+      transition: width .35s cubic-bezier(.2,.8,.2,1);
+      min-width: 0;
+    }
+    .xp-fill.empty { border-right: 0; }
+    .xp-belts {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+    }
+    .xp-belt {
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+      font-family: var(--mono); font-size: 0.62rem; color: #5a5048;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .xp-belt img {
+      width: 42px; height: 34px; object-fit: contain;
+      filter: grayscale(0.15);
+    }
+    .xp-belt.done img { filter: none; }
+    .xp-belt.active img {
+      filter: none;
+      animation: bob .9s ease-in-out infinite;
+    }
+    .xp-belt .pip {
+      width: 100%; height: 8px; border: 2px solid #111; border-radius: 999px;
+      background: #ddd6c8; overflow: hidden;
+    }
+    .xp-belt .pip > i {
+      display: block; height: 100%; width: 0%;
+      background: var(--bc, #e08a4f);
+      transition: width .3s ease;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
 
     .how {
       display: grid;
@@ -104,10 +197,8 @@
     @media (max-width: 760px) { .how { grid-template-columns: 1fr; } }
     .how-box {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background:
-        linear-gradient(145deg, rgba(200,255,0,0.05), transparent 45%),
-        var(--panel);
+      border-radius: 10px;
+      background: var(--panel);
       padding: 1rem 1.05rem;
     }
     .how-box .k {
@@ -123,7 +214,7 @@
     .how-box p span { color: var(--lime); }
     .path {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 0.45rem;
       margin-top: 0.75rem;
     }
@@ -168,20 +259,16 @@
       --c: var(--lime);
       position: relative;
       text-align: left; color: inherit; width: 100%;
-      border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line));
-      border-radius: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       padding: 1.05rem 1rem 1rem;
-      min-height: 168px;
-      background:
-        radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c) 22%, transparent), transparent 55%),
-        linear-gradient(165deg, #121812, #080b08);
+      min-height: 148px;
+      background: var(--panel);
       overflow: hidden;
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s;
+      transition: border-color .12s ease;
     }
     .card:hover {
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.45), 0 0 30px color-mix(in srgb, var(--c) 22%, transparent);
-      border-color: color-mix(in srgb, var(--c) 70%, var(--line));
+      border-color: var(--lime);
     }
     .card.locked { opacity: 0.48; filter: grayscale(0.35); }
     .card .icons {
@@ -192,28 +279,35 @@
       width: 46px; height: 46px;
       border-radius: 14px;
       display: grid; place-items: center;
-      border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
-      background: rgba(0,0,0,0.35);
-      box-shadow: inset 0 0 18px color-mix(in srgb, var(--c) 12%, transparent);
+      border: 2px solid #111;
+      background: #f4f0ea;
     }
-    .dojo-ico svg { width: 28px; height: 28px; }
+    .dojo-ico img { width: 34px; height: 34px; object-fit: contain; display: block; }
     .belt-ico {
-      width: 72px; height: 56px;
+      width: 88px; height: 72px;
       border-radius: 12px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+      background: #f4f0ea;
+      border: 2px solid #111;
       padding: 4px;
     }
-    .belt-ico svg { width: 64px; height: 48px; }
+    .belt-ico img { width: 80px; height: 64px; object-fit: contain; display: block; }
     .dhero .beltbig {
-      width: 140px; height: 100px;
+      width: 160px; height: 120px;
       display: grid; place-items: center;
-      border-radius: 16px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+      border-radius: 14px;
+      background: #f4f0ea;
+      border: 2px solid #111;
       padding: 0.4rem;
     }
-    .dhero .beltbig svg { width: 120px; height: 88px; }
+    .dhero .beltbig img { width: 148px; height: 108px; object-fit: contain; display: block; }
+    .dhero .big img { width: 40px; height: 40px; object-fit: contain; display: block; }
+    .ico {
+      width: 1.15em; height: 1.15em; vertical-align: -0.2em;
+      object-fit: contain; display: inline-block;
+    }
+    .btn .ico { width: 1.05em; height: 1.05em; margin-right: 0.25rem; }
+    .pc-ico img { width: 28px; height: 28px; object-fit: contain; display: block; }
+    .chip img { width: 14px; height: 14px; vertical-align: -2px; margin-right: 0.2rem; }
     .belt-tag {
       display: inline-flex; align-items: center; gap: 0.35rem;
       margin-top: 0.35rem;
@@ -227,7 +321,7 @@
     .pill-mini {
       font-family: var(--mono); font-size: 0.68rem;
       padding: 0.15rem 0.4rem; border-radius: 999px;
-      border: 1px solid #2a362a; color: var(--muted);
+      border: 1px solid var(--line); color: var(--muted);
     }
     .pill-mini em { font-style: normal; color: var(--fg); }
     .card h3 {
@@ -240,13 +334,15 @@
       font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
     }
     .card .rail {
-      margin-top: 0.85rem; height: 5px; border-radius: 99px;
-      background: #182018; overflow: hidden;
+      margin-top: 0.75rem; height: 10px; border-radius: 999px;
+      border: 2px solid #111;
+      background: #2a241f;
+      overflow: hidden;
     }
     .card .rail > i {
       display: block; height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--c));
-      box-shadow: 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
+      background: repeating-linear-gradient(-45deg, var(--c) 0 6px, color-mix(in srgb, var(--c) 72%, #fff) 6px 12px);
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
     }
     .chip {
       position: absolute; top: 0.75rem; right: 0.75rem;
@@ -254,7 +350,9 @@
       text-transform: uppercase; font-weight: 800;
       padding: 0.18rem 0.4rem; border-radius: 6px;
       background: var(--c); color: var(--ink);
+      display: inline-flex; align-items: center; gap: 0.2rem;
     }
+    .chip img { width: 14px; height: 14px; object-fit: contain; }
     .chip.lock { background: #3a3a3a; color: #bbb; }
     .chip.done { background: var(--cyan); color: #042; }
 
@@ -290,7 +388,7 @@
     .dojo-intro {
       max-width: 72ch;
       margin: 0 0 1.25rem;
-      color: #a8b4a8;
+      color: var(--muted);
       font-size: 0.98rem;
       line-height: 1.65;
     }
@@ -304,15 +402,15 @@
       max-width: 920px;
     }
     .pc-item {
-      border: 1px solid #1e281e;
+      border: 1px solid var(--line);
       border-radius: 12px;
-      background: #101510;
+      background: var(--panel);
       overflow: hidden;
       transition: border-color .15s, background .15s;
     }
-    .pc-item:hover { border-color: #2a3a2a; background: #121912; }
-    .pc-item.open { border-color: color-mix(in srgb, var(--lime) 35%, #1e281e); }
-    .pc-item.module-item { background: #0e130e; }
+    .pc-item:hover { border-color: #2a3a2a; background: #2a231e; }
+    .pc-item.open { border-color: color-mix(in srgb, var(--lime) 35%, var(--line)); }
+    .pc-item.module-item { background: var(--panel); }
     .pc-row {
       width: 100%;
       border: 0;
@@ -329,40 +427,40 @@
     .pc-ico {
       width: 44px; height: 44px;
       display: grid; place-items: center;
-      color: #6a7a6a;
+      color: var(--muted);
     }
     .pc-ico svg { width: 22px; height: 22px; }
     .pc-thumb {
       width: 44px; height: 34px;
       border-radius: 8px;
       object-fit: cover;
-      border: 1px solid #1e281e;
-      background: #0a0f0a;
+      border: 1px solid var(--line);
+      background: var(--bg);
       box-shadow: 0 0 0 1px rgba(0,0,0,0.35);
     }
     .pc-item.solved .pc-ico { color: var(--lime); }
-    .pc-item.solved .pc-ico svg { filter: drop-shadow(0 0 6px rgba(200,255,0,0.45)); }
-    .pc-item.solved .pc-thumb { border-color: color-mix(in srgb, var(--lime) 45%, #1e281e); }
+    .pc-item.solved .pc-ico svg { filter: drop-shadow(0 0 6px rgba(224,138,79,0.45)); }
+    .pc-item.solved .pc-thumb { border-color: color-mix(in srgb, var(--lime) 45%, var(--line)); }
     .pc-title {
       margin: 0;
       font-size: 1.05rem;
       font-weight: 700;
-      color: #7dd3fc;
+      color: var(--fg);
       letter-spacing: -0.01em;
     }
-    .pc-item.module-item .pc-title { color: #a5d8ff; }
-    .pc-item.solved .pc-title { color: #4ecdc4; }
+    .pc-item.module-item .pc-title { color: var(--fg); }
+    .pc-item.solved .pc-title { color: var(--lime); }
     .pc-right {
       font-family: var(--mono);
       font-size: 0.7rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: #c8d0c8;
+      color: var(--muted);
       white-space: nowrap;
       text-align: right;
     }
-    .pc-right .dim { color: #6a7a6a; }
-    .pc-right .ok { color: #4ecdc4; }
+    .pc-right .dim { color: var(--muted); }
+    .pc-right .ok { color: var(--lime); }
 
     .pc-body {
       display: none;
@@ -372,7 +470,7 @@
     .pc-item.open .pc-body { display: block; padding-top: 0.85rem; }
     .pc-mod-desc {
       margin: 0;
-      color: #8a9a8a;
+      color: var(--muted);
       font-size: 0.9rem;
       line-height: 1.5;
       max-width: 70ch;
@@ -403,28 +501,28 @@
     .tool {
       font-family: var(--mono); font-size: 0.68rem;
       padding: 0.15rem 0.4rem; border-radius: 999px;
-      border: 1px solid #2a362a; color: var(--fg);
+      border: 1px solid var(--line); color: var(--fg);
     }
     .ws { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.72rem; color: var(--cyan); word-break: break-all; }
 
     .submit {
       border: 1px solid color-mix(in srgb, var(--lime) 40%, var(--line));
       border-radius: 14px;
-      background: radial-gradient(120% 100% at 0% 0%, rgba(200,255,0,0.1), transparent 55%), rgba(0,0,0,0.35);
+      background: radial-gradient(120% 100% at 0% 0%, rgba(224,138,79,0.1), transparent 55%), rgba(0,0,0,0.35);
       padding: 0.85rem;
     }
     .submit .k { color: var(--lime); font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.4rem; }
     .row { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem; }
     .row input {
-      border: 1px solid #2a362a; border-radius: 10px; background: #070a07;
+      border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
       color: var(--fg); padding: 0.65rem 0.7rem; font-family: var(--mono); font-size: 0.85rem; outline: none;
     }
-    .row input:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(200,255,0,0.12); }
+    .row input:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(224,138,79,0.12); }
     .btn {
-      border: 1px solid #2a362a; border-radius: 10px; background: rgba(0,0,0,0.3);
+      border: 1px solid var(--line); border-radius: 10px; background: rgba(0,0,0,0.3);
       color: var(--fg); padding: 0.55rem 0.8rem; font-weight: 700; font-size: 0.85rem;
     }
-    .btn:hover { border-color: #8ab000; }
+    .btn:hover { border-color: #e08a4f; }
     .btn.pri { background: var(--lime); color: var(--ink); border-color: transparent; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .acts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
@@ -433,7 +531,7 @@
     .fb.bad { color: var(--danger); }
     .hints .h {
       margin-top: 0.35rem; padding: 0.35rem 0.5rem;
-      border-left: 2px solid var(--cyan); background: rgba(78,205,196,0.05);
+      border-left: 2px solid var(--cyan); background: rgba(196,164,132,0.05);
       font-size: 0.82rem; color: var(--muted);
     }
 
@@ -444,18 +542,18 @@
     }
     .toast {
       border-radius: 12px; padding: 0.7rem 0.85rem;
-      background: rgba(10,14,10,0.95); border: 1px solid #2a362a;
+      background: rgba(26,21,18,0.96); border: 1px solid var(--line);
       box-shadow: 0 16px 40px rgba(0,0,0,0.45);
       animation: in .2s ease;
     }
-    .toast.ok { border-color: color-mix(in srgb, var(--cyan) 50%, #2a362a); }
-    .toast.bad { border-color: color-mix(in srgb, var(--danger) 50%, #2a362a); }
+    .toast.ok { border-color: color-mix(in srgb, var(--cyan) 50%, var(--line)); }
+    .toast.bad { border-color: color-mix(in srgb, var(--danger) 50%, var(--line)); }
     .toast b { display: block; margin-bottom: 0.1rem; }
     .toast span { color: var(--muted); font-size: 0.82rem; }
     @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .burst {
       position: fixed; inset: 0; pointer-events: none; z-index: 40; opacity: 0;
-      background: radial-gradient(circle at 50% 40%, rgba(200,255,0,0.2), transparent 45%);
+      background: radial-gradient(circle at 50% 40%, rgba(224,138,79,0.2), transparent 45%);
     }
     .burst.go { animation: burst .65s ease-out forwards; }
     @keyframes burst { 0% { opacity: .85; } 100% { opacity: 0; } }
@@ -470,7 +568,9 @@
 
   <header class="top">
     <div class="top-inner">
-      <a class="brand" href="#" id="home-link"><i>道</i> Pi SDR <b>Academy</b></a>
+      <span class="dots" aria-hidden="true"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+      <span class="pathhint">~/academy/dojo</span>
+      <a class="brand" href="#" id="home-link" style="margin-left:0.75rem"><i>PT</i> Pi SDR <b>Academy</b></a>
       <div class="score">score <strong id="progress">…</strong></div>
     </div>
   </header>
@@ -479,10 +579,21 @@
     <div id="view-home">
       <div class="hero">
         <div>
+          <div class="eyebrow">Offline lab · 5 belts · 50 challenges</div>
           <h1>Pick a <em>dojo</em>. Earn a belt.</h1>
-          <p>Offline · air-gapped · challenge-based</p>
+          <p>Start · read README · solve · submit. No cloud. No pip.</p>
         </div>
-        <button type="button" class="go" id="btn-go">Continue →</button>
+        <!-- cartoony sticker -->
+        <img class="sticker" src="/icons/ponytail.png" alt="" width="220" height="220"/>
+        <button type="button" class="go" id="btn-go"><img class="ico" src="/icons/play.png" alt=""/> Continue</button>
+      </div>
+      <div class="xp" id="xp" aria-label="Overall progress">
+        <div class="xp-top">
+          <span class="lbl">Progress bar</span>
+          <span class="val"><em id="xp-count">0</em> / <span id="xp-total">50</span> cleared</span>
+        </div>
+        <div class="xp-track"><div class="xp-fill empty" id="xp-fill"></div></div>
+        <div class="xp-belts" id="xp-belts"></div>
       </div>
       <div class="how">
         <div class="how-box">
@@ -494,12 +605,13 @@
         </div>
         <div class="how-box">
           <div class="k">Structure</div>
-          <p>Karate-style dojos. Core belts unlock in order. Side quests are optional.</p>
+          <p>Five belts. Fifty challenges. Start → solve → submit.</p>
           <div class="path">
-            <div><i>01 Dojo</i><span>A belt: White → Black</span></div>
-            <div><i>02 Module</i><span>A skill cluster inside the belt</span></div>
-            <div><i>03 Challenge</i><span>Start · solve · submit flag</span></div>
-            <div><i>04 Capstone</i><span>End-to-end recovery under pressure</span></div>
+            <div><i>White</i><span>Shell + Linux CLI</span></div>
+            <div><i>Yellow</i><span>Python + C</span></div>
+            <div><i>Orange</i><span>GDB + systems</span></div>
+            <div><i>Green</i><span>DSP + FFT</span></div>
+            <div><i>Blue</i><span>IQ + BPSK</span></div>
           </div>
         </div>
       </div>
@@ -528,15 +640,19 @@
 
   <script>
     const ICONS = {
-      'intro-lab': 'term',
+      'intro-lab': 'terminal',
       'software-craft': 'code',
       'systems-core': 'chip',
       'dsp-foundations': 'wave',
       'radio-path': 'radio',
-      'receivers-security': 'shield',
-      'blackout': 'eclipse',
-      'language-qualification': 'book',
     };
+    const BELT_ICON = {
+      white: 'belt-white', yellow: 'belt-yellow', orange: 'belt-orange',
+      green: 'belt-green', blue: 'belt-blue',
+    };
+    function icon(name, cls) {
+      return `<img class="${cls || 'ico'}" src="/icons/${encodeURIComponent(name)}.png" alt="" draggable="false"/>`;
+    }
     const KANJI = { white:'白', yellow:'黄', orange:'橙', green:'緑', blue:'青', purple:'紫', black:'黒', brown:'茶' };
 
     const home = document.getElementById('view-home');
@@ -577,63 +693,24 @@
       return data;
     }
 
-    function dojoIcon(kind, color) {
-      const c = color || '#c8ff00';
-      const paths = {
-        term: `<rect x="3" y="5" width="18" height="13" rx="2" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M7 10h4M7 13h7" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/><path d="M8 20h8" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`,
-        code: `<path d="M8 7L3 12l5 5M16 7l5 5-5 5M13 5l-2 14" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>`,
-        chip: `<rect x="5" y="5" width="14" height="14" rx="2" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/><rect x="9" y="9" width="6" height="6" fill="${c}" opacity="0.35"/>`,
-        wave: `<path d="M2 12c2-6 4-6 6 0s4 6 6 0 4-6 6 0" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="${c}"/>`,
-        radio: `<path d="M12 14a3 3 0 100-6 3 3 0 000 6z" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M7 8a7 7 0 010 8M17 8a7 7 0 000 8M4 5a11 11 0 010 14M20 5a11 11 0 000 14" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/><path d="M12 14v6" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`,
-        shield: `<path d="M12 3l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M8 12c1.5 2 3 3 4 3s2.5-1 4-3" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>`,
-        eclipse: `<circle cx="12" cy="12" r="8" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M12 4a8 8 0 000 16 6 6 0 010-16z" fill="${c}" opacity="0.85"/>`,
-        book: `<path d="M5 4h6a3 3 0 013 3v13a3 3 0 00-3-3H5V4zm14 0h-6a3 3 0 00-3 3v13a3 3 0 013-3h6V4z" fill="none" stroke="${c}" stroke-width="1.7"/>`,
-      };
-      const g = paths[kind] || paths.term;
-      return `<svg viewBox="0 0 24 24" aria-hidden="true">${g}</svg>`;
+    function dojoIcon(kind) {
+      const map = { term: 'terminal', code: 'code', chip: 'chip', wave: 'wave', radio: 'radio' };
+      return icon(map[kind] || kind || 'terminal');
     }
 
     function beltIcon(color, belt) {
-      const c = color || '#c8ff00';
-      const isBlack = (belt === 'black') || c === '#222222' || c === '#111' || c === '#000';
-      const cloth = isBlack ? '#141414' : c;
-      const edge = isBlack ? '#c8ff00' : 'rgba(0,0,0,0.28)';
-      const stitch = isBlack ? 'rgba(200,255,0,0.35)' : 'rgba(255,255,255,0.28)';
-      const tip = isBlack ? '#c8ff00' : cloth;
-      const gid = 'bg' + Math.random().toString(36).slice(2, 8);
-      return `<svg viewBox="0 0 160 110" aria-hidden="true">
-        <defs>
-          <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${cloth}" stop-opacity="0.92"/>
-            <stop offset="45%" stop-color="${cloth}"/>
-            <stop offset="100%" stop-color="${cloth}" stop-opacity="0.75"/>
-          </linearGradient>
-        </defs>
-        <path d="M8 34h144v18H8z" fill="url(#${gid})" stroke="${edge}" stroke-width="1.2"/>
-        <path d="M12 39h136M12 47h136" stroke="${stitch}" stroke-width="0.8" opacity="0.7"/>
-        <path d="M58 50l-10 48 14-4 8-44z" fill="${cloth}" stroke="${edge}" stroke-width="1"/>
-        <path d="M52 58l8 36" stroke="${stitch}" stroke-width="0.8"/>
-        ${isBlack ? '<path d="M50 88l12-3 2 8-14 4z" fill="'+tip+'"/>' : ''}
-        <path d="M102 50l10 48-14-4-8-44z" fill="${cloth}" stroke="${edge}" stroke-width="1"/>
-        <path d="M108 58l-8 36" stroke="${stitch}" stroke-width="0.8"/>
-        ${isBlack ? '<path d="M98 88l12 3-2 8-14-4z" fill="'+tip+'"/>' : ''}
-        <path d="M68 28h24v12H68z" fill="${cloth}" stroke="${edge}" stroke-width="1.2"/>
-        <path d="M62 36c0-10 8-16 18-16s18 6 18 16v8H62z" fill="${cloth}" stroke="${edge}" stroke-width="1.2"/>
-        <path d="M74 24c4-3 8-3 12 0" fill="none" stroke="${stitch}" stroke-width="1.2"/>
-        <path d="M70 40h20" stroke="${stitch}" stroke-width="1"/>
-        <circle cx="80" cy="36" r="2.2" fill="${isBlack ? '#c8ff00' : '#0a0e0a'}" opacity="0.85"/>
-      </svg>`;
+      return icon(BELT_ICON[belt] || 'belt-white');
     }
 
     function card(d, start) {
       const done = d.challenges > 0 && d.solved >= d.challenges;
       const pct = d.challenges ? Math.round(100 * d.solved / d.challenges) : 0;
-      const color = d.belt_color || '#c8ff00';
-      const kind = ICONS[d.id] || 'term';
+      const color = d.belt_color || '#e08a4f';
+      const kind = ICONS[d.id] || 'terminal';
       let chip = '';
-      if (d.locked) chip = '<span class="chip lock">Locked</span>';
-      else if (done) chip = '<span class="chip done">Done</span>';
-      else if (start) chip = '<span class="chip">Start</span>';
+      if (d.locked) chip = `<span class="chip lock">${icon('lock')}Locked</span>`;
+      else if (done) chip = `<span class="chip done">${icon('check')}Done</span>`;
+      else if (start) chip = `<span class="chip">${icon('play')}Start</span>`;
 
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -642,7 +719,7 @@
       btn.innerHTML = `
         ${chip}
         <div class="icons">
-          <div class="dojo-ico">${dojoIcon(kind, color)}</div>
+          <div class="dojo-ico">${dojoIcon(kind)}</div>
           <div class="belt-ico" title="${esc(d.belt_label)}">${beltIcon(color, d.belt)}</div>
         </div>
         <h3>${esc(d.title)}</h3>
@@ -653,18 +730,12 @@
       return btn;
     }
 
-    function flagIcon() {
-      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5 21V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M5 5h10l-2 3.5L15 12H5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-      </svg>`;
-    }
-    function briefIcon() {
-      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>`;
-    }
+    function flagIcon() { return icon('flag'); }
+    function briefIcon() { return icon('folder'); }
+    function lockIcon() { return icon('lock'); }
+    function hintIcon() { return icon('hint'); }
+    function playIcon() { return icon('play'); }
+    function checkIcon() { return icon('check'); }
 
     function moduleRow(mod) {
       const item = document.createElement('div');
@@ -745,12 +816,12 @@
             <div class="k">Flag</div>
             <div class="row">
               <input id="flag-${esc(ch.id)}" placeholder="flag{…} or leave empty after ./check" ${ch.solved||locked?'disabled':''}/>
-              <button type="button" class="btn pri" data-act="submit" ${ch.solved||locked?'disabled':''}>Go</button>
+              <button type="button" class="btn pri" data-act="submit" ${ch.solved||locked?'disabled':''}>${icon('flag')} Go</button>
             </div>
             <div class="acts">
-              <button type="button" class="btn pri" data-act="start" ${locked?'disabled':''}>▶ Start</button>
-              <button type="button" class="btn" data-act="check" ${ch.solved||locked?'disabled':''}>Check</button>
-              <button type="button" class="btn" data-act="hint" ${locked?'disabled':''}>Hint</button>
+              <button type="button" class="btn pri" data-act="start" ${locked?'disabled':''}>${icon('play')} Start</button>
+              <button type="button" class="btn" data-act="check" ${ch.solved||locked?'disabled':''}>${icon('check')} Check</button>
+              <button type="button" class="btn" data-act="hint" ${locked?'disabled':''}>${icon('hint')} Hint</button>
             </div>
             <div class="hints" id="hints-${esc(ch.id)}"></div>
             <div class="fb" id="fb-${esc(ch.id)}"></div>
@@ -843,11 +914,11 @@
     async function openDojo(id, keep) {
       const d = await api('/api/dojos/' + encodeURIComponent(id));
       currentDojo = id;
-      const color = d.belt_color || '#c8ff00';
-      const kind = ICONS[d.id] || 'term';
+      const color = d.belt_color || '#e08a4f';
+      const kind = ICONS[d.id] || 'terminal';
       const hero = document.getElementById('dhero');
       hero.style.setProperty('--c', color);
-      document.getElementById('d-ico').innerHTML = dojoIcon(kind, color);
+      document.getElementById('d-ico').innerHTML = dojoIcon(ICONS[d.id] || 'terminal');
       document.getElementById('d-belt').innerHTML = beltIcon(color, d.belt);
       document.getElementById('d-title').textContent = d.title;
       document.getElementById('d-sub').textContent =
@@ -887,6 +958,41 @@
     async function refreshStatus() {
       const s = await api('/api/status');
       document.getElementById('progress').textContent = s.solved + '/' + s.total;
+      paintXp(s.solved, s.total);
+    }
+
+    function paintXp(solved, total, dojos) {
+      const pct = total ? Math.round(100 * solved / total) : 0;
+      const fill = document.getElementById('xp-fill');
+      if (!fill) return;
+      fill.style.width = pct + '%';
+      fill.classList.toggle('empty', pct === 0);
+      document.getElementById('xp-count').textContent = solved;
+      document.getElementById('xp-total').textContent = total;
+      const box = document.getElementById('xp-belts');
+      if (!box || !dojos) return;
+      box.innerHTML = '';
+      dojos.filter(d => d.kind === 'core').forEach(d => {
+        const done = d.challenges > 0 && d.solved >= d.challenges;
+        const active = !d.locked && !done && d.solved > 0;
+        const p = d.challenges ? Math.round(100 * d.solved / d.challenges) : 0;
+        const el = document.createElement('div');
+        el.className = 'xp-belt' + (done ? ' done' : '') + (active || (!d.locked && !done && d.solved === 0 && !d.locked) ? ' active' : '');
+        // only bob the first unlocked incomplete
+        el.innerHTML = `
+          <img src="/icons/${BELT_ICON[d.belt] || 'belt-white'}.png" alt=""/>
+          <div class="pip" style="--bc:${esc(d.belt_color || '#e08a4f')}"><i style="width:${p}%"></i></div>
+          <span>${esc((d.belt_label || d.belt || '').replace(/ Belt$/i,''))}</span>
+        `;
+        box.appendChild(el);
+      });
+      // mark only the continue target as active bob
+      const cores = [...box.children];
+      cores.forEach(el => el.classList.remove('active'));
+      if (continueTarget) {
+        const idx = dojos.filter(d => d.kind === 'core').findIndex(d => d.id === continueTarget.id);
+        if (idx >= 0 && cores[idx]) cores[idx].classList.add('active');
+      }
     }
 
     async function load() {
@@ -895,11 +1001,15 @@
       const core = (catalog.dojos || []).filter(d => d.kind === 'core');
       const side = (catalog.dojos || []).filter(d => d.kind !== 'core');
       continueTarget = core.find(d => !d.locked && d.solved < d.challenges) || null;
+      paintXp(status.solved, status.total, catalog.dojos || []);
       const coreEl = document.getElementById('core');
       const sideEl = document.getElementById('side');
       coreEl.innerHTML = ''; sideEl.innerHTML = '';
       core.forEach(d => coreEl.appendChild(card(d, continueTarget && d.id === continueTarget.id)));
       side.forEach(d => sideEl.appendChild(card(d, false)));
+      const sideSec = sideEl.previousElementSibling;
+      if (sideSec) sideSec.classList.toggle('hidden', side.length === 0);
+      sideEl.classList.toggle('hidden', side.length === 0);
 
       document.getElementById('btn-go').onclick = () => {
         if (continueTarget) openDojo(continueTarget.id);

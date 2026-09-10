@@ -1,0 +1,77 @@
+id: gdb-logic-bug
+module: debugging-gdb
+title: "Debug a Wrong Result"
+difficulty: medium
+estimated_time: "50-75 minutes"
+
+prerequisites:
+  - gdb-segfault
+
+objectives:
+  - gdb
+  - watchpoints
+  - logic-errors
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  This program runs but reports the wrong number of usable samples.
+  Use a breakpoint in the loop and inspect `samples[i]` and `usable` as execution
+  progresses. Fix the condition so values from 10 through 20 inclusive count.
+  The program must print `usable=4`.
+
+environment:
+  type: workspace
+  workspace_subdir: gdb-logic-bug
+  notes: Software-only; no external hardware or network required.
+
+files:
+  - README.txt
+  - target.c
+  - run
+  - check
+  - check.py
+
+expected_tools:
+  - bash
+  - gcc
+  - gdb
+
+flags:
+  value: "flag{watch_values_to_find_logic_bugs}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Break on the line containing `if`, run, then use `display i`, `display samples[i]`, and `display usable`.
+  - level: 2
+    text: |
+      Use `next` and observe what happens at boundary values 10 and 20.
+  - level: 3
+    text: |
+      Inclusive lower and upper limits use `>=` and `<=`, joined by logical AND `&&`.
+
+solution: |
+  Replace the condition with
+  `samples[i] >= 10 && samples[i] <= 20`. Rebuild and confirm the output before
+  running the checker.
+
+explanation: |
+  Logic bugs keep memory valid but implement the wrong rule.
+  Stepping through carefully chosen boundary values makes mismatches between the
+  written condition and the requirement visible.
+
+extension:
+  title: "Go further"
+  description: |
+    Add one more test case of your own and confirm the program still behaves
+    correctly.
+
+performance_notes: |
+  Sources and test data are intentionally small and compile quickly on a Raspberry Pi.
+
+optional_hardware: []

@@ -1,0 +1,75 @@
+id: c-pointer-basics
+module: c
+title: "Use Pointers to Update Values"
+difficulty: easy
+estimated_time: "35-50 minutes"
+
+prerequisites:
+  - c-compile-it
+
+objectives:
+  - pointers
+  - arrays
+  - functions
+
+mastery_evidence:
+  - understand
+  - observe
+  - apply
+
+description: |
+  Implement two functions in `pointers.c`: `swap_ints` exchanges
+  the integers at two pointers, and `sum_array` returns the sum of `count` array
+  items. For a zero count, the sum is zero. Do not change the public header.
+
+environment:
+  type: workspace
+  workspace_subdir: c-pointer-basics
+  notes: Software-only; no external hardware or network required.
+
+files:
+  - README.txt
+  - pointers.h
+  - pointers.c
+  - check
+  - check.py
+
+expected_tools:
+  - bash
+  - gcc
+
+flags:
+  value: "flag{pointers_share_locations}"
+  validation: session
+
+hints:
+  - level: 1
+    text: |
+      Dereference a pointer with `*pointer` to read or write the pointed-to value.
+  - level: 2
+    text: |
+      Swap safely by saving one value in a temporary integer.
+  - level: 3
+    text: |
+      Array indexing `values[i]` is pointer arithmetic written in a readable form.
+
+solution: |
+  Save `*a`, assign `*a = *b`, then `*b = temporary`. For the sum,
+  start an integer total at zero and add `values[i]` for `i` from zero up to but
+  not including `count`.
+
+explanation: |
+  A pointer stores the location of another object. Passing pointers
+  lets a function update the caller's values. An array parameter points at its
+  first element, while a separate count keeps iteration inside its bounds.
+
+extension:
+  title: "Go further"
+  description: |
+    Add one more test case of your own and confirm the program still behaves
+    correctly.
+
+performance_notes: |
+  Sources and test data are intentionally small and compile quickly on a Raspberry Pi.
+
+optional_hardware: []

@@ -1,0 +1,50 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "curriculum/**"
+      - "platform/academy/static/icons/**"
+      - "scripts/export_pages_catalog.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Vendor PyYAML + export catalog
+        run: |
+          pip install "PyYAML>=6.0"
+          mkdir -p vendor
+          python -c "import yaml,shutil,os; shutil.copytree(os.path.dirname(yaml.__file__), 'vendor/yaml', dirs_exist_ok=True)"
+          find vendor -name '*.so' -delete
+          python scripts/export_pages_catalog.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

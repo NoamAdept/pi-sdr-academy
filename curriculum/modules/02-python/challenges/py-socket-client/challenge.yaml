@@ -1,75 +1,79 @@
 id: py-socket-client
 module: python
-title: "Talk to a Local Signal Server"
+title: Talk to a Local Signal Server
 difficulty: medium
-estimated_time: "45-70 minutes"
-
+estimated_time: 45-70 minutes
 prerequisites:
-  - py-binary-decoder
-
+- py-binary-decoder
 objectives:
-  - tcp-sockets
-  - localhost
-  - network-protocols
-
+- tcp-sockets
+- localhost
+- network-protocols
 mastery_evidence:
-  - understand
-  - observe
-  - apply
+- understand
+- observe
+- apply
+description: 'Complete a TCP client for a tiny line protocol. Connect to the
 
-description: |
-  Complete a TCP client for a tiny line protocol. Connect to the
   host and port arguments, send `READ <channel>\n`, read until the server closes,
+
   and return the stripped reply. The supplied `run` starts a localhost practice
+
   server and asks your client for channel 7. No Internet connection is used.
 
+  '
 environment:
   type: workspace
   workspace_subdir: py-socket-client
   notes: Software-only; any networking stays on localhost.
-
 files:
-  - README.txt
-  - client.py
-  - run
-  - check
-  - check.py
-
+- README.txt
+- client.py
+- run
+- check
+- check.py
 expected_tools:
-  - python3
-
+- python3
 flags:
-  value: "flag{localhost_sockets_can_talk}"
+  value: flag{localhost_sockets_can_talk}
   validation: session
-
 hints:
-  - level: 1
-    text: |
-      Use `socket.create_connection((host, port), timeout=3)` in a `with` block.
-  - level: 2
-    text: |
-      Convert text to bytes with `.encode()` before `sendall`.
-  - level: 3
-    text: |
-      Call `recv` in a loop until it returns `b''`; join chunks, decode, and strip.
+- level: 1
+  text: 'Use `socket.create_connection((host, port), timeout=3)` in a `with` block.
 
-solution: |
-  Create a connection, `sendall(f"READ {channel}\n".encode())`, collect
-  chunks from `recv(4096)` until EOF, then return `b''.join(chunks).decode().strip()`.
+    '
+- level: 2
+  text: 'Convert text to bytes with `.encode()` before `sendall`.
+
+    '
+- level: 3
+  text: 'Call `recv` in a loop until it returns `b''''`; join chunks, decode, and
+    strip.
+
+    '
+solution: 'Create a connection, `sendall(f"READ {channel}\n".encode())`, collect
+
+  chunks from `recv(4096)` until EOF, then return `b''''.join(chunks).decode().strip()`.
+
   Use the command-line arguments in the provided main block.
 
-explanation: |
-  TCP carries a stream of bytes, not complete messages. A receiver
+  '
+explanation: 'TCP carries a stream of bytes, not complete messages. A receiver
+
   must keep reading because one `recv` may return only part of a reply. The local
+
   line protocol supplies its own message boundary with a newline and server close.
 
+  '
 extension:
-  title: "Go further"
-  description: |
-    Change the input data and make your solution handle the new case without
+  title: Go further
+  description: 'Change the input data and make your solution handle the new case without
+
     changing its output format.
 
-performance_notes: |
-  Inputs are intentionally tiny and run comfortably on a Raspberry Pi.
+    '
+performance_notes: 'Inputs are intentionally tiny and run comfortably on a Raspberry
+  Pi.
 
+  '
 optional_hardware: []

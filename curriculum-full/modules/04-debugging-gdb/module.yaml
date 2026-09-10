@@ -1,0 +1,15 @@
+id: debugging-gdb
+slug: debugging-gdb
+title: Debugging / GDB
+order: 4
+description: |
+  Breakpoints, watchpoints, stack frames, sanitizers, and core dumps.
+prerequisites:
+  - c
+challenges:
+  - gdb-first-breakpoint
+  - gdb-find-variable
+  - gdb-follow-stack
+  - gdb-inspect-memory
+  - gdb-segfault
+  - gdb-logic-bug

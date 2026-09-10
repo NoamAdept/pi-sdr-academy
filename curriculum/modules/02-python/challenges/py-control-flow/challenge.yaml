@@ -1,74 +1,76 @@
 id: py-control-flow
 module: python
-title: "Classify Signal Strengths"
+title: Classify Signal Strengths
 difficulty: easy
-estimated_time: "25-40 minutes"
-
-prerequisites:
-  - module:linux-cli
-
+estimated_time: 25-40 minutes
+prerequisites: []
 objectives:
-  - python-functions
-  - conditionals
-  - loops
-
+- python-functions
+- conditionals
+- loops
 mastery_evidence:
-  - understand
-  - observe
-  - apply
+- understand
+- observe
+- apply
+description: 'Complete `classify.py`. The `classify_signal(snr)` function returns
 
-description: |
-  Complete `classify.py`. The `classify_signal(snr)` function returns
   `weak` below 5, `usable` from 5 through 14, and `strong` at 15 or above.
+
   `summarize(values)` must count each label and return a dictionary. Keep the
+
   provided command-line program working.
 
+  '
 environment:
   type: workspace
   workspace_subdir: py-control-flow
   notes: Software-only; any networking stays on localhost.
-
 files:
-  - README.txt
-  - classify.py
-  - check
-  - check.py
-
+- README.txt
+- classify.py
+- check
+- check.py
 expected_tools:
-  - python3
-
+- python3
 flags:
-  value: "flag{branches_choose_the_path}"
+  value: flag{branches_choose_the_path}
   validation: session
-
 hints:
-  - level: 1
-    text: |
-      Test the strongest condition first, or use an `if`/`elif`/`else` chain.
-  - level: 2
-    text: |
-      Create counts with zero for all three labels before looping.
-  - level: 3
-    text: |
-      For every value, call `classify_signal` and increase that dictionary entry.
+- level: 1
+  text: 'Test the strongest condition first, or use an `if`/`elif`/`else` chain.
 
-solution: |
-  Implement the three ranges with `if snr < 5`, `elif snr < 15`, and
+    '
+- level: 2
+  text: 'Create counts with zero for all three labels before looping.
+
+    '
+- level: 3
+  text: 'For every value, call `classify_signal` and increase that dictionary entry.
+
+    '
+solution: 'Implement the three ranges with `if snr < 5`, `elif snr < 15`, and
+
   `else`. In `summarize`, initialize all counts to zero and update the key returned
+
   by `classify_signal` for each number.
 
-explanation: |
-  Conditional branches choose one path based on a value. The order
+  '
+explanation: 'Conditional branches choose one path based on a value. The order
+
   matters: after `snr < 5` is false, the second check only needs to test the upper
+
   edge. A loop applies the same rule to every sample.
 
+  '
 extension:
-  title: "Go further"
-  description: |
-    Change the input data and make your solution handle the new case without
+  title: Go further
+  description: 'Change the input data and make your solution handle the new case without
+
     changing its output format.
 
-performance_notes: |
-  Inputs are intentionally tiny and run comfortably on a Raspberry Pi.
+    '
+performance_notes: 'Inputs are intentionally tiny and run comfortably on a Raspberry
+  Pi.
 
+  '
 optional_hardware: []

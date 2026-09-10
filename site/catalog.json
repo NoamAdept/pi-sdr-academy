@@ -1,0 +1,497 @@
+{
+  "name": "Pi SDR Academy",
+  "tagline": "Offline lab \u2014 five belts from shell to IQ. Fifty challenges.",
+  "note": "Browse-only on GitHub Pages. Run locally for Start / Check / Submit.",
+  "run": {
+    "local": "./run.sh",
+    "url": "http://127.0.0.1:8080/dojo",
+    "admin": "ACADEMY_ADMIN=1 ./run.sh"
+  },
+  "dojos": [
+    {
+      "id": "intro-lab",
+      "title": "Intro to the Lab",
+      "belt": "white",
+      "belt_label": "White Belt",
+      "belt_color": "#f2f2f2",
+      "tagline": "Terminal, filesystem, and first flags.",
+      "kind": "core",
+      "modules": 2,
+      "challenges": 10,
+      "modules_detail": [
+        {
+          "slug": "orientation",
+          "title": "Raspberry Pi / Debian Orientation",
+          "description": "Learn the terminal, filesystem, permissions, processes, and basic system investigation on Debian.",
+          "challenges": [
+            {
+              "id": "orient-find-flag",
+              "title": "Needle in the Labyrinth",
+              "difficulty": "easy",
+              "estimated_time": "15-30 minutes",
+              "description": "You are already in the challenge folder. The real flag is hidden somewhere under labyrinth/."
+            },
+            {
+              "id": "orient-permissions",
+              "title": "The Locked Drawer",
+              "difficulty": "easy",
+              "estimated_time": "20-45 minutes",
+              "description": "You are already in the challenge folder. The flag is in vault/flag.txt, but you cannot read it yet."
+            },
+            {
+              "id": "orient-process-hunt",
+              "title": "Ghost in the Process List",
+              "difficulty": "medium",
+              "estimated_time": "1-2 hours",
+              "description": "What is this? A \"process\" is a program that is currently running."
+            },
+            {
+              "id": "orient-environment",
+              "title": "Whispered Variables",
+              "difficulty": "medium",
+              "estimated_time": "1-2 hours",
+              "description": "You are already in the challenge folder. 1) Open the prepared lab shell: 2) Inside it, list the environment variables: printenv."
+            },
+            {
+              "id": "orient-broken-service",
+              "title": "The Silent Port",
+              "difficulty": "hard",
+              "estimated_time": "2-4 hours",
+              "description": "You are already in the challenge folder. A small web service should run only on this computer, but its configuration is broken."
+            },
+            {
+              "id": "orient-system-investigation",
+              "title": "Autopsy of a Pi",
+              "difficulty": "hard",
+              "estimated_time": "3-5 hours",
+              "description": "You are already in the challenge folder. EchoRelay has more than one problem."
+            }
+          ]
+        },
+        {
+          "slug": "linux-cli",
+          "title": "Linux Command Line",
+          "description": "Master pipelines, text extraction, log analysis, and Bash automation.",
+          "challenges": [
+            {
+              "id": "cli-pipeline",
+              "title": "Pipe Dream",
+              "difficulty": "easy",
+              "estimated_time": "20-30 minutes",
+              "description": "Your task readings.csv has: callsign,region,strength Write the three strongest north callsigns to answer.txt, one per line, strongest first. Try to solve it with grep, sort, head, and cut."
+            },
+            {
+              "id": "cli-text-extraction",
+              "title": "Frequencies in the Fog",
+              "difficulty": "easy",
+              "estimated_time": "20-35 minutes",
+              "description": "Extract all decimal MHz frequencies from bulletin.txt. Create frequencies.txt with one unique number per line in numeric order."
+            },
+            {
+              "id": "cli-log-detective",
+              "title": "Receiver Log Noir",
+              "difficulty": "easy",
+              "estimated_time": "25-40 minutes",
+              "description": "Count WARN records in receiver.log by component. Write report.txt as component=count, alphabetically by component."
+            },
+            {
+              "id": "cli-shell-automation",
+              "title": "Night Watch Inventory",
+              "difficulty": "medium",
+              "estimated_time": "35-55 minutes",
+              "description": "Complete inventory.sh. Usage: ./inventory.sh DIRECTORY Output: manifest.txt in the current directory Line format: filename,size,sha256 Include only .iq files and sort by filename."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "software-craft",
+      "title": "Software Craft",
+      "belt": "yellow",
+      "belt_label": "Yellow Belt",
+      "belt_color": "#e6c84a",
+      "tagline": "Python and C as daily tools.",
+      "kind": "core",
+      "modules": 2,
+      "challenges": 10,
+      "modules_detail": [
+        {
+          "slug": "python",
+          "title": "Python",
+          "description": "Python fundamentals through binary formats, sockets, and automated analysis.",
+          "challenges": [
+            {
+              "id": "py-control-flow",
+              "title": "Strength Classifier",
+              "difficulty": "easy",
+              "estimated_time": "25-40 minutes",
+              "description": "Complete classify_signal and summarize in classify.py. Run `python3 classify.py 2 8 19` to try it."
+            },
+            {
+              "id": "py-file-parser",
+              "title": "Config Crypt",
+              "difficulty": "easy",
+              "estimated_time": "30-45 minutes",
+              "description": "Complete parse_config in parse_config.py. Rules are documented in its docstring."
+            },
+            {
+              "id": "py-binary-decoder",
+              "title": "Sensor Bones",
+              "difficulty": "medium",
+              "estimated_time": "40-60 minutes",
+              "description": "Complete decode_records in decode.py. Record layout (7 bytes): uint32 little-endian frequency_hz int16 little-endian power_db uint8 status Run `python3 decode.py samples.bin`, then ./check."
+            },
+            {
+              "id": "py-socket-client",
+              "title": "Knock on Localhost",
+              "difficulty": "medium",
+              "estimated_time": "45-70 minutes",
+              "description": "Complete request_reading in client.py. Try it with ./run (localhost only)."
+            },
+            {
+              "id": "py-protocol-parser",
+              "title": "Noisy Frame Tamer",
+              "difficulty": "medium",
+              "estimated_time": "50-75 minutes",
+              "description": "Complete parse_frames(data) in protocol.py. Frame: AA 55."
+            },
+            {
+              "id": "py-auto-investigator",
+              "title": "The Autopilot Probe",
+              "difficulty": "medium",
+              "estimated_time": "55-80 minutes",
+              "description": "Complete investigate(input_path, output_path). Use only LOCKED rows."
+            }
+          ]
+        },
+        {
+          "slug": "c",
+          "title": "C",
+          "description": "Compile, pointers, memory layout, and debugging C without advanced exploitation.",
+          "challenges": [
+            {
+              "id": "c-compile-it",
+              "title": "First Blood Compile",
+              "difficulty": "easy",
+              "estimated_time": "25-40 minutes",
+              "description": "Repair meter.c. Compile with: gcc -Wall -Wextra -Werror -std=c11 meter.c -o meter It must print average=20.0."
+            },
+            {
+              "id": "c-pointer-basics",
+              "title": "Follow the Arrow",
+              "difficulty": "easy",
+              "estimated_time": "35-50 minutes",
+              "description": "Implement swap_ints and sum_array in pointers.c. Do not edit pointers.h."
+            },
+            {
+              "id": "c-memory-layout",
+              "title": "Bytes Under Glass",
+              "difficulty": "medium",
+              "estimated_time": "40-60 minutes",
+              "description": "Implement decode_header in layout.c. Layout: tag[2], sequence uint16 little-endian, flags byte, length byte."
+            },
+            {
+              "id": "c-binary-parser",
+              "title": "Length-Prefixed Prey",
+              "difficulty": "medium",
+              "estimated_time": "50-75 minutes",
+              "description": "Implement parse_records in records.c. Record: type byte, length byte, payload bytes."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "systems-core",
+      "title": "Systems Core",
+      "belt": "orange",
+      "belt_label": "Orange Belt",
+      "belt_color": "#e08a3c",
+      "tagline": "Debug and systems programming.",
+      "kind": "core",
+      "modules": 2,
+      "challenges": 10,
+      "modules_detail": [
+        {
+          "slug": "debugging-gdb",
+          "title": "Debugging / GDB",
+          "description": "Breakpoints, watchpoints, stack frames, sanitizers, and core dumps.",
+          "challenges": [
+            {
+              "id": "gdb-first-breakpoint",
+              "title": "Stop Right There",
+              "difficulty": "easy",
+              "estimated_time": "25-40 minutes",
+              "description": "Run ./run to compile. Use GDB to break at checkpoint and inspect its sample argument."
+            },
+            {
+              "id": "gdb-find-variable",
+              "title": "The Moving Target",
+              "difficulty": "easy",
+              "estimated_time": "30-45 minutes",
+              "description": "Run ./run. Break at inspect_here."
+            },
+            {
+              "id": "gdb-follow-stack",
+              "title": "Down the Call Well",
+              "difficulty": "medium",
+              "estimated_time": "35-55 minutes",
+              "description": "Run ./run and use GDB. Break at capture and inspect a backtrace."
+            },
+            {
+              "id": "gdb-inspect-memory",
+              "title": "Peek Behind the Bytes",
+              "difficulty": "medium",
+              "estimated_time": "40-60 minutes",
+              "description": "Run ./run. In GDB break at inspect_packet."
+            },
+            {
+              "id": "gdb-segfault",
+              "title": "The Crash Site",
+              "difficulty": "medium",
+              "estimated_time": "45-70 minutes",
+              "description": "Run ./run to see the crash. Use GDB: run, bt, frame 0, info locals."
+            },
+            {
+              "id": "gdb-logic-bug",
+              "title": "Wrong Answer, Right Place",
+              "difficulty": "medium",
+              "estimated_time": "50-75 minutes",
+              "description": "Usable means 10 <= sample <= 20. Use GDB to observe the loop, then fix target.c."
+            }
+          ]
+        },
+        {
+          "slug": "systems-programming",
+          "title": "Linux Systems Programming",
+          "description": "fork/exec, pipes, signals, threads, sockets, shared memory, and mmap.",
+          "challenges": [
+            {
+              "id": "sys-file-descriptors",
+              "title": "Copy Through the FD",
+              "difficulty": "easy",
+              "estimated_time": "35-55 minutes",
+              "description": "A file descriptor is a small integer a process uses to refer to an open file. Complete copy.c using open, read, write, and close rather than stdio copying."
+            },
+            {
+              "id": "sys-pipes",
+              "title": "Parent, Child, Pipe",
+              "difficulty": "medium",
+              "estimated_time": "45-70 minutes",
+              "description": "A pipe is a one-way byte stream between processes. Complete pipe_demo.c so a child writes `samples=64` and its parent reads and prints it."
+            },
+            {
+              "id": "sys-process-controller",
+              "title": "Puppet the Child",
+              "difficulty": "medium",
+              "estimated_time": "45-70 minutes",
+              "description": "fork creates a child, exec replaces its program, and waitpid collects its status. Complete controller.c to run `/bin/echo child_ok` in a child and verify exit status zero."
+            },
+            {
+              "id": "sys-tcp-client",
+              "title": "Local Wire Tap",
+              "difficulty": "medium",
+              "estimated_time": "50-80 minutes",
+              "description": "TCP is a reliable byte stream; connect attaches a socket to an IP address and port. Complete client.py to connect only to the local test server, send PING, and print PONG."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dsp-foundations",
+      "title": "DSP Foundations",
+      "belt": "green",
+      "belt_label": "Green Belt",
+      "belt_color": "#2f6b3a",
+      "tagline": "Sinusoids, spectra, and the FFT.",
+      "kind": "core",
+      "modules": 2,
+      "challenges": 10,
+      "modules_detail": [
+        {
+          "slug": "dsp-fundamentals",
+          "title": "DSP Fundamentals",
+          "description": "Sinusoids, frequency measurement, sampling, aliasing, and a signal analyzer.",
+          "challenges": [
+            {
+              "id": "dsp-sinusoid",
+              "title": "Draw the Sine",
+              "difficulty": "easy",
+              "estimated_time": "30-45 minutes",
+              "description": "A sinusoid repeats smoothly; frequency counts cycles per second and amplitude sets height. Complete analyze.py to generate 2048 samples of a 64 Hz, amplitude 0.75 sine at 1024 samples/s."
+            },
+            {
+              "id": "dsp-measure-freq",
+              "title": "Count the Cycles",
+              "difficulty": "easy",
+              "estimated_time": "35-55 minutes",
+              "description": "A spectrum estimates how much signal energy lies at each frequency. Use NumPy's real FFT to estimate the strongest frequency in signal.npy."
+            },
+            {
+              "id": "dsp-sampling",
+              "title": "The Nyquist Line",
+              "difficulty": "easy",
+              "estimated_time": "30-45 minutes",
+              "description": "Sampling converts a continuous-time idea into evenly spaced measurements. Inspect metadata.txt and calculate sample interval, duration, and sample count."
+            },
+            {
+              "id": "dsp-aliasing",
+              "title": "The Impostor Tone",
+              "difficulty": "medium",
+              "estimated_time": "40-60 minutes",
+              "description": "Aliasing makes frequencies above half the sample rate appear at a lower frequency. Measure the apparent frequency of a 900 Hz tone sampled at 1000 samples/s."
+            },
+            {
+              "id": "dsp-reconstruct",
+              "title": "Fill the Missing Samples",
+              "difficulty": "medium",
+              "estimated_time": "45-70 minutes",
+              "description": "Interpolation estimates values between known samples. Fill NaNs in sparse.npy with linear interpolation and save reconstructed.npy."
+            },
+            {
+              "id": "dsp-analyzer",
+              "title": "Pocket Spectrum",
+              "difficulty": "hard",
+              "estimated_time": "60-90 minutes",
+              "description": "RMS measures typical signal level while an FFT peak estimates dominant frequency. Analyze signal.npy and write frequency_hz and rms to result.txt."
+            }
+          ]
+        },
+        {
+          "slug": "fft",
+          "title": "FFT / Frequency Domain",
+          "description": "FFT bins, spectral leakage, windowing, multi-tone analysis, spectrum analyzer.",
+          "challenges": [
+            {
+              "id": "fft-find-tone",
+              "title": "One Peak in the Dark",
+              "difficulty": "easy",
+              "estimated_time": "35-55 minutes",
+              "description": "The FFT converts samples over time into complex frequency bins. Find the strongest positive-frequency bin in signal.npy."
+            },
+            {
+              "id": "fft-bin-challenge",
+              "title": "Which Bin Holds the Note?",
+              "difficulty": "easy",
+              "estimated_time": "35-55 minutes",
+              "description": "FFT bin spacing is sample_rate / sample_count. Calculate bin spacing and the bin index for the tone in signal.npy."
+            },
+            {
+              "id": "fft-leakage",
+              "title": "Energy That Spills",
+              "difficulty": "medium",
+              "estimated_time": "45-70 minutes",
+              "description": "Leakage spreads energy when a captured tone does not complete a whole number of cycles. Compute the peak frequency and fraction of power outside the peak bin."
+            },
+            {
+              "id": "fft-windowing",
+              "title": "Close the Curtains",
+              "difficulty": "medium",
+              "estimated_time": "50-75 minutes",
+              "description": "A window tapers capture edges to reduce distant spectral leakage. Compare rectangular and Hann-window power outside five bins around the peak."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio-path",
+      "title": "Radio Path",
+      "belt": "blue",
+      "belt_label": "Blue Belt",
+      "belt_color": "#3b7dd8",
+      "tagline": "IQ captures and BPSK.",
+      "kind": "core",
+      "modules": 2,
+      "challenges": 10,
+      "modules_detail": [
+        {
+          "slug": "iq-sdr",
+          "title": "IQ / SDR Fundamentals",
+          "description": "Complex baseband, wideband IQ analysis, bandwidth, and unknown captures \u2014 software-only.",
+          "challenges": [
+            {
+              "id": "iq-identify",
+              "title": "Name That Capture",
+              "difficulty": "easy",
+              "estimated_time": "20-40 minutes",
+              "description": "Inspect `capture.iq`. Write `complex64` to `answer.txt` after identifying how pairs of float32 values become one complex sample."
+            },
+            {
+              "id": "iq-complex-analysis",
+              "title": "I and Q, Face to Face",
+              "difficulty": "easy",
+              "estimated_time": "20-40 minutes",
+              "description": "Compute mean power `mean(abs(x)**2)` and write it to `answer.txt` (tolerance \u00b10.01). IQ files use little-endian interleaved float32 values: I0,Q0,I1,Q1,..."
+            },
+            {
+              "id": "iq-find-signal",
+              "title": "Blip in the Waterfall",
+              "difficulty": "medium",
+              "estimated_time": "40-75 minutes",
+              "description": "Find the strongest FFT frequency and write it in Hz to `answer.txt` (tolerance \u00b15 Hz). IQ files use little-endian interleaved float32 values: I0,Q0,I1,Q1,..."
+            },
+            {
+              "id": "iq-bandwidth",
+              "title": "How Wide Is the Voice?",
+              "difficulty": "medium",
+              "estimated_time": "40-75 minutes",
+              "description": "Estimate the two-sided occupied bandwidth. Write Hz to `answer.txt`; values from 1000 through 1400 pass."
+            },
+            {
+              "id": "iq-recover-baseband",
+              "title": "Bring It Home to DC",
+              "difficulty": "medium",
+              "estimated_time": "40-75 minutes",
+              "description": "Estimate the carrier offset needed to move the signal to baseband. Write the positive offset in Hz to `answer.txt` (\u00b15 Hz)."
+            },
+            {
+              "id": "iq-unknown-capture",
+              "title": "File With No Name",
+              "difficulty": "hard",
+              "estimated_time": "60-120 minutes",
+              "description": "No sample-rate sidecar is supplied. `receiver_note.txt` gives one timing clue."
+            }
+          ]
+        },
+        {
+          "slug": "bpsk",
+          "title": "BPSK",
+          "description": "Identify and demodulate BPSK through noise, mapping, phase, and frequency offsets.",
+          "challenges": [
+            {
+              "id": "bpsk-identify",
+              "title": "Two Stars, One Axis",
+              "difficulty": "easy",
+              "estimated_time": "20-40 minutes",
+              "description": "Count the ideal constellation clusters after averaging each 8-sample symbol. Write `two` to `answer.txt`."
+            },
+            {
+              "id": "bpsk-decode-clean",
+              "title": "Clean BPSK, Clear Text",
+              "difficulty": "easy",
+              "estimated_time": "20-40 minutes",
+              "description": "Decode the 8-samples/symbol capture and write the recovered ASCII flag to `answer.txt`. IQ files use little-endian interleaved float32 values: I0,Q0,I1,Q1,..."
+            },
+            {
+              "id": "bpsk-noise",
+              "title": "BPSK in the Static",
+              "difficulty": "medium",
+              "estimated_time": "40-75 minutes",
+              "description": "Decode the 8-samples/symbol capture and write the recovered ASCII flag to `answer.txt`. IQ files use little-endian interleaved float32 values: I0,Q0,I1,Q1,..."
+            },
+            {
+              "id": "bpsk-mapping",
+              "title": "Bits on the Line",
+              "difficulty": "medium",
+              "estimated_time": "40-75 minutes",
+              "description": "Decode the 8-samples/symbol capture and write the recovered ASCII flag to `answer.txt`. `preamble.txt` states the known first bytes so you can resolve the symbol-to-bit mapping."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Browse · Pi SDR Academy</title>
+  <link rel="icon" href="icons/ponytail.png"/>
+  <style>
+    :root {
+      --bg: #1a1512; --panel: #221c18; --fg: #e8e4df; --muted: #8a8278;
+      --accent: #e08a4f; --ink: #1a1512; --line: #3a322c;
+      --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--fg); background: var(--bg); font-family: var(--font); }
+    .top {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--line);
+    }
+    .brand { font-weight: 800; text-decoration: none; color: inherit; }
+    .brand b { color: var(--accent); }
+    .nav { margin-left: auto; display: flex; gap: 0.5rem; }
+    .nav a {
+      color: var(--muted); text-decoration: none; font-family: var(--mono); font-size: 0.8rem;
+      border: 1px solid var(--line); border-radius: 8px; padding: 0.35rem 0.7rem;
+    }
+    .nav a.pri { color: var(--ink); background: var(--accent); border-color: var(--accent); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+    .banner {
+      border: 3px solid #111; border-radius: 14px; background: #f4efe6; color: #1a1512;
+      padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-family: var(--mono); font-size: 0.85rem;
+      box-shadow: 3px 3px 0 #111;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.85rem; }
+    .card {
+      text-align: left; color: inherit; width: 100%; cursor: pointer;
+      border: 3px solid #111; border-radius: 14px; background: var(--panel);
+      padding: 1rem; box-shadow: 3px 3px 0 #111;
+    }
+    .card img.belt { width: 80px; height: 64px; object-fit: contain; display: block; margin: 0 0 0.5rem auto; }
+    .card h3 { margin: 0; font-size: 1.05rem; }
+    .card p { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.88rem; }
+    .meta { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); margin-top: 0.55rem; }
+    .hidden { display: none !important; }
+    .back {
+      border: 1px solid var(--line); background: transparent; color: var(--accent);
+      border-radius: 8px; padding: 0.4rem 0.7rem; font-family: var(--mono); margin-bottom: 1rem; cursor: pointer;
+    }
+    .dhero {
+      display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
+      border: 3px solid #111; border-radius: 16px; padding: 1rem; background: var(--panel);
+      margin-bottom: 1rem; box-shadow: 3px 3px 0 #111;
+    }
+    .dhero img { width: 120px; height: 96px; object-fit: contain; background: #f4f0ea; border-radius: 12px; border: 2px solid #111; padding: 0.35rem; }
+    .mod { margin: 1.25rem 0; }
+    .mod h2 { margin: 0 0 0.35rem; font-size: 1.1rem; }
+    .mod .desc { color: var(--muted); margin: 0 0 0.75rem; }
+    .ch {
+      border: 1px solid var(--line); border-radius: 12px; padding: 0.75rem 0.85rem;
+      margin-bottom: 0.55rem; background: rgba(0,0,0,0.22);
+    }
+    .ch h3 { margin: 0; font-size: 0.98rem; }
+    .ch .m { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); margin-top: 0.25rem; }
+    .ch p { margin: 0.4rem 0 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./">Pi SDR <b>Academy</b></a>
+    <nav class="nav">
+      <a href="./">Home</a>
+      <a class="pri" href="https://github.com/NoamAdept/pi-sdr-academy">Run locally</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <div class="banner">Browse-only preview. Flags and checkers need the local lab — <code>./run.sh</code></div>
+    <div id="home">
+      <div class="grid" id="grid">Loading…</div>
+    </div>
+    <div id="detail" class="hidden">
+      <button type="button" class="back" id="back">← Belts</button>
+      <div class="dhero">
+        <div>
+          <h1 id="d-title">—</h1>
+          <p id="d-sub" style="color:var(--muted);margin:0.35rem 0 0"></p>
+        </div>
+        <img id="d-belt" src="" alt=""/>
+      </div>
+      <div id="mods"></div>
+    </div>
+  </main>
+  <script>
+    let catalog = null;
+    const home = document.getElementById('home');
+    const detail = document.getElementById('detail');
+
+    function esc(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function showHome() {
+      detail.classList.add('hidden');
+      home.classList.remove('hidden');
+      history.replaceState({}, '', './dojo.html');
+    }
+
+    function openDojo(id) {
+      const d = (catalog.dojos || []).find(x => x.id === id);
+      if (!d) return;
+      home.classList.add('hidden');
+      detail.classList.remove('hidden');
+      document.getElementById('d-title').textContent = d.title;
+      document.getElementById('d-sub').textContent = (d.belt_label || '') + ' · ' + (d.tagline || '');
+      document.getElementById('d-belt').src = 'icons/belt-' + d.belt + '.png';
+      const mods = document.getElementById('mods');
+      mods.innerHTML = '';
+      (d.modules_detail || []).forEach(m => {
+        const box = document.createElement('section');
+        box.className = 'mod';
+        box.innerHTML = `<h2>${esc(m.title)}</h2><p class="desc">${esc(m.description)}</p>`;
+        (m.challenges || []).forEach(ch => {
+          const row = document.createElement('div');
+          row.className = 'ch';
+          row.innerHTML = `
+            <h3>${esc(ch.title)}</h3>
+            <div class="m">${esc(ch.difficulty || '')} · ${esc(ch.estimated_time || '')}</div>
+            <p>${esc(ch.description || '')}</p>`;
+          box.appendChild(row);
+        });
+        mods.appendChild(box);
+      });
+      history.replaceState({}, '', './dojo.html#' + encodeURIComponent(id));
+    }
+
+    document.getElementById('back').onclick = showHome;
+
+    fetch('./catalog.json').then(r => r.json()).then(data => {
+      catalog = data;
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      (data.dojos || []).filter(d => d.kind === 'core').forEach(d => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'card';
+        btn.innerHTML = `
+          <img class="belt" src="icons/belt-${d.belt}.png" alt=""/>
+          <h3>${esc(d.title)}</h3>
+          <p>${esc(d.tagline)}</p>
+          <div class="meta">${esc(d.belt_label)} · ${d.challenges} challenges</div>`;
+        btn.onclick = () => openDojo(d.id);
+        grid.appendChild(btn);
+      });
+      const hash = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+      if (hash) openDojo(hash);
+    });
+  </script>
+</body>
+</html>
