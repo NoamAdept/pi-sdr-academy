@@ -10,9 +10,9 @@ offline_bundle
 instructor
 docs
 tools
-scripts
+curriculum-full
+dist
 packages.lock
 *.md
-!platform/README.md
 .env
 .DS_Store

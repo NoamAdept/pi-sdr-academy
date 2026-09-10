@@ -1,0 +1,7 @@
+Welcome, operator.
+
+The laboratory filesystem is larger than it looks.
+Start by listing everything here, including hidden entries.
+
+Someone left a "labyrinth" for new students.
+The real flag is deeper than the first turn.
