@@ -13,7 +13,7 @@ mastery_evidence: [implement, apply, integrate]
 description: |
   Complete a typed packet router using a dataclass, match/case, and a reusable
   decorator that counts successful calls without hiding function metadata.
-environment: {type: python, workspace_subdir: pyq-modern-python}
+environment: {type: workspace, workspace_subdir: pyq-modern-python}
 files: [README.txt, packet_router.py, check]
 expected_tools: [python3, ./check]
 flags: {value: "flag{pyq_modern_python_routes_safely}", validation: session}

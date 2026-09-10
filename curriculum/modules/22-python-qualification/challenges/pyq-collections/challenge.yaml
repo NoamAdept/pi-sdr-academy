@@ -13,7 +13,7 @@ mastery_evidence: [implement, apply]
 description: |
   Process a tiny in-memory receiver log into per-station counts, unique
   frequencies, strong-event IDs, and average signal levels.
-environment: {type: python, workspace_subdir: pyq-collections}
+environment: {type: workspace, workspace_subdir: pyq-collections}
 files: [README.txt, events.py, check]
 expected_tools: [python3, ./check]
 flags: {value: "flag{pyq_collections_shape_data}", validation: session}

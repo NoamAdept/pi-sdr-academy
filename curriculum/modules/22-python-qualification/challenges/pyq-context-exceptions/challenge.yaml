@@ -13,7 +13,7 @@ mastery_evidence: [implement, debug, apply]
 description: |
   Build a safe receiver-session context manager and parse sample lines while
   handling malformed measurements explicitly.
-environment: {type: python, workspace_subdir: pyq-context-exceptions}
+environment: {type: workspace, workspace_subdir: pyq-context-exceptions}
 files: [README.txt, receiver_session.py, check]
 expected_tools: [python3, ./check]
 flags: {value: "flag{pyq_context_closes_cleanly}", validation: session}

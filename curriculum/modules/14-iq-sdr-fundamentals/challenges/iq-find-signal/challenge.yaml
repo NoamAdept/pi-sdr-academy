@@ -1,5 +1,5 @@
 id: iq-find-signal
-module: iq-sdr-fundamentals
+module: iq-sdr
 title: "Find a Signal in Spectrum"
 difficulty: medium
 estimated_time: "40-75 minutes"

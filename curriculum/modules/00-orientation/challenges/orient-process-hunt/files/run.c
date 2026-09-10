@@ -66,7 +66,10 @@ int main(int argc, char **argv) {
 
     int reap = system("pkill -f 'helper --work' >/dev/null 2>&1");
     (void)reap;
-    usleep(150000);
+    {
+        struct timespec ts = {.tv_sec = 0, .tv_nsec = 150000000L};
+        nanosleep(&ts, NULL);
+    }
 
     rnd = ((unsigned)time(NULL) ^ (unsigned)getpid() * 2654435761u);
     snprintf(base, sizeof(base), "/tmp/academy_note_%u", rnd % 100000000u);

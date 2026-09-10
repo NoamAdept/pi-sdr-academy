@@ -1,5 +1,5 @@
 id: iq-unknown-capture
-module: iq-sdr-fundamentals
+module: iq-sdr
 title: "Unknown Capture"
 difficulty: hard
 estimated_time: "60-120 minutes"

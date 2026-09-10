@@ -14,7 +14,7 @@ mastery_evidence: [implement, apply, integrate]
 description: |
   Decode a fixed network-order receiver record, interpret its status bits,
   recover an XOR-obscured flag field, and support lossless packing plus JSON.
-environment: {type: python, workspace_subdir: pyq-bits-serialize}
+environment: {type: workspace, workspace_subdir: pyq-bits-serialize}
 files: [README.txt, radio_record.py, check]
 expected_tools: [python3, ./check]
 flags: {value: "flag{pyq_bits_unpack_records}", validation: session}

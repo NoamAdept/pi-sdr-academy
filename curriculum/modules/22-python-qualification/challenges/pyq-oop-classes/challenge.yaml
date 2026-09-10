@@ -15,7 +15,7 @@ description: |
   Complete a small SignalMeter hierarchy. The base class stores samples and
   computes an average; a calibrated subclass applies an offset while a property
   prevents invalid calibration values.
-environment: {type: python, workspace_subdir: pyq-oop-classes}
+environment: {type: workspace, workspace_subdir: pyq-oop-classes}
 files: [README.txt, signal_meter.py, check]
 expected_tools: [python3, ./check]
 flags: {value: "flag{pyq_classes_measure_signals}", validation: session}

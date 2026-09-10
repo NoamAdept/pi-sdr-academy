@@ -1,5 +1,5 @@
 id: iq-recover-baseband
-module: iq-sdr-fundamentals
+module: iq-sdr
 title: "Recover Baseband"
 difficulty: medium
 estimated_time: "40-75 minutes"

@@ -6,18 +6,18 @@
   <title>Admin · Pi SDR Academy</title>
   <style>
     :root {
-      --bg: #040604;
-      --panel: #0c110c;
-      --fg: #f2f7f2;
-      --muted: #6f7f6f;
-      --lime: #c8ff00;
-      --cyan: #4ecdc4;
-      --ink: #061006;
-      --line: #1a241a;
-      --danger: #ff6b6b;
-      --warn: #ffd166;
-      --font: "Avenir Next", "Segoe UI", "Hiragino Sans", sans-serif;
-      --mono: ui-monospace, Menlo, Consolas, monospace;
+      --bg: #1a1512;
+      --panel: #221c18;
+      --fg: #e8e4df;
+      --muted: #8a8278;
+      --lime: #e08a4f;
+      --cyan: #c4a484;
+      --ink: #1a1512;
+      --line: #3a322c;
+      --danger: #e06a5c;
+      --warn: #e08a4f;
+      --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
@@ -29,15 +29,14 @@
     .bg {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(800px 420px at 10% -10%, rgba(200,255,0,0.12), transparent 55%),
-        radial-gradient(700px 380px at 100% 0%, rgba(78,205,196,0.08), transparent 50%),
-        #040604;
+        radial-gradient(900px 480px at 12% -8%, rgba(224,138,79,0.08), transparent 55%),
+        #1a1512;
     }
 
     .top {
       position: sticky; top: 0; z-index: 30;
       backdrop-filter: blur(14px);
-      background: rgba(4,6,4,0.9);
+      background: rgba(26,21,18,0.94);
       border-bottom: 1px solid var(--line);
     }
     .top-inner {
@@ -78,8 +77,8 @@
     .step-pill.done { color: var(--lime); border-color: color-mix(in srgb, var(--lime) 40%, var(--line)); }
 
     .panel {
-      border: 1px solid var(--line); border-radius: 16px;
-      background: linear-gradient(145deg, rgba(78,205,196,0.04), transparent 45%), var(--panel);
+      border: 1px solid var(--line); border-radius: 10px;
+      background: var(--panel);
       padding: 1.1rem 1.15rem; margin-bottom: 1rem;
     }
     .panel h2 { margin: 0 0 0.65rem; font-size: 1.05rem; }
@@ -183,7 +182,7 @@
   <div class="bg"></div>
   <header class="top">
     <div class="top-inner">
-      <div class="brand"><i>管</i> <span>Pi SDR <b>Admin</b></span></div>
+      <div class="brand"><i>PT</i> <span>Pi SDR <b>Admin</b></span></div>
       <div class="top-links">
         <a href="/dojo">Student dojo</a>
         <a href="#" id="link-proposals">Proposals</a>

@@ -1,5 +1,5 @@
 id: iq-bandwidth
-module: iq-sdr-fundamentals
+module: iq-sdr
 title: "Estimate Occupied Bandwidth"
 difficulty: medium
 estimated_time: "40-75 minutes"

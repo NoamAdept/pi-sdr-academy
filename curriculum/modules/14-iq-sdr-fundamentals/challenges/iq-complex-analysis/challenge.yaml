@@ -1,5 +1,5 @@
 id: iq-complex-analysis
-module: iq-sdr-fundamentals
+module: iq-sdr
 title: "Complex IQ Analysis"
 difficulty: easy
 estimated_time: "20-40 minutes"
