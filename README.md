@@ -6,7 +6,9 @@ Offline lab: **five belts · fifty challenges · shell → IQ**.
 ./run.sh
 ```
 
-Open the URL. Then: **Start → solve in `./challenge` → Done**.
+Open the URL. Read the intro (what it is + how to use), then **Enter the lab**.
+
+**Start → solve in `./challenge` → Done.**
 
 ## Portable pack
 
@@ -27,13 +29,3 @@ platform/        engine + UI
 vendor/          pure-Python YAML
 scripts/         pack + curriculum check
 ```
-
-## Belts
-
-| Belt | Focus |
-|------|--------|
-| White | Terminal + first flags |
-| Yellow | Python + C |
-| Orange | Debugging + systems |
-| Green | DSP + FFT |
-| Blue | IQ + BPSK |

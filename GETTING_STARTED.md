@@ -4,12 +4,12 @@
 ./run.sh
 ```
 
-Open the URL (usually http://127.0.0.1:8080/).
+Open the URL.
 
-1. **Start** — files land in `./challenge`
-2. Open that folder, read `README.txt`, solve it
-3. **Done** — grades your work
+1. Read the **intro** — what the lab is, and the three-step loop
+2. Press **Enter the lab**
+3. Press **Start** — files land in `./challenge`
+4. Open that folder, read `README.txt`, solve it
+5. Press **Done**
 
 Belts unlock in order. Hint is optional.
-
-Portable pack: `tar -xzf pi-sdr-academy.tar.gz && cd pi-sdr-academy && ./run.sh`

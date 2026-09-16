@@ -206,19 +206,47 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
         while lines and lines[0] == "":
             lines.pop(0)
 
+    # Strip decorative ==== underlines left after title removal
+    if lines and set(lines[0].strip()) <= {"=", "-", "*"} and len(lines[0].strip()) >= 3:
+        lines = lines[1:]
+        while lines and lines[0] == "":
+            lines.pop(0)
+
     steps: list[str] = []
     mission_parts: list[str] = []
     in_workflow = False
     skip_cmd_block = False
     for line in lines:
         low = line.lower().rstrip(":")
+        # Skip stock workspace boilerplate — confuses people before Start
+        if "already in the challenge folder" in low:
+            continue
+        if low in {"goal", "mission", "task", "what is this?", "what is this"}:
+            in_workflow = False
+            skip_cmd_block = False
+            continue
         if low in {"workflow", "steps", "what to do"} or low.startswith("workflow"):
             in_workflow = True
             skip_cmd_block = False
             continue
         if in_workflow:
             step = line.lstrip("0123456789.-) ").strip()
-            if step:
+            if not step:
+                continue
+            # Skip bare shell crumbs — keep human instructions only
+            toks = step.replace("`", "").split()
+            cmd = toks[0] if toks else ""
+            if (
+                "academy" in step.lower()
+                or "flagpath" in step.lower()
+                or cmd.startswith("./")
+                or cmd in {
+                    "ls", "pwd", "cat", "find", "chmod", "ps", "curl",
+                    "printenv", "printf", "exit", "cd", "grep",
+                }
+            ):
+                continue
+            if len(step) < 90:
                 steps.append(step)
             continue
 
@@ -227,12 +255,11 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
             len(line.split()) <= 4
             and all(tok.startswith((".", "/", "`")) or tok in {"pwd", "ls", "cd", "find", "cat", "FILE", "-la", "-type", "f"} for tok in line.replace("`", "").split())
         ):
-            # bare command lines — fold into tools/steps later, not mission prose
             continue
 
         if line.startswith("#"):
             heading = line.lstrip("#").strip().lower()
-            if heading in {"mission", "task", "goal"}:
+            if heading in {"mission", "task", "goal", "what is this?", "what is this"}:
                 continue
             continue
 
@@ -247,6 +274,8 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
                 "copy it to the academy flag",
                 "when you find a value shaped like",
                 "when you find it, either",
+                "keep the quotes",
+                "back in the challenge folder, write the flag",
             )
         ):
             skip_cmd_block = True
@@ -259,41 +288,42 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
 
     mission = " ".join(mission_parts)
     mission = " ".join(mission.split())
-    # Drop dangling lead-ins left after stripping command lists
     mission = mission.rstrip(":").rstrip()
     for tail in ("Explore with", "Use", "Tools", "Try"):
         if mission.lower().endswith(tail.lower()):
             mission = mission[: -len(tail)].rstrip(" :")
             break
 
-    # Keep ~3 sentences max — enough detail, still brief
+    # One or two sentences — instant clarity
     sentences = [
         s.strip()
         for s in mission.replace("?", "?|").replace("!", "!|").replace(". ", ".|").split("|")
         if s.strip()
     ]
-    mission = " ".join(sentences[:3]).strip()
-    if len(mission) > 380:
-        mission = mission[:377].rstrip() + "…"
+    mission = " ".join(sentences[:2]).strip()
+    if len(mission) > 220:
+        mission = mission[:217].rstrip() + "…"
 
-    blurb = " ".join(sentences[:2]).strip() if sentences else (challenge.title or challenge.id or "Challenge")
+    blurb = sentences[0].strip() if sentences else (challenge.title or challenge.id or "Challenge")
     if blurb and not blurb.endswith((".", "!", "?")):
         blurb += "."
-    if len(blurb) > 220:
-        blurb = blurb[:217].rstrip() + "…"
+    if len(blurb) > 160:
+        blurb = blurb[:157].rstrip() + "…"
 
     clean_steps: list[str] = []
-    for step in steps[:5]:
+    for step in steps[:4]:
         s = " ".join(step.replace("`", "").split())
-        if len(s) > 110:
-            s = s[:107].rstrip() + "…"
+        if "academy" in s.lower() or "flagpath" in s.lower():
+            continue
+        if len(s) > 90:
+            s = s[:87].rstrip() + "…"
         clean_steps.append(s)
 
     if not clean_steps:
         clean_steps = [
-            "Press Start — files land in the challenge folder",
-            "Open that folder, read README.txt, solve it",
-            "Press Done",
+            "Press Start",
+            "Open the challenge folder → read README.txt",
+            "Press Done when finished",
         ]
 
     return {

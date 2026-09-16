@@ -1,15 +1,17 @@
 Permissions
 ===========
 
-You are already in the challenge folder.
+Goal
+----
+The flag is in vault/flag.txt, but you cannot read it yet. Fix the permissions.
 
-The flag is in vault/flag.txt, but you cannot read it yet.
-
-1) Look at the files and their permissions:
+Steps
+-----
+1) Look at the files:
 
      ls -l vault
 
-2) Give yourself read permission on the flag file:
+2) Give yourself read permission:
 
      chmod u+r vault/flag.txt
 
@@ -17,9 +19,6 @@ The flag is in vault/flag.txt, but you cannot read it yet.
 
      cat vault/flag.txt
 
-4) Copy the flag to the academy flag file and submit:
-
-     printf '%s\n' 'flag{...}' > "$(cat .flagpath 2>/dev/null || echo $HOME/flag.txt)"
-     academy submit
+4) Paste the flag in the dojo, or press Done.
 
 You own the file. Do not use sudo, delete it, or change its owner.
