@@ -14,14 +14,14 @@ from .ui_flavor import display_title
 
 
 BELT_COLORS = {
-    "white": "#f2f2f2",
-    "yellow": "#e6c84a",
-    "orange": "#e08a3c",
-    "green": "#2f6b3a",
-    "blue": "#3b7dd8",
-    "purple": "#8b5cf6",
-    "brown": "#8b5a2b",
-    "black": "#222222",
+    "white": "#E8EDF5",
+    "yellow": "#E9C46A",  # amber vertex
+    "orange": "#E76F51",  # coral vertex
+    "green": "#2A9D8F",   # teal vertex
+    "blue": "#6C7AE0",    # indigo vertex
+    "purple": "#6C7AE0",
+    "brown": "#8B95A8",
+    "black": "#0E1218",
 }
 
 

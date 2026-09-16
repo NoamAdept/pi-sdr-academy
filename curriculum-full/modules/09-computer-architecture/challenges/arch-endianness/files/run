@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-cc probe.c -o probe
-./probe

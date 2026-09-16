@@ -1,7 +1,0 @@
-#!/bin/sh
-set -eu
-cc -O0 sum.c -o sum_o0
-cc -O2 sum.c -o sum_o2
-./sum_o0
-./sum_o2
-echo "Measure each file with: wc -c < sum_o0"

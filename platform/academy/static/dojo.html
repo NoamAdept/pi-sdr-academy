@@ -5,339 +5,375 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Pi SDR Academy</title>
   <style>
+    /* Tetradic accents: teal ↔ coral, indigo ↔ amber. Surfaces stay cool slate. */
     :root {
-      --bg: #1a1512;
-      --panel: #221c18;
-      --fg: #e8e4df;
-      --muted: #8a8278;
-      --lime: #e08a4f;
-      --cyan: #c4a484;
-      --ink: #1a1512;
-      --line: #3a322c;
-      --danger: #e06a5c;
-      --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --teal: #2A9D8F;
+      --coral: #E76F51;
+      --indigo: #6C7AE0;
+      --amber: #E9C46A;
+      --bg: #0E1218;
+      --surface: #161C26;
+      --raised: #1C2430;
+      --line: #2A3444;
+      --fg: #E8EDF5;
+      --muted: #8B95A8;
+      --ink: #0E1218;
+      --ok: #2A9D8F;
+      --bad: #E76F51;
+      --font: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
       --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --radius: 12px;
+      --pad: clamp(1rem, 3vw, 1.5rem);
+      --max: 40rem;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
+      margin: 0;
+      min-height: 100dvh;
       color: var(--fg);
-      background: var(--bg);
+      background:
+        radial-gradient(720px 360px at 8% -10%, rgba(42,157,143,0.12), transparent 55%),
+        radial-gradient(640px 320px at 100% 0%, rgba(231,111,81,0.08), transparent 50%),
+        var(--bg);
       font-family: var(--font);
+      line-height: 1.45;
     }
     button, input { font: inherit; }
     button { cursor: pointer; }
     .hidden { display: none !important; }
-    .bg {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(900px 480px at 12% -8%, rgba(224,138,79,0.08), transparent 55%),
-        #1a1512;
-    }
+
     .top {
-      position: sticky; top: 0; z-index: 30;
-      background: rgba(26,21,18,0.94);
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
       border-bottom: 1px solid var(--line);
     }
     .top-inner {
-      max-width: 760px; margin: 0 auto;
-      padding: 0.7rem 1rem;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0.75rem var(--pad);
       display: flex; align-items: center; gap: 0.75rem;
     }
-    .dots { display: flex; gap: 6px; }
-    .dots i { width: 10px; height: 10px; border-radius: 50%; display: block; font-style: normal; }
-    .dots .r { background: #e06a5c; }
-    .dots .y { background: #e08a4f; }
-    .dots .g { background: #6a9e6a; }
     .brand {
-      display: flex; align-items: center; gap: 0.5rem;
-      text-decoration: none; color: inherit; font-weight: 800;
+      display: flex; align-items: center; gap: 0.55rem;
+      text-decoration: none; color: inherit; font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .brand i {
-      width: 28px; height: 28px; border-radius: 8px;
-      display: grid; place-items: center;
-      background: var(--lime); color: var(--ink);
-      font-style: normal; font-weight: 900; font-family: var(--mono); font-size: 0.75rem;
+    .brand img {
+      width: 36px; height: 36px; border-radius: 10px;
+      border: 1px solid var(--line); background: #f3eee6; object-fit: cover;
     }
-    .brand b { color: var(--lime); }
+    .brand b { color: var(--teal); font-weight: 700; }
     .score {
       margin-left: auto;
       font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
     }
-    .score strong { color: var(--lime); }
+    .score strong { color: var(--coral); font-weight: 700; }
+
     .wrap {
-      position: relative; z-index: 1;
-      max-width: 760px; margin: 0 auto;
-      padding: 1.25rem 1rem 4rem;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1.25rem var(--pad) 3.5rem;
     }
-    .hero {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      gap: 1rem; margin-bottom: 1.1rem; flex-wrap: wrap;
-    }
+
+    .hero { margin-bottom: 1.1rem; }
     .hero h1 {
       margin: 0;
-      font-size: clamp(1.7rem, 4vw, 2.4rem);
-      letter-spacing: -0.03em; line-height: 1;
+      font-size: clamp(1.75rem, 5vw, 2.35rem);
+      letter-spacing: -0.03em; line-height: 1.05;
     }
-    .hero h1 em { font-style: normal; color: var(--lime); }
+    .hero h1 em { font-style: normal; color: var(--teal); }
     .hero p {
-      margin: 0.4rem 0 0;
-      color: var(--muted); font-size: 0.92rem; font-family: var(--mono);
+      margin: 0.45rem 0 0;
+      color: var(--muted);
+      font-family: var(--mono); font-size: 0.85rem;
     }
-    .sticker {
-      width: min(160px, 36vw); height: auto; flex-shrink: 0;
-      border-radius: 22px;
-      background: #f4f0ea;
-      border: 3px solid #111;
-      box-shadow: 4px 4px 0 #111;
-      object-fit: cover;
-    }
+
     .loop {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem;
-      margin: 0 0 1.1rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin: 0 0 1.15rem;
     }
-    @media (max-width: 560px) { .loop { grid-template-columns: 1fr; } }
     .loop div {
-      border: 1px solid var(--line); border-radius: 10px;
-      background: var(--panel); padding: 0.65rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 0.7rem 0.75rem;
     }
     .loop i {
       display: block; font-style: normal;
       font-family: var(--mono); font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime);
-      margin-bottom: 0.2rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 0.25rem;
     }
     .loop span { color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
+    @media (max-width: 560px) {
+      .loop { grid-template-columns: 1fr; }
+    }
 
     .now {
-      border: 3px solid #111;
+      border: 1px solid var(--line);
       border-radius: 16px;
-      background: #f4efe6;
-      color: #1a1512;
+      background: var(--raised);
       padding: 1rem 1.05rem 1.1rem;
-      box-shadow: 4px 4px 0 #111;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
     }
     .now .lbl {
-      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em;
-      text-transform: uppercase; color: #5a5048; margin-bottom: 0.35rem;
+      font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 0.35rem;
     }
-    .now h2 { margin: 0; font-size: 1.35rem; line-height: 1.15; }
+    .now h2 {
+      margin: 0;
+      font-size: clamp(1.15rem, 3.5vw, 1.4rem);
+      letter-spacing: -0.02em; line-height: 1.2;
+    }
     .now .belt {
-      margin-top: 0.25rem;
-      font-family: var(--mono); font-size: 0.75rem; color: #c45a1a;
-      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-top: 0.3rem;
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--coral); letter-spacing: 0.06em; text-transform: uppercase;
     }
     .now .mission {
       margin: 0.7rem 0 0;
-      font-size: 0.95rem; line-height: 1.45; color: #2a241f;
+      color: var(--muted); font-size: 0.95rem;
     }
     .now .ws {
-      margin-top: 0.65rem;
+      margin-top: 0.7rem;
       font-family: var(--mono); font-size: 0.78rem;
-      background: #1a1512; color: #e08a4f;
-      border-radius: 8px; padding: 0.55rem 0.65rem;
+      color: var(--teal);
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
       word-break: break-all;
     }
-    .now .acts {
+    .acts {
       display: flex; flex-wrap: wrap; gap: 0.45rem;
-      margin-top: 0.85rem; align-items: center;
+      margin-top: 0.9rem; align-items: center;
     }
-    .go {
-      border: 0; border-radius: 8px;
-      background: var(--lime); color: var(--ink);
-      font-family: var(--mono); font-weight: 800;
-      padding: 0.75rem 1.15rem;
-      letter-spacing: 0.04em; text-transform: uppercase;
+    .go, .ghost, .btn {
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      font-family: var(--mono); font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      transition: background .15s ease, border-color .15s ease, opacity .15s ease;
     }
-    .go:hover { filter: brightness(1.06); }
-    .go:disabled { opacity: 0.45; cursor: not-allowed; }
-    .ghost {
-      border: 2px solid #111; border-radius: 8px;
-      background: transparent; color: #1a1512;
-      font-family: var(--mono); font-weight: 700;
-      padding: 0.65rem 0.9rem;
+    .go, .btn.pri {
+      border: 0;
+      background: var(--teal); color: var(--ink);
     }
-    .now .fb {
+    .go:hover, .btn.pri:hover { filter: brightness(1.06); }
+    .go:disabled, .btn:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+    .ghost, .btn {
+      border: 1px solid var(--line);
+      background: transparent; color: var(--fg);
+    }
+    .ghost:hover, .btn:hover { border-color: var(--indigo); }
+    .fb {
       margin-top: 0.55rem;
-      font-family: var(--mono); font-size: 0.78rem; color: #5a5048; min-height: 1em;
+      font-family: var(--mono); font-size: 0.78rem;
+      color: var(--muted); min-height: 1.1em;
     }
-    .now .fb.ok { color: #2f6b3a; }
-    .now .fb.bad { color: #a33; }
-    .now .done-msg {
-      margin: 0; font-size: 1.05rem; font-weight: 700;
-    }
+    .fb.ok { color: var(--ok); }
+    .fb.bad { color: var(--bad); }
+    .done-msg { margin: 0; font-size: 1.05rem; font-weight: 700; }
     .flagrow {
-      display: grid; grid-template-columns: 1fr auto; gap: 0.4rem;
-      margin-top: 0.65rem; width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.4rem;
+      margin-top: 0.7rem;
+      width: 100%;
     }
     .flagrow input {
-      border: 2px solid #111; border-radius: 8px;
-      padding: 0.55rem 0.65rem; font-family: var(--mono); font-size: 0.85rem;
-      background: #fff; color: #1a1512;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 0.65rem 0.75rem;
+      font-family: var(--mono); font-size: 0.85rem;
+      outline: none;
+    }
+    .flagrow input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(42,157,143,0.18);
     }
     .hints .h {
-      margin-top: 0.35rem; padding: 0.35rem 0.5rem;
-      border-left: 3px solid #c45a1a; background: rgba(0,0,0,0.05);
-      font-size: 0.85rem; color: #3a322c;
+      margin-top: 0.4rem;
+      padding: 0.4rem 0.55rem;
+      border-left: 3px solid var(--indigo);
+      background: rgba(108,122,224,0.08);
+      font-size: 0.88rem; color: var(--muted);
     }
 
     .xp {
-      margin: 0 0 1rem;
-      border: 1px solid var(--line); border-radius: 12px;
-      background: var(--panel); padding: 0.75rem 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 0.8rem 0.9rem;
+      margin-bottom: 0.35rem;
     }
     .xp-top {
       display: flex; justify-content: space-between; gap: 0.5rem;
-      font-family: var(--mono); font-size: 0.72rem;
+      font-family: var(--mono); font-size: 0.7rem;
       letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.5rem;
     }
-    .xp-top em { font-style: normal; color: var(--lime); }
+    .xp-top em { font-style: normal; color: var(--coral); }
     .xp-track {
-      height: 14px; border: 2px solid #111; border-radius: 999px;
-      background: #2a241f; overflow: hidden;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      overflow: hidden;
     }
     .xp-fill {
       height: 100%; width: 0%;
-      background: repeating-linear-gradient(-45deg, #e08a4f 0 8px, #f0a86a 8px 16px);
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
       transition: width .35s cubic-bezier(.2,.8,.2,1);
     }
     .belts {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem;
-      margin-top: 0.7rem;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.35rem;
+      margin-top: 0.75rem;
     }
     .belt {
       text-align: center;
-      font-family: var(--mono); font-size: 0.62rem;
+      font-family: var(--mono); font-size: 0.6rem;
       color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
     }
     .belt img {
-      width: 42px; height: 34px; object-fit: contain;
-      filter: grayscale(0.35); opacity: 0.7;
+      width: 40px; height: 32px; object-fit: contain;
+      opacity: 0.45; filter: grayscale(0.4);
+      transition: opacity .2s ease, filter .2s ease;
     }
-    .belt.on img, .belt.done img { filter: none; opacity: 1; }
+    .belt.on img, .belt.done img { opacity: 1; filter: none; }
     .belt.on img { animation: bob .9s ease-in-out infinite; }
     @keyframes bob {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
+      50% { transform: translateY(-2px); }
     }
 
     .sec {
-      margin: 1.2rem 0 0.55rem;
-      font-family: var(--mono); font-size: 0.72rem;
-      letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan);
+      margin: 1.15rem 0 0.55rem;
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--indigo);
     }
-    .path {
-      display: flex; flex-direction: column; gap: 0.45rem;
-    }
+    .path { display: flex; flex-direction: column; gap: 0.45rem; }
     .card {
       width: 100%; text-align: left; color: inherit;
-      border: 1px solid var(--line); border-radius: 10px;
-      background: var(--panel); padding: 0.85rem 0.95rem;
-      display: grid; grid-template-columns: auto 1fr auto; gap: 0.75rem; align-items: center;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--surface);
+      padding: 0.8rem 0.9rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.7rem; align-items: center;
+      transition: border-color .15s ease;
     }
-    .card:hover { border-color: var(--lime); }
+    .card:hover { border-color: var(--teal); }
     .card.locked { opacity: 0.45; }
+    .card.locked:hover { border-color: var(--line); }
     .card img.b {
-      width: 64px; height: 48px; object-fit: contain;
-      background: #f4f0ea; border: 2px solid #111; border-radius: 8px; padding: 2px;
+      width: 56px; height: 42px; object-fit: contain;
+      background: #f3eee6; border: 1px solid var(--line);
+      border-radius: 8px; padding: 2px;
     }
-    .card h3 { margin: 0; font-size: 1rem; }
+    .card h3 { margin: 0; font-size: 0.98rem; letter-spacing: -0.01em; }
     .card .meta {
       margin-top: 0.2rem;
-      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
     }
-    .card .chip {
-      font-family: var(--mono); font-size: 0.65rem; font-weight: 800;
+    .chip {
+      font-family: var(--mono); font-size: 0.62rem; font-weight: 800;
       letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 0.2rem 0.45rem; border-radius: 6px;
-      background: var(--lime); color: var(--ink);
+      padding: 0.22rem 0.45rem; border-radius: 6px;
+      background: var(--teal); color: var(--ink); white-space: nowrap;
     }
-    .card .chip.lock { background: #3a3a3a; color: #bbb; }
-    .card .chip.done { background: var(--cyan); color: #1a1512; }
+    .chip.lock { background: #3A4454; color: #B8C0D0; }
+    .chip.done { background: var(--indigo); color: #fff; }
 
     .back {
-      border: 1px solid var(--line); background: transparent; color: var(--lime);
-      border-radius: 8px; padding: 0.4rem 0.7rem; margin-bottom: 1rem;
+      border: 1px solid var(--line); background: transparent; color: var(--teal);
+      border-radius: 8px; padding: 0.4rem 0.7rem; margin-bottom: 0.9rem;
       font-family: var(--mono); font-size: 0.78rem;
     }
     .dhero {
       display: flex; gap: 0.85rem; align-items: center;
-      border: 1px solid var(--line); border-radius: 12px;
-      background: var(--panel); padding: 0.9rem 1rem; margin-bottom: 0.9rem;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--surface); padding: 0.85rem 0.95rem; margin-bottom: 0.85rem;
     }
     .dhero img {
-      width: 88px; height: 66px; object-fit: contain;
-      background: #f4f0ea; border: 2px solid #111; border-radius: 10px; padding: 3px;
+      width: 72px; height: 54px; object-fit: contain;
+      background: #f3eee6; border: 1px solid var(--line);
+      border-radius: 8px; padding: 2px; flex-shrink: 0;
     }
-    .dhero h1 { margin: 0; font-size: 1.35rem; }
+    .dhero h1 { margin: 0; font-size: clamp(1.15rem, 3vw, 1.35rem); }
     .dhero p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.88rem; }
+
     .clist { display: flex; flex-direction: column; gap: 0.4rem; }
     .crow {
-      border: 1px solid var(--line); border-radius: 10px; background: var(--panel); overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--surface); overflow: hidden;
     }
-    .crow.open { border-color: color-mix(in srgb, var(--lime) 40%, var(--line)); }
+    .crow.open { border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
     .crow > button.row {
       width: 100%; border: 0; background: transparent; color: inherit;
       display: flex; justify-content: space-between; gap: 0.75rem; align-items: center;
-      padding: 0.8rem 0.95rem; text-align: left; cursor: pointer;
+      padding: 0.8rem 0.9rem; text-align: left; cursor: pointer;
     }
-    .crow h3 { margin: 0; font-size: 0.98rem; }
-    .crow.solved h3 { color: var(--lime); }
+    .crow h3 { margin: 0; font-size: 0.95rem; }
+    .crow.solved h3 { color: var(--teal); }
     .crow .r {
       font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
       text-transform: uppercase; white-space: nowrap;
     }
-    .crow .r.ok { color: var(--lime); }
+    .crow .r.ok { color: var(--teal); }
     .cbody {
-      display: none; padding: 0 0.95rem 0.95rem;
+      display: none; padding: 0 0.9rem 0.9rem;
       border-top: 1px solid var(--line);
     }
     .crow.open .cbody { display: block; padding-top: 0.75rem; }
-    .cbody .m { margin: 0; font-size: 0.9rem; line-height: 1.4; color: var(--muted); }
-    .cbody .acts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
-    .btn {
-      border: 1px solid var(--line); border-radius: 8px; background: rgba(0,0,0,0.3);
-      color: var(--fg); padding: 0.55rem 0.8rem; font-weight: 700; font-size: 0.85rem;
-    }
-    .btn.pri { background: var(--lime); color: var(--ink); border-color: transparent; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .cbody .m { margin: 0; font-size: 0.9rem; color: var(--muted); }
     .cbody .ws {
       margin-top: 0.5rem; font-family: var(--mono); font-size: 0.72rem;
-      color: var(--cyan); word-break: break-all;
+      color: var(--teal); word-break: break-all;
     }
-    .cbody .fb { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-    .cbody .fb.ok { color: var(--cyan); }
-    .cbody .fb.bad { color: var(--danger); }
-    .cbody .flagrow { margin-top: 0.55rem; }
-    .cbody .flagrow input {
-      border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
-      color: var(--fg); padding: 0.55rem 0.65rem; font-family: var(--mono); font-size: 0.85rem;
-    }
+
     .toasts {
-      position: fixed; right: 1rem; bottom: 1rem; z-index: 50;
+      position: fixed; right: 1rem; bottom: 1rem; z-index: 40;
       display: flex; flex-direction: column; gap: 0.4rem;
-      max-width: min(320px, calc(100vw - 2rem));
+      max-width: min(20rem, calc(100vw - 2rem));
     }
     .toast {
       border-radius: 10px; padding: 0.65rem 0.8rem;
-      background: rgba(26,21,18,0.96); border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
       animation: in .2s ease;
     }
-    .toast.ok { border-color: color-mix(in srgb, var(--cyan) 50%, var(--line)); }
-    .toast.bad { border-color: color-mix(in srgb, var(--danger) 50%, var(--line)); }
+    .toast.ok { border-color: color-mix(in srgb, var(--teal) 50%, var(--line)); }
+    .toast.bad { border-color: color-mix(in srgb, var(--coral) 50%, var(--line)); }
     .toast b { display: block; }
     .toast span { color: var(--muted); font-size: 0.8rem; }
     @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 420px) {
+      .card { grid-template-columns: auto 1fr; }
+      .card .chip { grid-column: 2; justify-self: start; }
+      .flagrow { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div class="bg"></div>
   <header class="top">
     <div class="top-inner">
-      <span class="dots" aria-hidden="true"><i class="r"></i><i class="y"></i><i class="g"></i></span>
-      <a class="brand" href="#" id="home-link"><i>PT</i> Pi SDR <b>Academy</b></a>
+      <a class="brand" href="#" id="home-link">
+        <img src="/icons/ponytail.png" alt="" width="36" height="36"/>
+        Pi SDR <b>Academy</b>
+      </a>
       <div class="score"><strong id="progress">…</strong></div>
     </div>
   </header>
@@ -345,17 +381,14 @@
   <main class="wrap">
     <div id="view-home">
       <div class="hero">
-        <div>
-          <h1>Pi SDR <em>Academy</em></h1>
-          <p>One loop. Fifty challenges. No cloud.</p>
-        </div>
-        <img class="sticker" src="/icons/ponytail.png" alt="" width="160" height="160"/>
+        <h1>Pi SDR <em>Academy</em></h1>
+        <p>One loop · fifty challenges · offline</p>
       </div>
 
       <div class="loop" aria-label="How to play">
-        <div><i>1 · Start</i><span>Files drop into the challenge folder.</span></div>
+        <div><i>1 · Start</i><span>Files land in the challenge folder.</span></div>
         <div><i>2 · Solve</i><span>Open that folder. Read README.txt.</span></div>
-        <div><i>3 · Done</i><span>Press Done here when you think you finished.</span></div>
+        <div><i>3 · Done</i><span>Press Done when you finish.</span></div>
       </div>
 
       <section class="now" id="now" aria-live="polite"></section>
@@ -383,7 +416,6 @@
     const BELT = { white:'belt-white', yellow:'belt-yellow', orange:'belt-orange', green:'belt-green', blue:'belt-blue' };
     const home = document.getElementById('view-home');
     const detail = document.getElementById('view-dojo');
-    let catalog = null;
     let nextCh = null;
 
     function esc(s) {
@@ -394,7 +426,7 @@
       el.className = 'toast ' + kind;
       el.innerHTML = `<b>${esc(t)}</b><span>${esc(d||'')}</span>`;
       document.getElementById('toasts').appendChild(el);
-      setTimeout(() => el.remove(), 3200);
+      setTimeout(() => el.remove(), 3000);
     }
     async function api(path, opts) {
       const r = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
@@ -416,32 +448,23 @@
     async function doneChallenge(id, flag, fb) {
       fb.className = 'fb';
       fb.textContent = flag ? 'Submitting…' : 'Checking…';
-      let data;
-      if (flag) {
-        data = await api('/api/challenges/' + encodeURIComponent(id) + '/submit', {
-          method: 'POST', body: JSON.stringify({ flag })
-        });
-      } else {
-        data = await api('/api/challenges/' + encodeURIComponent(id) + '/check', {
-          method: 'POST', body: '{}'
-        });
-      }
+      const data = flag
+        ? await api('/api/challenges/' + encodeURIComponent(id) + '/submit', { method: 'POST', body: JSON.stringify({ flag }) })
+        : await api('/api/challenges/' + encodeURIComponent(id) + '/check', { method: 'POST', body: '{}' });
       if (data.ok) {
         fb.className = 'fb ok';
-        fb.textContent = data.explanation || 'Cleared. Next challenge unlocked.';
+        fb.textContent = data.explanation || 'Cleared.';
         toast('Cleared', id, 'ok');
         return true;
       }
       fb.className = 'fb bad';
       fb.textContent = data.error || 'Not yet — keep working in the folder.';
-      if (data.detail) fb.textContent += ' ' + data.detail.slice(0, 200);
+      if (data.detail) fb.textContent += ' ' + String(data.detail).slice(0, 180);
       return false;
     }
 
     async function hintChallenge(id, box) {
-      const data = await api('/api/challenges/' + encodeURIComponent(id) + '/hint', {
-        method: 'POST', body: '{}'
-      });
+      const data = await api('/api/challenges/' + encodeURIComponent(id) + '/hint', { method: 'POST', body: '{}' });
       const row = document.createElement('div');
       row.className = 'h';
       row.textContent = data.text || 'No more hints.';
@@ -451,7 +474,7 @@
     function paintNow() {
       const box = document.getElementById('now');
       if (!nextCh) {
-        box.innerHTML = `<div class="lbl">Path complete</div><p class="done-msg">All fifty challenges cleared. Nice work.</p>`;
+        box.innerHTML = `<div class="lbl">Complete</div><p class="done-msg">All fifty challenges cleared.</p>`;
         return;
       }
       const ch = nextCh;
@@ -467,7 +490,7 @@
           <button type="button" class="ghost" id="now-hint">Hint</button>
         </div>
         <div class="flagrow">
-          <input id="now-flag" placeholder="or paste flag{…} if you found one"/>
+          <input id="now-flag" placeholder="or paste flag{…}"/>
           <button type="button" class="ghost" id="now-flag-go">Go</button>
         </div>
         <div class="hints" id="now-hints"></div>
@@ -481,23 +504,18 @@
           el.textContent = 'Folder: ' + ws;
           el.classList.remove('hidden');
           document.getElementById('now-done').disabled = false;
-          ch.started = true;
-          ch.workspace = ws;
+          ch.started = true; ch.workspace = ws;
         } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
       };
       document.getElementById('now-done').onclick = async () => {
-        try {
-          const ok = await doneChallenge(ch.id, '', fb());
-          if (ok) await load();
-        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+        try { if (await doneChallenge(ch.id, '', fb())) await load(); }
+        catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
       };
       document.getElementById('now-flag-go').onclick = async () => {
         const flag = (document.getElementById('now-flag').value || '').trim();
-        if (!flag) { fb().className = 'fb bad'; fb().textContent = 'Paste a flag, or press Done to auto-check.'; return; }
-        try {
-          const ok = await doneChallenge(ch.id, flag, fb());
-          if (ok) await load();
-        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+        if (!flag) { fb().className = 'fb bad'; fb().textContent = 'Paste a flag, or press Done.'; return; }
+        try { if (await doneChallenge(ch.id, flag, fb())) await load(); }
+        catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
       };
       document.getElementById('now-hint').onclick = async () => {
         try { await hintChallenge(ch.id, document.getElementById('now-hints')); }
@@ -558,7 +576,6 @@
     function challengeRow(ch, locked, autoOpen) {
       const wrap = document.createElement('div');
       wrap.className = 'crow' + (ch.solved ? ' solved' : '') + (autoOpen ? ' open' : '');
-      wrap.dataset.id = ch.id;
       const head = document.createElement('button');
       head.type = 'button';
       head.className = 'row';
@@ -594,8 +611,7 @@
             const ws = await startChallenge(ch.id, fb);
             body.querySelector('#ws-' + CSS.escape(ch.id)).textContent = 'Folder: ' + ws;
           } else if (act === 'done') {
-            const ok = await doneChallenge(ch.id, '', fb);
-            if (ok) {
+            if (await doneChallenge(ch.id, '', fb)) {
               wrap.classList.add('solved');
               head.querySelector('.r').className = 'r ok';
               head.querySelector('.r').textContent = 'cleared';
@@ -604,8 +620,7 @@
           } else if (act === 'flag') {
             const flag = (body.querySelector('input').value || '').trim();
             if (!flag) { fb.className = 'fb bad'; fb.textContent = 'Paste a flag, or press Done.'; return; }
-            const ok = await doneChallenge(ch.id, flag, fb);
-            if (ok) {
+            if (await doneChallenge(ch.id, flag, fb)) {
               wrap.classList.add('solved');
               await load(true);
             }
@@ -624,8 +639,7 @@
 
     async function openDojo(id, keep) {
       const d = await api('/api/dojos/' + encodeURIComponent(id));
-      const hero = document.getElementById('dhero');
-      hero.innerHTML = `
+      document.getElementById('dhero').innerHTML = `
         <img src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
         <div>
           <h1>${esc(d.title)}</h1>
@@ -658,7 +672,6 @@
 
     async function load(stay) {
       const [status, cat] = await Promise.all([api('/api/status'), api('/api/dojos')]);
-      catalog = cat;
       nextCh = cat.next_challenge || null;
       if (nextCh && status.current_challenge_id === nextCh.id) {
         nextCh.started = true;
@@ -666,7 +679,7 @@
       }
       paintNow();
       paintBelts(cat.dojos || [], status.solved, status.total);
-      if (stay && detail.classList.contains('hidden') === false) {
+      if (stay && !detail.classList.contains('hidden')) {
         const m = (location.hash || '').match(/^#dojo\/(.+)$/);
         if (m) await openDojo(decodeURIComponent(m[1]), true);
       } else if (!stay) {

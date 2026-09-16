@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<flow_graph><timestamp>offline teaching sketch</timestamp><block><key>options</key></block>
-<block><key>blocks_file_source</key></block><block><key>processing_block</key></block>
-<block><key>blocks_file_sink</key></block></flow_graph>

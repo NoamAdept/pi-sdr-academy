@@ -1,5 +1,0 @@
-# Example working configuration
-listen_host=127.0.0.1
-listen_port=8765
-data_path=service/data/beacon_ok.json
-log_path=service/logs/beacon.log

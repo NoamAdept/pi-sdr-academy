@@ -1,4 +1,5 @@
 .academy-data/
+challenge/
 dist/
 .DS_Store
 *.egg-info/

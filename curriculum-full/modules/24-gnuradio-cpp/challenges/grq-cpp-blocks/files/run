@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-cd "$(dirname "$0")"
-echo "=== grq-cpp-blocks ==="
-python3 starter.py
-echo
-echo "Read README.txt, edit build_flowgraph.py, then run ./check"

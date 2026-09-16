@@ -19,5 +19,7 @@ jobs:
       - name: Test
         env:
           ACADEMY_CURRICULUM: ${{ github.workspace }}/curriculum
-          PYTHONPATH: ${{ github.workspace }}/platform
+          PYTHONPATH: ${{ github.workspace }}/vendor:${{ github.workspace }}/platform
         run: python -m pytest platform/tests -q
+      - name: Curriculum check
+        run: python3 scripts/check_curriculum.py

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-cd "$(dirname "$0")"
-echo "=== grq-complete-topblock ==="
-python3 starter.py
-echo
-echo "Read README.txt, edit complete_topblock.py, then run ./check"
