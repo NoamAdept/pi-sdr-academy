@@ -60,10 +60,37 @@
       --radius: 16px;
       --pad: clamp(1rem, 4vw, 2rem);
       --max: 44rem;
+      --glow: rgba(255,255,255,0.55);
+      --emboss: #ffffff;
+      --ok-text: #15803d;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #1e242c;
+      --panel: #262d38;
+      --muted-bg: #151a21;
+      --fg: #e8edf5;
+      --muted: #9aa3b5;
+      --accent: #ff4757;
+      --accent-fg: #ffffff;
+      --border: #0d1117;
+      --hilite: #2a3340;
+      --deep: #0a0c10;
+      --ok: #22c55e;
+      --dark: #0f1318;
+      --shadow-card: 8px 8px 18px #12161c, -6px -6px 14px #2a323e;
+      --shadow-float: 12px 12px 26px #0f1318, -8px -8px 18px #303947;
+      --shadow-press: inset 6px 6px 12px #12161c, inset -4px -4px 10px #2a323e;
+      --shadow-recess: inset 4px 4px 10px #0f1318, inset -3px -3px 8px #2a323e;
+      --shadow-accent: 4px 4px 10px rgba(0,0,0,0.45), -2px -2px 6px rgba(255,90,100,0.2);
+      --glow: rgba(108,122,224,0.12);
+      --emboss: transparent;
+      --ok-text: #4ade80;
     }
 
     * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; color-scheme: light; }
+    html[data-theme="dark"] { color-scheme: dark; }
     body {
       margin: 0;
       min-height: 100dvh;
@@ -71,10 +98,11 @@
       font-family: var(--font);
       background-color: var(--bg);
       background-image:
-        radial-gradient(900px 420px at 12% -8%, rgba(255,255,255,0.55), transparent 55%),
+        radial-gradient(900px 420px at 12% -8%, var(--glow), transparent 55%),
         url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E");
       background-blend-mode: normal, overlay;
       line-height: 1.55;
+      transition: background-color .25s ease, color .25s ease;
     }
     button, input { font: inherit; }
     button { cursor: pointer; }
@@ -123,6 +151,24 @@
       font-family: var(--mono); font-size: 0.8rem; font-weight: 500; color: var(--muted);
     }
     .score strong { color: var(--accent); }
+    .theme-btn {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--muted);
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      min-height: 36px; min-width: 36px;
+      padding: 0.4rem 0.65rem;
+      box-shadow: var(--shadow-card);
+      transition: transform .15s ease, box-shadow .15s ease, color .15s ease;
+    }
+    .theme-btn:hover { color: var(--accent); }
+    .theme-btn:active {
+      transform: translateY(1px);
+      box-shadow: var(--shadow-press);
+    }
 
     .wrap {
       max-width: var(--max);
@@ -167,7 +213,7 @@
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.08;
-      text-shadow: 0 1px 0 #fff;
+      text-shadow: 0 1px 0 var(--emboss);
     }
     h1 em { font-style: normal; color: var(--accent); }
     h2 {
@@ -402,7 +448,7 @@
       margin-top: 0.55rem;
       font-family: var(--mono); font-size: 0.78rem; color: var(--muted); min-height: 1.1em;
     }
-    .fb.ok { color: #15803d; }
+    .fb.ok { color: var(--ok-text); }
     .fb.bad { color: var(--accent); }
     .hints .h {
       margin-top: 0.4rem;
@@ -537,12 +583,12 @@
       padding: 0.85rem 0.95rem; text-align: left; cursor: pointer;
     }
     .crow h3 { margin: 0; font-size: 0.95rem; font-weight: 700; }
-    .crow.solved h3 { color: #15803d; }
+    .crow.solved h3 { color: var(--ok-text); }
     .crow .r {
       font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
       color: var(--muted); text-transform: uppercase; white-space: nowrap;
     }
-    .crow .r.ok { color: #15803d; }
+    .crow .r.ok { color: var(--ok-text); }
     .cbody {
       display: none; padding: 0 0.95rem 0.95rem;
       border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
@@ -570,6 +616,17 @@
       .card .chip { grid-column: 2; justify-self: start; }
     }
   </style>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('academy-theme');
+        var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 <body>
   <header class="top">
@@ -580,6 +637,7 @@
       </a>
       <span class="led" id="led"><i></i><span>Ready</span></span>
       <div class="score"><strong id="progress">…</strong></div>
+      <button type="button" class="theme-btn" id="btn-theme" aria-label="Toggle dark mode">Dark</button>
     </div>
   </header>
 
@@ -993,6 +1051,23 @@
       e.preventDefault();
       showIntro();
     };
+
+    (function themeToggle() {
+      const btn = document.getElementById('btn-theme');
+      function sync() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? 'Light' : 'Dark';
+        btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      }
+      btn.onclick = () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('academy-theme', next); } catch (e) {}
+        sync();
+      };
+      sync();
+    })();
+
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view === 'dojo' && e.state.id) openDojo(e.state.id);
       else if (e.state && e.state.view === 'home') showHome();
