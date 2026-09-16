@@ -26,6 +26,18 @@ def test_modules_loaded(engine):
     assert modules[0].slug == "orientation"
 
 
+def test_next_challenge_card(engine):
+    from academy.dojos import catalog_payload
+
+    cat = catalog_payload(engine)
+    nxt = cat["next_challenge"]
+    assert nxt is not None
+    assert nxt["id"] == "orient-find-flag"
+    assert nxt["dojo_id"] == "intro-lab"
+    assert nxt["mission"]
+    assert len(nxt["steps"]) >= 1
+
+
 def test_orientation_challenges(engine):
     chs = engine.module_challenges("orientation")
     ids = {c.id for c in chs}

@@ -3,7 +3,6 @@
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 export PYTHONPATH="$ROOT/vendor:$ROOT/platform${PYTHONPATH:+:$PYTHONPATH}"
-# Docker layout puts academy/ at ROOT
 if [ ! -d "$ROOT/platform/academy" ] && [ -d "$ROOT/academy" ]; then
   export PYTHONPATH="$ROOT/vendor:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 fi
@@ -14,10 +13,14 @@ export ACADEMY_FLAG_PATH="${ACADEMY_FLAG_PATH:-$ROOT/.academy-data/flag.txt}"
 mkdir -p "$ACADEMY_DATA" "$ACADEMY_WORKSPACE"
 HOST="${HOST:-127.0.0.1}"
 PORT="${PORT:-8080}"
-echo "Pi SDR Academy  http://$HOST:$PORT/dojo"
+echo ""
+echo "  Pi SDR Academy"
+echo "  Open  http://$HOST:$PORT/"
+echo "  Then  Start → solve in ./challenge → Done"
+echo ""
 case "${ACADEMY_ADMIN:-0}" in
   1|true|yes)
-    echo "Admin           http://$HOST:$PORT/admin"
+    echo "  Admin http://$HOST:$PORT/admin"
     exec python3 -m academy.cli admin --host "$HOST" --port "$PORT"
     ;;
   *)

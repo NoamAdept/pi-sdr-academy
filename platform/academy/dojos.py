@@ -290,13 +290,11 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
         clean_steps.append(s)
 
     if not clean_steps:
-        tools = list(challenge.expected_tools or [])[:4]
-        if any(t in {"./check", "check", "./run", "run"} for t in (challenge.expected_tools or [])):
-            clean_steps = ["Start challenge", "Follow README.txt in the workspace", "Run Check or Submit in the dojo"]
-        elif tools:
-            clean_steps = ["Start challenge", "Use: " + ", ".join(tools), "Submit flag in the dojo"]
-        else:
-            clean_steps = ["Start challenge", "Read README.txt in the workspace", "Submit flag in the dojo"]
+        clean_steps = [
+            "Press Start — files land in the challenge folder",
+            "Open that folder, read README.txt, solve it",
+            "Press Done",
+        ]
 
     return {
         "blurb": blurb or (challenge.title or ""),
@@ -379,9 +377,37 @@ def next_dojo(engine: AcademyEngine) -> DojoStats | None:
     return None
 
 
+def next_challenge_payload(engine: AcademyEngine) -> dict[str, Any] | None:
+    """Single 'do this next' card for the minimal dojo UI."""
+    dojo = next_dojo(engine)
+    if dojo is None or not dojo.next_challenge_id:
+        return None
+    try:
+        ch = engine.get_challenge(dojo.next_challenge_id)
+    except KeyError:
+        return None
+    copy = challenge_ui_copy(ch)
+    store = engine.progress()
+    return {
+        "dojo_id": dojo.id,
+        "dojo_title": dojo.title,
+        "belt": dojo.belt,
+        "belt_label": dojo.belt_label,
+        "belt_color": dojo.belt_color,
+        "id": ch.id,
+        "title": display_title(ch.id, ch.title),
+        "mission": copy["mission"],
+        "steps": copy["steps"],
+        "hints_total": len(ch.hints or []),
+        "workspace": store.current_workspace if store.current_challenge_id == ch.id else None,
+        "started": store.current_challenge_id == ch.id,
+    }
+
+
 def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
     catalog = load_dojos(engine.curriculum_root)
     stats = dojo_stats(engine)
+    nxt = next_dojo(engine)
     return {
         "intro": catalog.intro,
         "rules": catalog.rules,
@@ -403,5 +429,6 @@ def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
             }
             for d in stats
         ],
-        "next": (n.id if (n := next_dojo(engine)) else None),
+        "next": (nxt.id if nxt else None),
+        "next_challenge": next_challenge_payload(engine),
     }

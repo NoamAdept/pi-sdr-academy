@@ -1,4 +1,4 @@
-# Light academy image — slim curriculum (5 modules / 10 challenges).
+# Light image — five belts / fifty challenges. python3 only (YAML vendored).
 # Build: docker build -t pi-sdr-academy .
 # Run:   docker run --rm -p 8080:8080 pi-sdr-academy
 

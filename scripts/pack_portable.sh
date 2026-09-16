@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Build a closed-network tarball: python3 + this folder. No pip.
+# Build ONE closed-network tarball: python3 + this folder. No pip.
 set -euo pipefail
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
-OUT="${1:-$ROOT/dist/academy-portable}"
+NAME="pi-sdr-academy"
+OUT="${1:-$ROOT/dist/$NAME}"
 rm -rf "$OUT"
 mkdir -p "$OUT/vendor" "$OUT/platform" "$OUT/curriculum"
 
@@ -19,28 +20,49 @@ find "$OUT/vendor" -name '*.so' -delete
 find "$OUT/vendor" -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
 
 cp -a "$ROOT/platform/academy" "$OUT/platform/"
+# Student pack: keep admin behind ACADEMY_ADMIN=1, but drop tests/cache noise
+rm -rf "$OUT/platform/academy/__pycache__" "$OUT/platform/tests" 2>/dev/null || true
+find "$OUT/platform" -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+
 cp -a "$ROOT/curriculum/." "$OUT/curriculum/"
+rm -rf "$OUT/curriculum/proposals" "$OUT/curriculum/schema" 2>/dev/null || true
+find "$OUT/curriculum" -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+
 cp "$ROOT/run.sh" "$OUT/run.sh"
 chmod +x "$OUT/run.sh"
+cp "$ROOT/LICENSE" "$OUT/LICENSE" 2>/dev/null || true
 
 cat > "$OUT/README.txt" <<'EOF'
-Pi SDR Academy — portable (closed network)
-==========================================
+Pi SDR Academy
+==============
 
-Needs: python3 (3.11+). No internet. No pip.
+Offline lab: five belts, fifty challenges, shell → IQ.
+Needs: python3 only. No internet. No pip.
 
+How to run
+----------
+  tar -xzf pi-sdr-academy.tar.gz
+  cd pi-sdr-academy
   ./run.sh
-  open http://127.0.0.1:8080/dojo
 
-Admin challenge writer:
+Open the URL it prints (usually http://127.0.0.1:8080/).
+
+How to learn
+------------
+  1. Press Start   → files land in ./challenge
+  2. Open ./challenge, read README.txt, solve it
+  3. Press Done    → grades your work
+
+Belts unlock in order. Hints are optional. That's the whole app.
+
+Instructor (optional)
+---------------------
   ACADEMY_ADMIN=1 ./run.sh
-  open http://127.0.0.1:8080/admin
-
-Copy this whole folder to a USB stick / air-gapped host and run.
+  → http://127.0.0.1:8080/admin
 EOF
 
 mkdir -p "$ROOT/dist"
-TAR="$ROOT/dist/academy-portable.tgz"
+TAR="$ROOT/dist/${NAME}.tar.gz"
 tar -C "$(dirname "$OUT")" -czf "$TAR" "$(basename "$OUT")"
 echo "Packed $OUT"
 echo "Tarball $TAR ($(du -h "$TAR" | awk '{print $1}'))"
