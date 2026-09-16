@@ -408,7 +408,7 @@
       const data = await api('/api/challenges/' + encodeURIComponent(id) + '/start', { method: 'POST', body: '{}' });
       const ws = data.workspace || '';
       fb.className = 'fb ok';
-      fb.textContent = 'Started. Open the folder below and read README.txt.';
+      fb.textContent = 'Started. Open that folder and read README.txt.';
       toast('Started', id, 'ok');
       return ws;
     }
