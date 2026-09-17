@@ -530,14 +530,16 @@ def profile_payload(engine: AcademyEngine) -> dict[str, Any]:
     n_belts = max(1, len(stats))
     ascent = 0.0
     current_belt = stats[0].belt if stats else "white"
+    current_set = False
     for i, d in enumerate(stats):
         frac = (d.solved / d.challenges) if d.challenges else 0.0
         ascent += frac / n_belts
-        if d.solved < d.challenges:
+        if not current_set and d.solved < d.challenges:
             current_belt = d.belt
-            break
-        if i == len(stats) - 1 and d.challenges and d.solved >= d.challenges:
+            current_set = True
+        elif not current_set and i == len(stats) - 1 and d.challenges and d.solved >= d.challenges:
             current_belt = d.belt
+            current_set = True
 
     best_day = None
     if day_counts:

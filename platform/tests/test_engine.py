@@ -310,7 +310,8 @@ def test_profile_payload_calendar_and_mountain(engine):
     profile = profile_payload(engine)
     assert profile["solved"] == 2
     assert profile["total"] == 50
-    assert profile["ascent_pct"] > 0
+    # Two white-belt solves out of 10, across 5 equal terraces → 4%
+    assert profile["ascent_pct"] == 4.0
     assert len(profile["belts"]) == 5
     assert profile["belts"][0]["belt"] == "white"
     assert profile["belts"][0]["solved"] == 2
@@ -318,3 +319,14 @@ def test_profile_payload_calendar_and_mountain(engine):
     assert sum(profile["days"].values()) == 2
     assert profile["recent"][0]["id"] in {"orient-find-flag", "orient-permissions"}
     assert profile["streak"] >= 1
+
+    # Progress on a later belt still counts toward ascent even if earlier belts incomplete
+    store.challenges["py-control-flow"] = ChallengeProgress(
+        started_at=now - 10,
+        completed_at=now - 5,
+        solved=True,
+    )
+    engine.progress_repo.save(store)
+    profile2 = profile_payload(engine)
+    assert profile2["solved"] == 3
+    assert profile2["ascent_pct"] == 6.0  # 2/10 white + 1/10 yellow → 3/50 of mountain
