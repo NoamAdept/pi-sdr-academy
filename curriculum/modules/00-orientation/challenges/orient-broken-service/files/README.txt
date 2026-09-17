@@ -1,30 +1,43 @@
-Broken Service
-==============
+The Silent Port
+===============
 
-You are already in the challenge folder.
+Goal
+----
+A tiny local web service ("beacon") will not start. Fix its config so it
+listens on localhost, then prove it with a health check. The flag is only
+in the live /health response — not in the files on disk.
 
-A small web service should run only on this computer, but its configuration
-is broken.
+What you have
+-------------
+  service/beaconctl.sh          start / stop / logs
+  service/config/beacon.conf    broken config (fix this)
+  service/config/beacon.conf.example   known-good example
+  service/data/                 data files the service expects
+  INCIDENT.txt                  short incident note
 
-1) Try to start it:
+Steps
+-----
+1) Press Start in the dojo.
+
+2) Try to bring the service up:
 
      ./service/beaconctl.sh start
 
-2) If it fails, read the logs:
+3) If it fails, read why:
 
      ./service/beaconctl.sh logs
 
-3) Compare these files and fix the broken values in beacon.conf:
+4) Compare the broken config to the example and fix only what is wrong:
 
      service/config/beacon.conf
      service/config/beacon.conf.example
 
-4) Start it again, then fetch its health page using the port in the config:
+   Typical issues: wrong listen address/port, wrong data file path.
 
-     curl -s http://127.0.0.1:8765/health
+5) Start again, then ask the live service for health (use the port from config):
 
-5) Copy the flag from the response and submit it with quotes:
+     curl -s http://127.0.0.1:PORT/health
 
-     academy submit 'flag{...}'
+6) Paste the flag from that JSON into the dojo, or press Done.
 
-You do not need sudo or the Internet. Keep listen_host set to 127.0.0.1.
+You do not need root or the Internet. Keep the service on localhost.

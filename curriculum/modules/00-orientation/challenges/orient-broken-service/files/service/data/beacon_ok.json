@@ -1,5 +1,5 @@
 {
   "status": "ok",
   "service": "beacon",
-  "flag": "flag{local_service_restored_on_loopback}"
+  "message": "health payload — flag is injected by the running service only"
 }

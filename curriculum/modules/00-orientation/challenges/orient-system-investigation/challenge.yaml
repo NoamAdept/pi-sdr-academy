@@ -16,32 +16,19 @@ mastery_evidence:
 - debug
 - apply
 - integrate
-description: 'Start in the challenge folder and read `README.txt`.
+description: 'EchoRelay is a local TCP service with more than one fault. Fix config,
+
+  permissions, and process state until `./echorelay/verify.sh` prints a flag.
 
 
-  EchoRelay is a small local service with more than one problem. It needs
+  Read `README.txt` first. Use `relayctl.sh` to start/stop/logs. Compare
 
-  to read a token file, start a worker, and listen on the port expected by
+  `relay.conf` to the example, fix the dropbox token path/mode, restart, then
 
-  its verification script.
-
-
-  Try the start and verify commands, read the logs, inspect permissions, and
-
-  compare the current configuration with the example. Fix each problem, then
-
-  run `./echorelay/verify.sh` again.
+  verify. The flag is only in the live PING reply — not in the scripts on disk.
 
 
-  A successful verify prints the flag. Submit it with quotes:
-
-  ```
-
-  academy submit ''flag{...}''
-
-  ```
-
-  You do not need root or the Internet.
+  Paste the printed flag in the dojo, or press Done. No root or Internet.
 
   '
 environment:
@@ -69,8 +56,7 @@ flags:
   value: flag{multi_signal_systems_triage}
   validation: session
   plant_files:
-  - echorelay/bin/relay_worker.py
-  - echorelay/verify.sh
+  - echorelay/data/.relay_secret
 hints:
 - level: 1
   text: 'Read `BRIEFING.md`, then run `./echorelay/relayctl.sh start` and `./echorelay/verify.sh`.

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-cd "$(dirname "$0")"
-echo "=== rx-offset-qpsk ==="
-python3 inspect.py
-echo "Read README.txt, create answer.txt, then run ./check"

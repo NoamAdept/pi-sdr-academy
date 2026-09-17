@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -48,6 +49,12 @@ def main() -> int:
         return 3
 
     payload = json.loads(data_path.read_text(encoding="utf-8"))
+    # Live flag comes from the process environment (set by beaconctl at start).
+    # It is not stored in the JSON on disk.
+    session_flag = os.environ.get("BEACON_SESSION_FLAG", "").strip()
+    if session_flag:
+        payload = dict(payload)
+        payload["flag"] = session_flag
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):  # noqa: N802

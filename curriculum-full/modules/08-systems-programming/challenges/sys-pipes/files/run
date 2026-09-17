@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-cc -Wall -Wextra pipe_demo.c -o pipe_demo
-./pipe_demo

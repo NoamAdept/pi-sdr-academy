@@ -1,1 +1,0 @@
-flag{chmod_u_plus_r_opens_doors}

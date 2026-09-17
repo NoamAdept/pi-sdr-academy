@@ -5,907 +5,1432 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Pi SDR Academy</title>
   <style>
-    :root {
-      --bg: #1a1512;
-      --panel: #221c18;
-      --fg: #e8e4df;
-      --muted: #8a8278;
-      --lime: #e08a4f;
-      --cyan: #c4a484;
-      --ink: #1a1512;
-      --line: #3a322c;
-      --danger: #e06a5c;
-      --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    @font-face {
+      font-family: "Inter";
+      font-style: normal; font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/Inter-Regular.woff2") format("woff2");
     }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal; font-weight: 600;
+      font-display: swap;
+      src: url("/fonts/Inter-SemiBold.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal; font-weight: 700;
+      font-display: swap;
+      src: url("/fonts/Inter-Bold.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal; font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal; font-weight: 500;
+      font-display: swap;
+      src: url("/fonts/JetBrainsMono-Medium.woff2") format("woff2");
+    }
+
+    :root {
+      --bg: #e0e5ec;
+      --panel: #f0f2f5;
+      --muted-bg: #d1d9e6;
+      --fg: #2d3436;
+      --muted: #4a5568;
+      --accent: #ff4757;
+      --accent-fg: #ffffff;
+      --border: #babecc;
+      --hilite: #ffffff;
+      --deep: #a3b1c6;
+      --ok: #22c55e;
+      --dark: #2d3436;
+      --font: "Inter", "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      --shadow-card: 8px 8px 16px #babecc, -8px -8px 16px #ffffff;
+      --shadow-float: 12px 12px 24px #babecc, -12px -12px 24px #ffffff;
+      --shadow-press: inset 6px 6px 12px #babecc, inset -6px -6px 12px #ffffff;
+      --shadow-recess: inset 4px 4px 8px #babecc, inset -4px -4px 8px #ffffff;
+      --shadow-accent: 4px 4px 8px rgba(166,50,60,0.35), -2px -2px 6px rgba(255,120,130,0.35);
+      --ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --radius: 16px;
+      --pad: clamp(1rem, 4vw, 2rem);
+      --max: 44rem;
+      --glow: rgba(255,255,255,0.55);
+      --emboss: #ffffff;
+      --ok-text: #15803d;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #1e242c;
+      --panel: #262d38;
+      --muted-bg: #151a21;
+      --fg: #e8edf5;
+      --muted: #9aa3b5;
+      --accent: #ff4757;
+      --accent-fg: #ffffff;
+      --border: #0d1117;
+      --hilite: #2a3340;
+      --deep: #0a0c10;
+      --ok: #22c55e;
+      --dark: #0f1318;
+      --shadow-card: 8px 8px 18px #12161c, -6px -6px 14px #2a323e;
+      --shadow-float: 12px 12px 26px #0f1318, -8px -8px 18px #303947;
+      --shadow-press: inset 6px 6px 12px #12161c, inset -4px -4px 10px #2a323e;
+      --shadow-recess: inset 4px 4px 10px #0f1318, inset -3px -3px 8px #2a323e;
+      --shadow-accent: 4px 4px 10px rgba(0,0,0,0.45), -2px -2px 6px rgba(255,90,100,0.2);
+      --glow: rgba(108,122,224,0.12);
+      --emboss: transparent;
+      --ok-text: #4ade80;
+    }
+
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
+    html { -webkit-text-size-adjust: 100%; color-scheme: light; }
+    html[data-theme="dark"] { color-scheme: dark; }
     body {
+      margin: 0;
+      min-height: 100dvh;
       color: var(--fg);
-      background: var(--bg);
       font-family: var(--font);
-      overflow-x: hidden;
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(900px 420px at 12% -8%, var(--glow), transparent 55%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E");
+      background-blend-mode: normal, overlay;
+      line-height: 1.55;
+      transition: background-color .25s ease, color .25s ease;
     }
     button, input { font: inherit; }
     button { cursor: pointer; }
     .hidden { display: none !important; }
 
-    .bg {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(900px 480px at 12% -8%, rgba(224,138,79,0.08), transparent 55%),
-        #1a1512;
-    }
-
+    /* —— chrome —— */
     .top {
       position: sticky; top: 0; z-index: 30;
-      background: rgba(26,21,18,0.94);
-      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
     }
-    .dots { display: flex; gap: 6px; margin-right: 0.35rem; }
-    .dots i { width: 10px; height: 10px; border-radius: 50%; display: block; font-style: normal; }
-    .dots .r { background: #e06a5c; }
-    .dots .y { background: #e08a4f; }
-    .dots .g { background: #6a9e6a; }
-    .pathhint { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
     .top-inner {
-      max-width: 1100px; margin: 0 auto;
-      padding: 0.7rem 1rem;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0.75rem var(--pad);
       display: flex; align-items: center; gap: 0.75rem;
     }
     .brand {
-      display: flex; align-items: center; gap: 0.5rem;
-      text-decoration: none; color: inherit; font-weight: 800;
+      display: flex; align-items: center; gap: 0.6rem;
+      text-decoration: none; color: inherit; font-weight: 700;
     }
-    .brand i {
-      width: 28px; height: 28px; border-radius: 8px;
-      display: grid; place-items: center;
-      background: var(--lime); color: var(--ink);
-      font-style: normal; font-weight: 900; font-family: var(--mono); font-size: 0.75rem;
+    .brand img {
+      width: 36px; height: 36px; border-radius: 10px;
+      box-shadow: var(--shadow-card);
+      background: var(--panel); object-fit: cover;
     }
-    .brand b { color: var(--lime); font-weight: 800; }
+    .led {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+    }
+    .led i {
+      width: 9px; height: 9px; border-radius: 999px;
+      background: var(--ok);
+      box-shadow: 0 0 10px 2px rgba(34,197,94,0.65);
+      animation: pulse 2s ease-in-out infinite;
+      font-style: normal;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
     .score {
       margin-left: auto;
-      font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+      font-family: var(--mono); font-size: 0.8rem; font-weight: 500; color: var(--muted);
     }
-    .score strong { color: var(--lime); }
-
-    .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
-
-    .hero {
-      display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
-      margin-bottom: 1.5rem; flex-wrap: wrap;
+    .score strong { color: var(--accent); }
+    .theme-btn {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--muted);
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      min-height: 36px; min-width: 36px;
+      padding: 0.4rem 0.65rem;
+      box-shadow: var(--shadow-card);
+      transition: transform .15s ease, box-shadow .15s ease, color .15s ease;
     }
-    .hero h1 {
+    .theme-btn:hover { color: var(--accent); }
+    .theme-btn:active {
+      transform: translateY(1px);
+      box-shadow: var(--shadow-press);
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1.35rem var(--pad) 3.5rem;
+    }
+
+    /* —— panels / modules —— */
+    .module {
+      position: relative;
+      background: var(--bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: 1.15rem 1.2rem 1.25rem;
+      margin-bottom: 1rem;
+      background-image:
+        radial-gradient(circle at 12px 12px, rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 12px) 12px, rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at 12px calc(100% - 12px), rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), rgba(0,0,0,0.16) 2px, transparent 3px);
+      transition: transform .3s var(--ease), box-shadow .3s ease;
+    }
+    .module:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
+    .vents {
+      position: absolute; top: 14px; right: 18px;
+      display: flex; gap: 4px;
+    }
+    .vents span {
+      display: block; width: 3px; height: 18px; border-radius: 999px;
+      background: var(--muted-bg);
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.12);
+    }
+
+    .lbl {
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      margin: 0 0 0.45rem;
+    }
+    h1 {
       margin: 0;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      letter-spacing: -0.03em; line-height: 1;
+      font-size: clamp(1.85rem, 5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      text-shadow: 0 1px 0 var(--emboss);
     }
-    .hero h1 em { font-style: normal; color: var(--lime); }
-    .hero p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.95rem; font-family: var(--mono); }
-    .eyebrow {
-      display: flex; align-items: center; gap: 0.45rem;
-      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--lime); margin-bottom: 0.55rem;
+    h1 em { font-style: normal; color: var(--accent); }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.15rem, 3.2vw, 1.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
-    .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+    .lede {
+      margin: 0.7rem 0 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 36ch;
+    }
+
+    /* —— intro —— */
+    #view-intro .hero-row {
+      display: flex; gap: 1rem; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .device {
+      width: min(160px, 38vw);
+      border-radius: 20px;
+      padding: 10px;
+      background: #2c3e50;
+      box-shadow: var(--shadow-float);
+      border: 3px solid #1a252f;
+      flex-shrink: 0;
+    }
+    .device .screen {
+      border-radius: 12px;
+      background: #0b0f14;
+      min-height: 120px;
+      padding: 0.75rem;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.65);
+      position: relative;
+      overflow: hidden;
+      color: #a8b2d1;
+      font-family: var(--mono); font-size: 0.68rem; line-height: 1.45;
+    }
+    .device .screen::after {
+      content: "";
+      position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.22) 50%);
+      background-size: 100% 4px;
+    }
+    .device .screen b { color: var(--accent); font-weight: 500; }
+    .device .ports {
+      display: flex; gap: 0.35rem; margin-top: 0.55rem; justify-content: center;
+    }
+    .device .ports i {
+      width: 18px; height: 8px; border-radius: 3px;
+      background: #1a252f;
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+      font-style: normal;
+    }
+
+    .guide {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.35rem;
+      position: relative;
+    }
+    @media (max-width: 640px) {
+      .guide { grid-template-columns: 1fr; }
+      .pipe { display: none; }
+    }
+    .step {
+      background: var(--bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow-card);
+      padding: 0.95rem 0.9rem;
+      text-align: left;
+    }
+    .step .n {
+      width: 28px; height: 28px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: var(--bg);
+      box-shadow: var(--shadow-float);
+      color: var(--accent);
+      font-family: var(--mono); font-weight: 700; font-size: 0.8rem;
+      margin-bottom: 0.55rem;
+    }
+    .step strong {
+      display: block;
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .step p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.55rem;
+      margin: 0.25rem 0 0.35rem;
+    }
+    @media (max-width: 560px) { .facts { grid-template-columns: 1fr; } }
+    .fact {
+      background: var(--muted-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow-recess);
+      padding: 0.7rem 0.75rem;
+      font-size: 0.88rem;
+    }
+    .fact b {
+      display: block;
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.15rem;
+    }
+
+    /* —— buttons —— */
     .go {
-      border: 0; border-radius: 8px;
-      background: var(--lime); color: var(--ink);
-      font-family: var(--mono); font-weight: 800; padding: 0.75rem 1.15rem;
-      letter-spacing: 0.04em; text-transform: uppercase;
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 12px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-family: var(--mono); font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      min-height: 48px;
+      padding: 0.75rem 1.25rem;
+      box-shadow: var(--shadow-accent);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
     }
     .go:hover { filter: brightness(1.06); }
-
-    .sticker {
-      width: min(220px, 42vw); height: auto; flex-shrink: 0;
-      border-radius: 22px;
-      background: #f4f0ea;
-      border: 3px solid #111;
-      box-shadow: 4px 4px 0 #111;
-      object-fit: cover;
+    .go:active {
+      transform: translateY(2px);
+      box-shadow: inset 4px 4px 8px rgba(140,30,40,0.45), inset -2px -2px 6px rgba(255,140,150,0.25);
     }
-    @media (max-width: 640px) { .sticker { width: 140px; } }
+    .go:disabled { opacity: 0.45; cursor: not-allowed; filter: none; transform: none; }
+    .ghost {
+      appearance: none;
+      border: 0;
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono); font-weight: 700; font-size: 0.78rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      min-height: 48px;
+      padding: 0.7rem 1rem;
+      box-shadow: var(--shadow-card);
+      transition: transform .15s ease, box-shadow .15s ease, color .15s ease;
+    }
+    .ghost:hover { color: var(--accent); }
+    .ghost:active {
+      transform: translateY(2px);
+      box-shadow: var(--shadow-press);
+    }
+    .cta-row {
+      display: flex; flex-wrap: wrap; gap: 0.55rem;
+      margin-top: 1rem; align-items: center;
+    }
 
-    /* Cartoon overall progress */
+    /* —— lab home —— */
+    .loop {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 560px) { .loop { grid-template-columns: 1fr; } }
+    .loop .step { margin: 0; }
+
+    .now .belt {
+      margin-top: 0.25rem;
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent);
+    }
+    .now .mission {
+      margin: 0.7rem 0 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 42ch;
+    }
+    .steps {
+      margin: 0.75rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid; gap: 0.35rem;
+    }
+    .steps li {
+      display: flex; gap: 0.5rem; align-items: flex-start;
+      font-size: 0.9rem; color: var(--fg);
+    }
+    .steps li::before {
+      content: attr(data-n);
+      flex-shrink: 0;
+      width: 1.35rem; height: 1.35rem; border-radius: 999px;
+      display: grid; place-items: center;
+      background: var(--bg);
+      box-shadow: var(--shadow-card);
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700; color: var(--accent);
+    }
+    .ws {
+      margin-top: 0.75rem;
+      font-family: var(--mono); font-size: 0.78rem;
+      color: var(--fg);
+      background: var(--muted-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow-recess);
+      padding: 0.65rem 0.75rem;
+      word-break: break-all;
+    }
+    .acts {
+      display: flex; flex-wrap: wrap; gap: 0.45rem;
+      margin-top: 0.95rem; align-items: center;
+    }
+    .flagrow {
+      display: grid; grid-template-columns: 1fr auto; gap: 0.45rem;
+      margin-top: 0.75rem; width: 100%;
+    }
+    @media (max-width: 420px) { .flagrow { grid-template-columns: 1fr; } }
+    .flagrow input {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--fg);
+      box-shadow: var(--shadow-recess);
+      padding: 0.85rem 0.9rem;
+      min-height: 48px;
+      font-family: var(--mono); font-size: 0.85rem;
+      outline: none;
+    }
+    .flagrow input:focus {
+      box-shadow: var(--shadow-recess), 0 0 0 2px var(--accent);
+    }
+    .flagrow input::placeholder { color: color-mix(in srgb, var(--muted) 55%, transparent); }
+    .fb {
+      margin-top: 0.55rem;
+      font-family: var(--mono); font-size: 0.78rem; color: var(--muted); min-height: 1.1em;
+    }
+    .fb.ok { color: var(--ok-text); }
+    .fb.bad { color: var(--accent); }
+    .hints .h {
+      margin-top: 0.4rem;
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      font-size: 0.88rem; color: var(--muted);
+    }
+    .done-msg { margin: 0; font-size: 1.05rem; font-weight: 700; }
+
     .xp {
-      margin: 0 0 1.25rem;
-      border: 3px solid #111;
-      border-radius: 16px;
-      background: #f4efe6;
-      padding: 0.75rem 0.9rem 0.85rem;
-      box-shadow: 4px 4px 0 #111;
-      color: #1a1512;
+      padding-top: 0.35rem;
     }
     .xp-top {
-      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
-      margin-bottom: 0.55rem; flex-wrap: wrap;
+      display: flex; justify-content: space-between; gap: 0.5rem;
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.55rem;
     }
-    .xp-top .lbl {
-      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
-      text-transform: uppercase; color: #5a5048;
-    }
-    .xp-top .val {
-      font-family: var(--mono); font-weight: 800; font-size: 0.95rem; color: #1a1512;
-    }
-    .xp-top .val em { font-style: normal; color: #c45a1a; }
+    .xp-top em { font-style: normal; color: var(--accent); }
     .xp-track {
-      position: relative;
-      height: 28px;
-      border: 3px solid #111;
-      border-radius: 999px;
-      background:
-        repeating-linear-gradient(90deg, #ebe4d8 0 10px, #e2d9ca 10px 20px);
+      height: 12px; border-radius: 999px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
       overflow: hidden;
     }
     .xp-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: inherit;
-      background:
-        repeating-linear-gradient(
-          -45deg,
-          #e08a4f 0 8px,
-          #f0a86a 8px 16px
-        );
-      border-right: 3px solid #111;
-      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15);
-      transition: width .35s cubic-bezier(.2,.8,.2,1);
-      min-width: 0;
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #ff7b86, var(--accent));
+      transition: width .35s var(--ease);
     }
-    .xp-fill.empty { border-right: 0; }
-    .xp-belts {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.35rem;
-      margin-top: 0.65rem;
+    .belts {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.35rem;
+      margin-top: 0.8rem;
     }
-    .xp-belt {
-      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-      font-family: var(--mono); font-size: 0.62rem; color: #5a5048;
-      text-transform: uppercase; letter-spacing: 0.04em;
+    .belt {
+      text-align: center;
+      font-family: var(--mono); font-size: 0.58rem; font-weight: 500;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
     }
-    .xp-belt img {
-      width: 42px; height: 34px; object-fit: contain;
-      filter: grayscale(0.15);
+    .belt img {
+      width: 40px; height: 32px; object-fit: contain;
+      opacity: 0.4; filter: grayscale(0.5);
+      transition: opacity .2s ease, filter .2s ease, transform .2s var(--ease);
     }
-    .xp-belt.done img { filter: none; }
-    .xp-belt.active img {
-      filter: none;
-      animation: bob .9s ease-in-out infinite;
-    }
-    .xp-belt .pip {
-      width: 100%; height: 8px; border: 2px solid #111; border-radius: 999px;
-      background: #ddd6c8; overflow: hidden;
-    }
-    .xp-belt .pip > i {
-      display: block; height: 100%; width: 0%;
-      background: var(--bc, #e08a4f);
-      transition: width .3s ease;
-    }
+    .belt.on img, .belt.done img { opacity: 1; filter: none; }
+    .belt.on img { animation: bob .9s ease-in-out infinite; }
     @keyframes bob {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    .how {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 0.85rem;
-      margin: 0 0 0.4rem;
-    }
-    @media (max-width: 760px) { .how { grid-template-columns: 1fr; } }
-    .how-box {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel);
-      padding: 1rem 1.05rem;
-    }
-    .how-box .k {
-      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--cyan); margin-bottom: 0.4rem;
-    }
-    .how-box p {
-      margin: 0;
-      color: var(--fg);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-    .how-box p span { color: var(--lime); }
-    .path {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.45rem;
-      margin-top: 0.75rem;
-    }
-    @media (max-width: 560px) { .path { grid-template-columns: 1fr 1fr; } }
-    .path i {
-      display: block;
-      font-style: normal;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--lime);
-      margin-bottom: 0.2rem;
-    }
-    .path span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.3;
-    }
-    .path > div {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 0.55rem 0.6rem;
-      background: rgba(0,0,0,0.28);
+      50% { transform: translateY(-2px); }
     }
 
     .sec {
-      display: flex; align-items: baseline; gap: 0.5rem;
-      margin: 1.4rem 0 0.7rem;
-      font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--cyan); font-family: var(--mono);
+      margin: 1.15rem 0 0.55rem;
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 0.85rem;
-    }
-
+    .path { display: flex; flex-direction: column; gap: 0.55rem; }
     .card {
-      --c: var(--lime);
-      position: relative;
-      text-align: left; color: inherit; width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 1.05rem 1rem 1rem;
-      min-height: 148px;
-      background: var(--panel);
-      overflow: hidden;
-      transition: border-color .12s ease;
-    }
-    .card:hover {
-      border-color: var(--lime);
-    }
-    .card.locked { opacity: 0.48; filter: grayscale(0.35); }
-    .card .icons {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 0.7rem;
-    }
-    .dojo-ico, .belt-ico {
-      width: 46px; height: 46px;
+      width: 100%; text-align: left; color: inherit;
+      border: 0;
       border-radius: 14px;
-      display: grid; place-items: center;
-      border: 2px solid #111;
-      background: #f4f0ea;
+      background: var(--bg);
+      box-shadow: var(--shadow-card);
+      padding: 0.85rem 0.95rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.75rem; align-items: center;
+      transition: transform .25s var(--ease), box-shadow .25s ease;
     }
-    .dojo-ico img { width: 34px; height: 34px; object-fit: contain; display: block; }
-    .belt-ico {
-      width: 88px; height: 72px;
-      border-radius: 12px;
-      background: #f4f0ea;
-      border: 2px solid #111;
-      padding: 4px;
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
+    .card.locked { opacity: 0.55; }
+    .card.locked:hover { transform: none; box-shadow: var(--shadow-card); }
+    .card img.b {
+      width: 56px; height: 42px; object-fit: contain;
+      background: var(--panel); border-radius: 8px;
+      box-shadow: var(--shadow-recess); padding: 2px;
     }
-    .belt-ico img { width: 80px; height: 64px; object-fit: contain; display: block; }
-    .dhero .beltbig {
-      width: 160px; height: 120px;
-      display: grid; place-items: center;
-      border-radius: 14px;
-      background: #f4f0ea;
-      border: 2px solid #111;
-      padding: 0.4rem;
-    }
-    .dhero .beltbig img { width: 148px; height: 108px; object-fit: contain; display: block; }
-    .dhero .big img { width: 40px; height: 40px; object-fit: contain; display: block; }
-    .ico {
-      width: 1.15em; height: 1.15em; vertical-align: -0.2em;
-      object-fit: contain; display: inline-block;
-    }
-    .btn .ico { width: 1.05em; height: 1.05em; margin-right: 0.25rem; }
-    .pc-ico img { width: 28px; height: 28px; object-fit: contain; display: block; }
-    .chip img { width: 14px; height: 14px; vertical-align: -2px; margin-right: 0.2rem; }
-    .belt-tag {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      margin-top: 0.35rem;
-      font-family: var(--mono); font-size: 0.72rem;
-      color: var(--c, var(--lime)); letter-spacing: 0.06em; text-transform: uppercase;
-    }
-    .meta-row {
-      display: flex; flex-wrap: wrap; gap: 0.35rem;
-      margin-top: 0.45rem;
-    }
-    .pill-mini {
-      font-family: var(--mono); font-size: 0.68rem;
-      padding: 0.15rem 0.4rem; border-radius: 999px;
-      border: 1px solid var(--line); color: var(--muted);
-    }
-    .pill-mini em { font-style: normal; color: var(--fg); }
-    .card h3 {
-      margin: 0;
-      font-size: 1.05rem;
-      line-height: 1.15;
-    }
+    .card h3 { margin: 0; font-size: 0.98rem; font-weight: 700; }
     .card .meta {
-      margin-top: 0.35rem;
-      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
-    }
-    .card .rail {
-      margin-top: 0.75rem; height: 10px; border-radius: 999px;
-      border: 2px solid #111;
-      background: #2a241f;
-      overflow: hidden;
-    }
-    .card .rail > i {
-      display: block; height: 100%;
-      background: repeating-linear-gradient(-45deg, var(--c) 0 6px, color-mix(in srgb, var(--c) 72%, #fff) 6px 12px);
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
+      margin-top: 0.2rem;
+      font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
     }
     .chip {
-      position: absolute; top: 0.75rem; right: 0.75rem;
-      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
-      text-transform: uppercase; font-weight: 800;
-      padding: 0.18rem 0.4rem; border-radius: 6px;
-      background: var(--c); color: var(--ink);
-      display: inline-flex; align-items: center; gap: 0.2rem;
+      font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.28rem 0.5rem; border-radius: 999px;
+      background: var(--accent); color: #fff;
+      box-shadow: 0 0 10px 1px rgba(255,71,87,0.35);
+      white-space: nowrap;
     }
-    .chip img { width: 14px; height: 14px; object-fit: contain; }
-    .chip.lock { background: #3a3a3a; color: #bbb; }
-    .chip.done { background: var(--cyan); color: #042; }
+    .chip.lock {
+      background: var(--muted-bg); color: var(--muted);
+      box-shadow: var(--shadow-recess);
+    }
+    .chip.done {
+      background: var(--dark); color: #fff;
+      box-shadow: none;
+    }
 
     .back {
-      border: 1px solid var(--line); background: transparent; color: var(--lime);
-      border-radius: 10px; padding: 0.45rem 0.75rem; margin-bottom: 1rem;
-      font-family: var(--mono); font-size: 0.78rem;
+      border: 0; background: var(--bg); color: var(--muted);
+      border-radius: 10px; padding: 0.45rem 0.75rem; margin-bottom: 0.9rem;
+      font-family: var(--mono); font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      box-shadow: var(--shadow-card);
     }
+    .back:active { box-shadow: var(--shadow-press); transform: translateY(1px); }
     .dhero {
-      --c: var(--lime);
-      display: grid; grid-template-columns: auto 1fr auto; gap: 1rem;
-      align-items: center;
-      padding: 1.1rem 1.15rem;
-      border-radius: 18px;
-      border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line));
-      background:
-        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--c) 20%, transparent), transparent 45%),
-        var(--panel);
-      margin-bottom: 1rem;
+      display: flex; gap: 0.85rem; align-items: center;
+      margin-bottom: 0.2rem;
     }
-    .dhero .big {
-      width: 64px; height: 64px; border-radius: 18px;
-      display: grid; place-items: center;
-      background: rgba(0,0,0,0.4);
-      border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
-      box-shadow: 0 0 24px color-mix(in srgb, var(--c) 25%, transparent);
+    .dhero img {
+      width: 72px; height: 54px; object-fit: contain;
+      background: var(--panel); border-radius: 10px;
+      box-shadow: var(--shadow-recess); padding: 3px; flex-shrink: 0;
     }
-    .dhero .big svg { width: 36px; height: 36px; }
-    .dhero h1 { margin: 0; font-size: 1.55rem; }
-    .dhero .sub { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.88rem; }
+    .dhero p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.88rem; }
 
-    /* pwn.college-style dojo body */
-    .dojo-intro {
-      max-width: 72ch;
-      margin: 0 0 1.25rem;
-      color: var(--muted);
-      font-size: 0.98rem;
-      line-height: 1.65;
-    }
-    .dojo-intro p { margin: 0 0 0.85rem; }
-    .dojo-intro p:last-child { margin-bottom: 0; }
-
-    .pc-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      max-width: 920px;
-    }
-    .pc-item {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--panel);
-      overflow: hidden;
-      transition: border-color .15s, background .15s;
-    }
-    .pc-item:hover { border-color: #2a3a2a; background: #2a231e; }
-    .pc-item.open { border-color: color-mix(in srgb, var(--lime) 35%, var(--line)); }
-    .pc-item.module-item { background: var(--panel); }
-    .pc-row {
-      width: 100%;
-      border: 0;
-      background: transparent;
-      color: inherit;
-      display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 0.75rem;
-      align-items: center;
-      padding: 0.9rem 1rem;
-      text-align: left;
-      cursor: pointer;
-    }
-    .pc-ico {
-      width: 44px; height: 44px;
-      display: grid; place-items: center;
-      color: var(--muted);
-    }
-    .pc-ico svg { width: 22px; height: 22px; }
-    .pc-thumb {
-      width: 44px; height: 34px;
-      border-radius: 8px;
-      object-fit: cover;
-      border: 1px solid var(--line);
-      background: var(--bg);
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.35);
-    }
-    .pc-item.solved .pc-ico { color: var(--lime); }
-    .pc-item.solved .pc-ico svg { filter: drop-shadow(0 0 6px rgba(224,138,79,0.45)); }
-    .pc-item.solved .pc-thumb { border-color: color-mix(in srgb, var(--lime) 45%, var(--line)); }
-    .pc-title {
-      margin: 0;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--fg);
-      letter-spacing: -0.01em;
-    }
-    .pc-item.module-item .pc-title { color: var(--fg); }
-    .pc-item.solved .pc-title { color: var(--lime); }
-    .pc-right {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--muted);
-      white-space: nowrap;
-      text-align: right;
-    }
-    .pc-right .dim { color: var(--muted); }
-    .pc-right .ok { color: var(--lime); }
-
-    .pc-body {
-      display: none;
-      padding: 0 1rem 1rem 3.4rem;
-      border-top: 1px solid #1a241a;
-    }
-    .pc-item.open .pc-body { display: block; padding-top: 0.85rem; }
-    .pc-mod-desc {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.5;
-      max-width: 70ch;
-    }
-
-    .panel {
-      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 0.75rem;
-    }
-    @media (max-width: 760px) {
-      .panel { grid-template-columns: 1fr; }
-      .dhero { grid-template-columns: auto 1fr; }
-      .dhero .beltbig { display: none; }
-      .pc-body { padding-left: 1rem; }
-    }
-
-    .box {
-      border: 1px solid var(--line); border-radius: 14px;
-      background: rgba(0,0,0,0.28); padding: 0.85rem;
-    }
-    .box .k {
-      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--cyan); margin-bottom: 0.4rem;
-    }
-    .box .m { margin: 0; font-size: 0.92rem; line-height: 1.4; }
-    .box ol { margin: 0.5rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.84rem; }
-    .box ol li { margin: 0.15rem 0; }
-    .tools { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.55rem; }
-    .tool {
-      font-family: var(--mono); font-size: 0.68rem;
-      padding: 0.15rem 0.4rem; border-radius: 999px;
-      border: 1px solid var(--line); color: var(--fg);
-    }
-    .ws { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.72rem; color: var(--cyan); word-break: break-all; }
-
-    .submit {
-      border: 1px solid color-mix(in srgb, var(--lime) 40%, var(--line));
+    .clist { display: flex; flex-direction: column; gap: 0.5rem; }
+    .crow {
       border-radius: 14px;
-      background: radial-gradient(120% 100% at 0% 0%, rgba(224,138,79,0.1), transparent 55%), rgba(0,0,0,0.35);
-      padding: 0.85rem;
+      background: var(--bg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
     }
-    .submit .k { color: var(--lime); font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.4rem; }
-    .row { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem; }
-    .row input {
-      border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
-      color: var(--fg); padding: 0.65rem 0.7rem; font-family: var(--mono); font-size: 0.85rem; outline: none;
+    .crow.open { box-shadow: var(--shadow-float); }
+    .crow > button.row {
+      width: 100%; border: 0; background: transparent; color: inherit;
+      display: flex; justify-content: space-between; gap: 0.75rem; align-items: center;
+      padding: 0.85rem 0.95rem; text-align: left; cursor: pointer;
     }
-    .row input:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(224,138,79,0.12); }
-    .btn {
-      border: 1px solid var(--line); border-radius: 10px; background: rgba(0,0,0,0.3);
-      color: var(--fg); padding: 0.55rem 0.8rem; font-weight: 700; font-size: 0.85rem;
+    .crow h3 { margin: 0; font-size: 0.95rem; font-weight: 700; }
+    .crow.solved h3 { color: var(--ok-text); }
+    .crow .r {
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+      color: var(--muted); text-transform: uppercase; white-space: nowrap;
     }
-    .btn:hover { border-color: #e08a4f; }
-    .btn.pri { background: var(--lime); color: var(--ink); border-color: transparent; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .acts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
-    .fb { margin-top: 0.45rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-height: 1em; }
-    .fb.ok { color: var(--cyan); }
-    .fb.bad { color: var(--danger); }
-    .hints .h {
-      margin-top: 0.35rem; padding: 0.35rem 0.5rem;
-      border-left: 2px solid var(--cyan); background: rgba(196,164,132,0.05);
-      font-size: 0.82rem; color: var(--muted);
+    .crow .r.ok { color: var(--ok-text); }
+    .cbody {
+      display: none; padding: 0 0.95rem 0.95rem;
+      border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
     }
+    .crow.open .cbody { display: block; padding-top: 0.8rem; }
+    .cbody .m { margin: 0; font-size: 0.92rem; color: var(--muted); max-width: 42ch; }
 
     .toasts {
       position: fixed; right: 1rem; bottom: 1rem; z-index: 50;
       display: flex; flex-direction: column; gap: 0.4rem;
-      max-width: min(340px, calc(100vw - 2rem));
+      max-width: min(20rem, calc(100vw - 2rem));
     }
     .toast {
       border-radius: 12px; padding: 0.7rem 0.85rem;
-      background: rgba(26,21,18,0.96); border: 1px solid var(--line);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+      background: var(--bg);
+      box-shadow: var(--shadow-float);
       animation: in .2s ease;
     }
-    .toast.ok { border-color: color-mix(in srgb, var(--cyan) 50%, var(--line)); }
-    .toast.bad { border-color: color-mix(in srgb, var(--danger) 50%, var(--line)); }
-    .toast b { display: block; margin-bottom: 0.1rem; }
-    .toast span { color: var(--muted); font-size: 0.82rem; }
+    .toast b { display: block; }
+    .toast span { color: var(--muted); font-size: 0.8rem; }
     @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .burst {
-      position: fixed; inset: 0; pointer-events: none; z-index: 40; opacity: 0;
-      background: radial-gradient(circle at 50% 40%, rgba(224,138,79,0.2), transparent 45%);
-    }
-    .burst.go { animation: burst .65s ease-out forwards; }
-    @keyframes burst { 0% { opacity: .85; } 100% { opacity: 0; } }
 
-    #view-home, #view-dojo { animation: fade .2s ease; }
-    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 420px) {
+      .card { grid-template-columns: auto 1fr; }
+      .card .chip { grid-column: 2; justify-self: start; }
+    }
+
+    /* —— top progress —— */
+    .top-progress {
+      height: 6px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      overflow: hidden;
+    }
+    .top-progress > i {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, #ff7b86, var(--accent));
+      transition: width .55s var(--ease);
+      box-shadow: 0 0 10px rgba(255,71,87,0.45);
+    }
+    .hello {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      color: var(--muted); letter-spacing: 0.04em;
+      max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .hello b { color: var(--fg); font-weight: 700; }
+
+    /* —— name gate + celebrate —— */
+    .overlay {
+      position: fixed; inset: 0; z-index: 80;
+      display: grid; place-items: center;
+      padding: var(--pad);
+      background: color-mix(in srgb, var(--bg) 55%, rgba(0,0,0,0.35));
+      backdrop-filter: blur(6px);
+      animation: fadein .2s ease;
+    }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    .overlay.hidden { display: none !important; }
+    .overlay-card {
+      width: min(26rem, 100%);
+      background: var(--bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow-float);
+      padding: 1.35rem 1.25rem 1.3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background-image:
+        radial-gradient(circle at 12px 12px, rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 12px) 12px, rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at 12px calc(100% - 12px), rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), rgba(0,0,0,0.16) 2px, transparent 3px);
+      animation: popin .35s var(--ease);
+    }
+    @keyframes popin {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); }
+      to { opacity: 1; transform: none; }
+    }
+    .overlay-card h2 { margin: 0.35rem 0 0; }
+    .overlay-card .sub {
+      margin: 0.55rem 0 0;
+      color: var(--muted); font-size: 0.95rem;
+    }
+    .overlay-card .flagrow { margin-top: 1rem; text-align: left; }
+    .overlay-card .cta-row { justify-content: center; margin-top: 1.1rem; }
+    .stamp {
+      display: inline-block;
+      margin-top: 0.85rem;
+      padding: 0.4rem 0.95rem;
+      border: 3px solid var(--ok);
+      border-radius: 8px;
+      color: var(--ok);
+      font-family: var(--mono); font-weight: 800; font-size: 1.1rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      transform: rotate(-8deg) scale(0.6);
+      opacity: 0;
+      animation: stamp .55s var(--ease) .15s forwards;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent),
+                  0 0 18px rgba(34,197,94,0.35);
+    }
+    @keyframes stamp {
+      0% { opacity: 0; transform: rotate(-18deg) scale(1.4); }
+      60% { opacity: 1; transform: rotate(-6deg) scale(1.05); }
+      100% { opacity: 1; transform: rotate(-8deg) scale(1); }
+    }
+    .burst-bits {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    }
+    .burst-bits span {
+      position: absolute;
+      top: -8%;
+      left: var(--left, 50%);
+      width: var(--w, 8px); height: var(--h, 10px);
+      border-radius: 2px;
+      background: var(--c, var(--ok));
+      opacity: 0;
+      animation: confetti-fall var(--dur, 1.2s) var(--ease) var(--delay, 0ms) forwards;
+    }
+    @keyframes confetti-fall {
+      0% { opacity: 1; transform: translate3d(0,0,0) rotate(0deg); }
+      100% { opacity: 0; transform: translate3d(var(--dx), 110vh, 0) rotate(var(--rot)); }
+    }
+    .cele-bar {
+      margin-top: 1rem;
+      height: 10px; border-radius: 999px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      overflow: hidden;
+    }
+    .cele-bar > i {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, #4ade80, var(--ok));
+      transition: width .7s var(--ease);
+      box-shadow: 0 0 8px rgba(34,197,94,0.45);
+    }
+    #cele-title { color: var(--ok-text); }
+    html[data-theme="dark"] #cele-title { color: #4ade80; }
+    .go.ok-btn {
+      background: var(--ok);
+      box-shadow: 4px 4px 10px rgba(20,100,50,0.3), -2px -2px 6px rgba(120,220,150,0.25);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* —— profile —— */
+    .profile-btn {
+      appearance: none; border: 0; border-radius: 10px;
+      background: var(--bg); color: var(--muted);
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      min-height: 36px; padding: 0.35rem 0.7rem;
+      box-shadow: var(--shadow-card);
+    }
+    .profile-btn:hover { color: var(--accent); }
+    .profile-btn:active { box-shadow: var(--shadow-press); }
+    .score { cursor: pointer; }
+    .score:hover strong { text-decoration: underline; }
+
+    .prof-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem;
+      margin-top: 0.85rem;
+    }
+    @media (max-width: 520px) { .prof-stats { grid-template-columns: 1fr; } }
+    .prof-stat {
+      background: var(--muted-bg); border-radius: 12px;
+      box-shadow: var(--shadow-recess); padding: 0.75rem 0.8rem;
+    }
+    .prof-stat b {
+      display: block; font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+    .prof-stat strong {
+      font-family: var(--mono); font-size: 1.15rem; font-weight: 700; color: var(--fg);
+    }
+
+    .contrib {
+      margin-top: 0.85rem;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: 0.25rem;
+    }
+    .contrib-inner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.35rem 0.45rem;
+      align-items: start;
+      min-width: 620px;
+    }
+    .contrib-dows {
+      display: grid; grid-template-rows: repeat(7, 11px); gap: 3px;
+      font-family: var(--mono); font-size: 0.58rem; color: var(--muted);
+      padding-top: 1.1rem;
+    }
+    .contrib-dows span { line-height: 11px; height: 11px; }
+    .contrib-main { display: grid; gap: 0.35rem; }
+    .contrib-months {
+      display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+      font-family: var(--mono); font-size: 0.58rem; color: var(--muted);
+      height: 0.9rem;
+    }
+    .contrib-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(7, 11px);
+      grid-auto-columns: 11px;
+      gap: 3px;
+    }
+    .cday {
+      width: 11px; height: 11px; border-radius: 2px;
+      background: var(--muted-bg);
+      box-shadow: inset 1px 1px 1px rgba(0,0,0,0.06);
+    }
+    .cday.l1 { background: color-mix(in srgb, var(--ok) 28%, var(--muted-bg)); }
+    .cday.l2 { background: color-mix(in srgb, var(--ok) 52%, var(--muted-bg)); }
+    .cday.l3 { background: color-mix(in srgb, var(--ok) 78%, #16a34a); }
+    .cday.l4 { background: var(--ok); box-shadow: 0 0 0 1px rgba(34,197,94,0.25); }
+    .cday:hover { outline: 1px solid var(--fg); outline-offset: 1px; }
+    .contrib-legend {
+      display: flex; align-items: center; gap: 0.3rem; justify-content: flex-end;
+      margin-top: 0.55rem;
+      font-family: var(--mono); font-size: 0.6rem; color: var(--muted);
+    }
+    .contrib-legend i {
+      width: 11px; height: 11px; border-radius: 2px; display: inline-block;
+      font-style: normal;
+    }
+
+    .mountain-wrap {
+      margin-top: 0.75rem;
+      border-radius: 16px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      padding: 0.75rem 0.5rem 0.35rem;
+      overflow: hidden;
+    }
+    .mountain-wrap svg { width: 100%; height: auto; display: block; }
+    .mtn-label {
+      font-family: var(--mono); font-size: 9px; font-weight: 600;
+      fill: var(--fg); letter-spacing: 0.04em;
+    }
+    .mtn-sub { font-family: var(--mono); font-size: 8px; fill: var(--muted); }
+    .climber {
+      transition: cx .7s var(--ease), cy .7s var(--ease);
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+    }
+    @keyframes mtn-rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mountain-wrap { animation: mtn-rise .55s var(--ease) both; }
+
+    .recent-list { display: grid; gap: 0.4rem; margin-top: 0.75rem; }
+    .recent-row {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.55rem 0.65rem; border-radius: 10px;
+      background: var(--bg); box-shadow: var(--shadow-card);
+    }
+    .recent-row img { width: 22px; height: 22px; object-fit: contain; }
+    .recent-row .t { flex: 1; min-width: 0; }
+    .recent-row .t strong {
+      display: block; font-size: 0.88rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .recent-row .t span {
+      font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+    }
   </style>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('academy-theme');
+        var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 <body>
-  <div class="bg"></div>
-  <div class="burst" id="burst"></div>
-
   <header class="top">
     <div class="top-inner">
-      <span class="dots" aria-hidden="true"><i class="r"></i><i class="y"></i><i class="g"></i></span>
-      <span class="pathhint">~/academy/dojo</span>
-      <a class="brand" href="#" id="home-link" style="margin-left:0.75rem"><i>PT</i> Pi SDR <b>Academy</b></a>
-      <div class="score">score <strong id="progress">…</strong></div>
+      <a class="brand" href="#" id="home-link">
+        <img src="/icons/ponytail.png" alt="" width="36" height="36"/>
+        Pi SDR Academy
+      </a>
+      <span class="led" id="led"><i></i><span>Ready</span></span>
+      <span class="hello" id="hello"></span>
+      <div class="score" id="btn-score" title="Open profile"><strong id="progress">…</strong></div>
+      <button type="button" class="profile-btn" id="btn-profile">Profile</button>
+      <button type="button" class="theme-btn" id="btn-theme" aria-label="Toggle dark mode">Dark</button>
     </div>
+    <div class="top-progress" aria-label="Overall progress"><i id="top-fill"></i></div>
   </header>
 
   <main class="wrap">
-    <div id="view-home">
-      <div class="hero">
-        <div>
-          <div class="eyebrow">Offline lab · 5 belts · 50 challenges</div>
-          <h1>Pick a <em>dojo</em>. Earn a belt.</h1>
-          <p>Start · read README · solve · submit. No cloud. No pip.</p>
-        </div>
-        <!-- cartoony sticker -->
-        <img class="sticker" src="/icons/ponytail.png" alt="" width="220" height="220"/>
-        <button type="button" class="go" id="btn-go"><img class="ico" src="/icons/play.png" alt=""/> Continue</button>
-      </div>
-      <div class="xp" id="xp" aria-label="Overall progress">
-        <div class="xp-top">
-          <span class="lbl">Progress bar</span>
-          <span class="val"><em id="xp-count">0</em> / <span id="xp-total">50</span> cleared</span>
-        </div>
-        <div class="xp-track"><div class="xp-fill empty" id="xp-fill"></div></div>
-        <div class="xp-belts" id="xp-belts"></div>
-      </div>
-      <div class="how">
-        <div class="how-box">
-          <div class="k">Goal</div>
-          <p>
-            Train people who can <span>investigate a system, process a signal, recover a message, and explain why</span> —
-            on air-gapped Raspberry Pi hardware. No cloud. One path from shell to working digital receivers.
-          </p>
-        </div>
-        <div class="how-box">
-          <div class="k">Structure</div>
-          <p>Five belts. Fifty challenges. Start → solve → submit.</p>
-          <div class="path">
-            <div><i>White</i><span>Shell + Linux CLI</span></div>
-            <div><i>Yellow</i><span>Python + C</span></div>
-            <div><i>Orange</i><span>GDB + systems</span></div>
-            <div><i>Green</i><span>DSP + FFT</span></div>
-            <div><i>Blue</i><span>IQ + BPSK</span></div>
+    <!-- INTRO -->
+    <div id="view-intro">
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="hero-row">
+          <div>
+            <p class="lbl">What this is</p>
+            <h1>Learn radio by <em>doing</em></h1>
+            <p class="lede">
+              An offline lab: fifty short challenges from the terminal to IQ signals.
+              No accounts. No cloud. One clear loop.
+            </p>
+          </div>
+          <div class="device" aria-hidden="true">
+            <div class="screen">
+              <div>SYS <b>ONLINE</b></div>
+              <div>BELTS 5</div>
+              <div>CHALS 50</div>
+              <div>MODE LAB</div>
+            </div>
+            <div class="ports"><i></i><i></i><i></i></div>
           </div>
         </div>
-      </div>
-      <div class="sec">Core · 本道</div>
-      <div class="grid" id="core"></div>
-      <div class="sec">Side · 脇道</div>
-      <div class="grid" id="side"></div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">How to use it</p>
+        <h2>Three steps. That’s the whole app.</h2>
+        <div class="guide" style="margin-top:0.9rem">
+          <div class="step">
+            <div class="n">1</div>
+            <strong>Start</strong>
+            <p>Press Start. Puzzle files land in the <b>challenge</b> folder.</p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <strong>Solve</strong>
+            <p>Open that folder. Read <b>README.txt</b>. Work in your terminal.</p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <strong>Done</strong>
+            <p>Press Done here. Or paste a <b>flag&#123;…&#125;</b> if you found one.</p>
+          </div>
+        </div>
+        <div class="facts" style="margin-top:1rem">
+          <div class="fact"><b>Belts</b>White → Blue. Unlock in order.</div>
+          <div class="fact"><b>Hints</b>Optional. Try yourself first.</div>
+          <div class="fact"><b>Needs</b>python3 only. No pip.</div>
+        </div>
+        <div class="cta-row">
+          <button type="button" class="go" id="btn-enter">Enter the lab</button>
+          <button type="button" class="ghost" id="btn-howto">Jump to guide</button>
+        </div>
+      </section>
     </div>
 
-    <div id="view-dojo" class="hidden">
-      <button type="button" class="back" id="btn-back">← Dojos</button>
-      <div class="dhero" id="dhero">
-        <div class="big" id="d-ico"></div>
-        <div>
-          <h1 id="d-title">—</h1>
-          <p class="sub" id="d-sub"></p>
-        </div>
-        <div class="beltbig" id="d-belt"></div>
+    <!-- LAB HOME -->
+    <div id="view-home" class="hidden">
+      <div class="cta-row" style="margin:0 0 0.85rem">
+        <button type="button" class="ghost" id="btn-intro">← Intro</button>
       </div>
-      <div class="dojo-intro" id="d-intro"></div>
-      <div class="pc-list" id="d-modules"></div>
+
+      <div class="loop" aria-label="How to play">
+        <div class="step"><div class="n">1</div><strong>Start</strong><p>Files land in the challenge folder.</p></div>
+        <div class="step"><div class="n">2</div><strong>Solve</strong><p>Open it. Read README.txt.</p></div>
+        <div class="step"><div class="n">3</div><strong>Done</strong><p>Press Done when finished.</p></div>
+      </div>
+
+      <section class="module now" id="now" aria-live="polite"></section>
+
+      <section class="module xp">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">50</span></span></div>
+        <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
+        <div class="belts" id="belts"></div>
+      </section>
+
+      <div class="sec">Belts</div>
+      <div class="path" id="belts-list"></div>
+    </div>
+
+    <!-- DOJO DETAIL -->
+    <div id="view-dojo" class="hidden">
+      <button type="button" class="back" id="btn-back">← Belts</button>
+      <section class="module">
+        <div class="dhero" id="dhero"></div>
+      </section>
+      <div class="clist" id="clist"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="view-profile" class="hidden">
+      <div class="cta-row" style="margin:0 0 0.85rem">
+        <button type="button" class="ghost" id="btn-profile-back">← Lab</button>
+      </div>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Operator profile</p>
+        <h2 id="prof-name">Your path</h2>
+        <p class="lede" id="prof-lede" style="max-width:42ch">
+          Clears on this machine — when you solved, and how far up the belts you’ve climbed.
+        </p>
+        <div class="prof-stats">
+          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/50</strong></div>
+          <div class="prof-stat"><b>Streak</b><strong id="prof-streak">0 days</strong></div>
+          <div class="prof-stat"><b>Ascent</b><strong id="prof-ascent">0%</strong></div>
+        </div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Activity</p>
+        <h2>Solve calendar</h2>
+        <p class="lede" style="max-width:42ch;font-size:0.95rem">
+          Each square is a day. Darker green means more challenges cleared that day.
+        </p>
+        <div class="contrib" id="contrib" aria-label="Contribution calendar"></div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Belt path</p>
+        <h2>The mountain</h2>
+        <p class="lede" style="max-width:42ch;font-size:0.95rem">
+          White belt base camp to Blue belt summit. Your marker climbs as you clear each belt.
+        </p>
+        <div class="mountain-wrap" id="mountain" aria-label="Belt mountain progress"></div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Recent clears</p>
+        <h2>Latest work</h2>
+        <div class="recent-list" id="recent-list"></div>
+      </section>
     </div>
   </main>
 
   <div class="toasts" id="toasts"></div>
 
-  <script>
-    const ICONS = {
-      'intro-lab': 'terminal',
-      'software-craft': 'code',
-      'systems-core': 'chip',
-      'dsp-foundations': 'wave',
-      'radio-path': 'radio',
-    };
-    const BELT_ICON = {
-      white: 'belt-white', yellow: 'belt-yellow', orange: 'belt-orange',
-      green: 'belt-green', blue: 'belt-blue',
-    };
-    function icon(name, cls) {
-      return `<img class="${cls || 'ico'}" src="/icons/${encodeURIComponent(name)}.png" alt="" draggable="false"/>`;
-    }
-    const KANJI = { white:'白', yellow:'黄', orange:'橙', green:'緑', blue:'青', purple:'紫', black:'黒', brown:'茶' };
+  <div class="overlay hidden" id="name-gate" role="dialog" aria-modal="true" aria-labelledby="name-title">
+    <div class="overlay-card">
+      <p class="lbl">Operator ID</p>
+      <h2 id="name-title">What should we call you?</h2>
+      <p class="sub">Saved on this machine only. Makes clears feel like yours.</p>
+      <div class="flagrow">
+        <input id="name-input" maxlength="32" placeholder="Your name" autocomplete="nickname"/>
+      </div>
+      <div class="cta-row">
+        <button type="button" class="go" id="btn-save-name">Save & enter</button>
+      </div>
+    </div>
+  </div>
 
+  <div class="overlay hidden" id="celebrate" role="dialog" aria-modal="true" aria-labelledby="cele-title">
+    <div class="overlay-card" id="cele-card">
+      <div class="burst-bits" id="cele-bits" aria-hidden="true"></div>
+      <p class="lbl">Nice work</p>
+      <h2 id="cele-title">Challenge cleared</h2>
+      <div class="stamp">Success</div>
+      <p class="sub" id="cele-sub"></p>
+      <div class="cele-bar"><i id="cele-fill"></i></div>
+      <p class="sub" id="cele-count" style="margin-top:0.45rem;font-family:var(--mono);font-size:0.78rem"></p>
+      <div class="cta-row">
+        <button type="button" class="go ok-btn" id="btn-cele-next">Next challenge</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BELT = { white:'belt-white', yellow:'belt-yellow', orange:'belt-orange', green:'belt-green', blue:'belt-blue' };
+    const intro = document.getElementById('view-intro');
     const home = document.getElementById('view-home');
     const detail = document.getElementById('view-dojo');
-    let continueTarget = null;
-    let currentDojo = null;
+    const profile = document.getElementById('view-profile');
+    let nextCh = null;
+    let catalogIntro = '';
+    let lastSolved = 0;
+    let lastTotal = 50;
+    let lastProfile = null;
 
     function esc(s) {
-      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
-
+    function playerName() {
+      try { return (localStorage.getItem('academy-player-name') || '').trim(); }
+      catch (e) { return ''; }
+    }
+    function setPlayerName(name) {
+      const n = String(name || '').trim().slice(0, 32);
+      try { if (n) localStorage.setItem('academy-player-name', n); } catch (e) {}
+      paintHello();
+      return n;
+    }
+    function paintHello() {
+      const el = document.getElementById('hello');
+      const n = playerName();
+      el.innerHTML = n ? `Hi, <b>${esc(n)}</b>` : '';
+    }
+    function setTopProgress(solved, total) {
+      lastSolved = solved;
+      lastTotal = total || 50;
+      const pct = lastTotal ? Math.round(100 * solved / lastTotal) : 0;
+      const fill = document.getElementById('top-fill');
+      if (fill) fill.style.width = pct + '%';
+      document.getElementById('progress').textContent = solved + '/' + lastTotal;
+    }
     function toast(t, d, kind='ok') {
       const el = document.createElement('div');
-      el.className = 'toast ' + kind;
+      el.className = 'toast';
       el.innerHTML = `<b>${esc(t)}</b><span>${esc(d||'')}</span>`;
       document.getElementById('toasts').appendChild(el);
-      setTimeout(() => el.remove(), 3500);
+      setTimeout(() => el.remove(), 2800);
     }
-
-    function celebrate() {
-      const b = document.getElementById('burst');
-      b.classList.remove('go'); void b.offsetWidth; b.classList.add('go');
-    }
-
     async function api(path, opts) {
-      let res;
-      try {
-        res = await fetch(path, {
-          headers: { 'Content-Type': 'application/json', ...(opts && opts.headers || {}) },
-          ...opts,
-        });
-      } catch (_) {
-        throw new Error('Server down — run: python -m academy serve --port 8081');
-      }
-      let data = {};
-      try { data = await res.json(); } catch (_) {}
-      if (!res.ok) throw new Error((data && data.error) || ('HTTP ' + res.status));
+      const r = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || r.statusText || 'request failed');
       return data;
     }
 
-    function dojoIcon(kind) {
-      const map = { term: 'terminal', code: 'code', chip: 'chip', wave: 'wave', radio: 'radio' };
-      return icon(map[kind] || kind || 'terminal');
-    }
-
-    function beltIcon(color, belt) {
-      return icon(BELT_ICON[belt] || 'belt-white');
-    }
-
-    function card(d, start) {
-      const done = d.challenges > 0 && d.solved >= d.challenges;
-      const pct = d.challenges ? Math.round(100 * d.solved / d.challenges) : 0;
-      const color = d.belt_color || '#e08a4f';
-      const kind = ICONS[d.id] || 'terminal';
-      let chip = '';
-      if (d.locked) chip = `<span class="chip lock">${icon('lock')}Locked</span>`;
-      else if (done) chip = `<span class="chip done">${icon('check')}Done</span>`;
-      else if (start) chip = `<span class="chip">${icon('play')}Start</span>`;
-
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'card' + (d.locked ? ' locked' : '');
-      btn.style.setProperty('--c', color);
-      btn.innerHTML = `
-        ${chip}
-        <div class="icons">
-          <div class="dojo-ico">${dojoIcon(kind)}</div>
-          <div class="belt-ico" title="${esc(d.belt_label)}">${beltIcon(color, d.belt)}</div>
-        </div>
-        <h3>${esc(d.title)}</h3>
-        <div class="meta">${d.solved}/${d.challenges} · ${esc(d.belt_label)}</div>
-        <div class="rail"><i style="width:${pct}%"></i></div>
-      `;
-      btn.onclick = () => openDojo(d.id);
-      return btn;
-    }
-
-    function flagIcon() { return icon('flag'); }
-    function briefIcon() { return icon('folder'); }
-    function lockIcon() { return icon('lock'); }
-    function hintIcon() { return icon('hint'); }
-    function playIcon() { return icon('play'); }
-    function checkIcon() { return icon('check'); }
-
-    function moduleRow(mod) {
-      const item = document.createElement('div');
-      item.className = 'pc-item module-item';
-      const n = (mod.challenges || []).length;
-      const solved = (mod.challenges || []).filter(c => c.solved).length;
-      item.innerHTML = `
-        <button type="button" class="pc-row">
-          <span class="pc-ico">${briefIcon()}</span>
-          <h3 class="pc-title">${esc(mod.title)}</h3>
-          <div class="pc-right"><span class="dim">${solved}/${n} challenges</span></div>
-        </button>
-        <div class="pc-body">
-          <p class="pc-mod-desc">${esc(mod.description || 'Skill cluster in this belt.')}</p>
-        </div>
-      `;
-      item.querySelector('.pc-row').onclick = () => {
-        const open = item.classList.toggle('open');
-        if (open) document.querySelectorAll('.pc-item.open').forEach(el => {
-          if (el !== item) el.classList.remove('open');
-        });
+    function askNameThen(enterLab) {
+      if (playerName()) {
+        if (enterLab) showHome();
+        return;
+      }
+      const gate = document.getElementById('name-gate');
+      const input = document.getElementById('name-input');
+      gate.classList.remove('hidden');
+      input.value = '';
+      setTimeout(() => input.focus(), 50);
+      const save = () => {
+        const n = setPlayerName(input.value);
+        if (!n) { input.focus(); return; }
+        gate.classList.add('hidden');
+        if (enterLab) showHome();
       };
-      return item;
+      document.getElementById('btn-save-name').onclick = save;
+      input.onkeydown = (e) => { if (e.key === 'Enter') save(); };
     }
 
-    function markChallengeSolved(wrap, ch) {
-      ch.solved = true;
-      wrap.classList.add('solved');
-      const ico = wrap.querySelector('.pc-ico');
-      if (ico) ico.innerHTML = flagIcon();
-      const right = wrap.querySelector('.pc-right');
-      if (right) right.innerHTML = '<span class="ok">cleared</span>';
-      wrap.querySelectorAll('input,[data-act="submit"],[data-act="check"]').forEach(el => el.disabled = true);
+    function celebrateClear({ title, solved, total }) {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('celebrate');
+        const name = playerName();
+        document.getElementById('cele-title').textContent =
+          name ? `You did it, ${name}!` : 'You did it!';
+        document.getElementById('cele-sub').textContent =
+          title ? `“${title}” is cleared. On to the next one.` : 'Challenge cleared. On to the next one.';
+        document.getElementById('cele-count').textContent =
+          `${solved} / ${total} challenges`;
+
+        const bits = document.getElementById('cele-bits');
+        bits.innerHTML = '';
+        const colors = ['#22c55e', '#4ade80', '#86efac', '#e9c46a', '#38bdf8', '#a3e635'];
+        for (let i = 0; i < 42; i++) {
+          const s = document.createElement('span');
+          s.style.setProperty('--left', (4 + Math.random() * 92) + '%');
+          s.style.setProperty('--dx', ((Math.random() - 0.5) * 160) + 'px');
+          s.style.setProperty('--rot', ((Math.random() * 720) - 360) + 'deg');
+          s.style.setProperty('--dur', (0.9 + Math.random() * 0.9) + 's');
+          s.style.setProperty('--delay', (Math.random() * 280) + 'ms');
+          s.style.setProperty('--c', colors[i % colors.length]);
+          s.style.setProperty('--w', (5 + Math.random() * 7) + 'px');
+          s.style.setProperty('--h', (7 + Math.random() * 9) + 'px');
+          if (i % 4 === 0) s.style.borderRadius = '999px';
+          bits.appendChild(s);
+        }
+
+        const fill = document.getElementById('cele-fill');
+        fill.style.width = '0%';
+        overlay.classList.remove('hidden');
+        const pct = total ? Math.round(100 * solved / total) : 0;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { fill.style.width = pct + '%'; });
+        });
+        setTopProgress(solved, total);
+
+        const btn = document.getElementById('btn-cele-next');
+        const finish = () => {
+          overlay.classList.add('hidden');
+          btn.onclick = null;
+          resolve();
+        };
+        btn.onclick = finish;
+        btn.focus();
+      });
     }
 
-    function challengeRow(ch, locked) {
+    function showIntro() {
+      home.classList.add('hidden');
+      detail.classList.add('hidden');
+      profile.classList.add('hidden');
+      intro.classList.remove('hidden');
+      document.getElementById('led').querySelector('span').textContent = 'Ready';
+      history.replaceState({ view: 'intro' }, '', '#intro');
+    }
+    function showHome() {
+      intro.classList.add('hidden');
+      detail.classList.add('hidden');
+      profile.classList.add('hidden');
+      home.classList.remove('hidden');
+      document.getElementById('led').querySelector('span').textContent = 'Lab';
+      history.pushState({ view: 'home' }, '', '#lab');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      paintNow();
+    }
+    async function showProfile() {
+      intro.classList.add('hidden');
+      home.classList.add('hidden');
+      detail.classList.add('hidden');
+      profile.classList.remove('hidden');
+      document.getElementById('led').querySelector('span').textContent = 'Profile';
+      history.pushState({ view: 'profile' }, '', '#profile');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      await paintProfile();
+    }
+
+    async function startChallenge(id, fb) {
+      fb.className = 'fb'; fb.textContent = 'Starting…';
+      const data = await api('/api/challenges/' + encodeURIComponent(id) + '/start', { method: 'POST', body: '{}' });
+      const ws = data.workspace || '';
+      fb.className = 'fb ok';
+      fb.textContent = 'Started. Open that folder and read README.txt.';
+      toast('Started', id);
+      return ws;
+    }
+    async function doneChallenge(id, flag, fb, meta) {
+      fb.className = 'fb';
+      fb.textContent = flag ? 'Submitting…' : 'Checking…';
+      const data = flag
+        ? await api('/api/challenges/' + encodeURIComponent(id) + '/submit', { method: 'POST', body: JSON.stringify({ flag }) })
+        : await api('/api/challenges/' + encodeURIComponent(id) + '/check', { method: 'POST', body: '{}' });
+      if (data.ok) {
+        fb.className = 'fb ok';
+        fb.textContent = 'Cleared!';
+        const status = await api('/api/status');
+        await celebrateClear({
+          title: (meta && meta.title) || id,
+          solved: status.solved,
+          total: status.total,
+        });
+        return true;
+      }
+      fb.className = 'fb bad';
+      fb.textContent = data.error || 'Not yet — keep working in the folder.';
+      if (data.detail) fb.textContent += ' ' + String(data.detail).slice(0, 160);
+      return false;
+    }
+    async function hintChallenge(id, box) {
+      const data = await api('/api/challenges/' + encodeURIComponent(id) + '/hint', { method: 'POST', body: '{}' });
+      const row = document.createElement('div');
+      row.className = 'h';
+      row.textContent = data.text || 'No more hints.';
+      box.appendChild(row);
+    }
+
+    function paintNow() {
+      const box = document.getElementById('now');
+      const name = playerName();
+      if (!nextCh) {
+        box.innerHTML = `<p class="lbl">Path complete</p><p class="done-msg">${name ? esc(name) + ', you' : 'You'} cleared all fifty challenges.</p>`;
+        return;
+      }
+      const ch = nextCh;
+      const steps = (ch.steps || []).slice(0, 3).map((s, i) =>
+        `<li data-n="${i + 1}">${esc(s)}</li>`
+      ).join('');
+      box.innerHTML = `
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">${name ? esc(name) + ' · ' : ''}Do this next</p>
+        <h2>${esc(ch.title)}</h2>
+        <div class="belt">${esc(ch.belt_label)} · ${esc(ch.dojo_title)}</div>
+        <p class="mission">${esc(ch.mission || '')}</p>
+        ${steps ? `<ol class="steps">${steps}</ol>` : ''}
+        <div class="ws ${ch.workspace ? '' : 'hidden'}" id="now-ws">${ch.workspace ? 'Folder: ' + esc(ch.workspace) : ''}</div>
+        <div class="acts">
+          <button type="button" class="go" id="now-start">${ch.started ? 'Re-start' : '1 · Start'}</button>
+          <button type="button" class="go" id="now-done" ${ch.started ? '' : 'disabled'}>3 · Done</button>
+          <button type="button" class="ghost" id="now-hint">Hint</button>
+        </div>
+        <div class="flagrow">
+          <input id="now-flag" placeholder="or paste flag{…}"/>
+          <button type="button" class="ghost" id="now-flag-go">Go</button>
+        </div>
+        <div class="hints" id="now-hints"></div>
+        <div class="fb" id="now-fb"></div>
+      `;
+      const fb = () => document.getElementById('now-fb');
+      document.getElementById('now-start').onclick = async () => {
+        try {
+          const ws = await startChallenge(ch.id, fb());
+          const el = document.getElementById('now-ws');
+          el.textContent = 'Folder: ' + ws;
+          el.classList.remove('hidden');
+          document.getElementById('now-done').disabled = false;
+          ch.started = true; ch.workspace = ws;
+        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+      };
+      document.getElementById('now-done').onclick = async () => {
+        try {
+          if (await doneChallenge(ch.id, '', fb(), { title: ch.title })) {
+            await load(true);
+            showHome();
+          }
+        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+      };
+      document.getElementById('now-flag-go').onclick = async () => {
+        const flag = (document.getElementById('now-flag').value || '').trim();
+        if (!flag) { fb().className = 'fb bad'; fb().textContent = 'Paste a flag, or press Done.'; return; }
+        try {
+          if (await doneChallenge(ch.id, flag, fb(), { title: ch.title })) {
+            await load(true);
+            showHome();
+          }
+        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+      };
+      document.getElementById('now-hint').onclick = async () => {
+        try { await hintChallenge(ch.id, document.getElementById('now-hints')); }
+        catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+      };
+      document.getElementById('now-flag').addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('now-flag-go').click();
+      });
+    }
+
+    function paintBelts(dojos, solved, total) {
+      const pct = total ? Math.round(100 * solved / total) : 0;
+      document.getElementById('xp-fill').style.width = pct + '%';
+      document.getElementById('xp-count').textContent = solved;
+      document.getElementById('xp-total').textContent = total;
+      setTopProgress(solved, total);
+
+      const cores = (dojos || []).filter(d => d.kind === 'core');
+      const belts = document.getElementById('belts');
+      belts.innerHTML = '';
+      cores.forEach(d => {
+        const done = d.challenges > 0 && d.solved >= d.challenges;
+        const on = nextCh && d.id === nextCh.dojo_id;
+        const el = document.createElement('div');
+        el.className = 'belt' + (done ? ' done' : '') + (on ? ' on' : '');
+        el.innerHTML = `
+          <img src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
+          <div>${esc((d.belt_label || '').replace(/ Belt$/i, ''))}</div>
+        `;
+        belts.appendChild(el);
+      });
+
+      const list = document.getElementById('belts-list');
+      list.innerHTML = '';
+      cores.forEach(d => {
+        const done = d.challenges > 0 && d.solved >= d.challenges;
+        const on = nextCh && d.id === nextCh.dojo_id;
+        let chip = '';
+        if (d.locked) chip = '<span class="chip lock">Locked</span>';
+        else if (done) chip = '<span class="chip done">Done</span>';
+        else if (on) chip = '<span class="chip">Now</span>';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'card' + (d.locked ? ' locked' : '');
+        btn.innerHTML = `
+          <img class="b" src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
+          <div>
+            <h3>${esc(d.title)}</h3>
+            <div class="meta">${d.solved}/${d.challenges} · ${esc(d.tagline || d.belt_label || '')}</div>
+          </div>
+          ${chip}
+        `;
+        btn.onclick = () => { if (!d.locked) openDojo(d.id); };
+        list.appendChild(btn);
+      });
+    }
+
+    function challengeRow(ch, locked, autoOpen) {
       const wrap = document.createElement('div');
-      wrap.className = 'pc-item' + (ch.solved ? ' solved' : '');
-      wrap.dataset.id = ch.id;
-
-      const rightBits = [];
-      if (ch.solved) rightBits.push('<span class="ok">cleared</span>');
-      else rightBits.push(`<span class="dim">${esc(ch.difficulty || '')}</span>`);
-      if (ch.estimated_time) rightBits.push(`<span class="dim"> · ${esc(ch.estimated_time)}</span>`);
-
+      wrap.className = 'crow' + (ch.solved ? ' solved' : '') + (autoOpen ? ' open' : '');
       const head = document.createElement('button');
       head.type = 'button';
-      head.className = 'pc-row';
+      head.className = 'row';
       head.innerHTML = `
-        <span class="pc-ico">${ch.solved ? flagIcon() : `<img class="pc-thumb" src="/api/thumbs/${encodeURIComponent(ch.id)}.svg" alt="" loading="lazy"/>`}</span>
-        <h3 class="pc-title">${esc(ch.title)}</h3>
-        <div class="pc-right">${rightBits.join('')}</div>
+        <h3>${esc(ch.title)}</h3>
+        <span class="r ${ch.solved ? 'ok' : ''}">${ch.solved ? 'cleared' : (locked ? 'locked' : 'open')}</span>
       `;
-
       const body = document.createElement('div');
-      body.className = 'pc-body';
-      const steps = (ch.steps || []).slice(0, 4).map(s => `<li>${esc(s)}</li>`).join('');
-      const tools = (ch.expected_tools || []).slice(0, 8).map(t => `<span class="tool">${esc(t)}</span>`).join('');
-      const time = ch.estimated_time ? `<span class="pill-mini">time <em>${esc(ch.estimated_time)}</em></span>` : '';
-      const hints = ch.hints_total
-        ? `<span class="pill-mini">hints <em>${ch.hints_revealed||0}/${ch.hints_total}</em></span>`
-        : '';
+      body.className = 'cbody';
+      const steps = (ch.steps || []).slice(0, 3).map((s, i) =>
+        `<li data-n="${i + 1}">${esc(s)}</li>`
+      ).join('');
       body.innerHTML = `
-        <div class="panel">
-          <div class="box">
-            <div class="k">Mission</div>
-            <p class="m">${esc(ch.mission || ch.description || '')}</p>
-            <div class="meta-row">
-              <span class="pill-mini">level <em>${esc(ch.difficulty)}</em></span>
-              ${time}
-              ${hints}
-            </div>
-            ${steps ? `<div class="k" style="margin-top:0.7rem">Steps</div><ol>${steps}</ol>` : ''}
-            ${tools ? `<div class="k" style="margin-top:0.65rem">Tools</div><div class="tools">${tools}</div>` : ''}
-            <div class="ws" id="ws-${esc(ch.id)}"></div>
-          </div>
-          <div class="submit">
-            <div class="k">Flag</div>
-            <div class="row">
-              <input id="flag-${esc(ch.id)}" placeholder="flag{…} or leave empty after ./check" ${ch.solved||locked?'disabled':''}/>
-              <button type="button" class="btn pri" data-act="submit" ${ch.solved||locked?'disabled':''}>${icon('flag')} Go</button>
-            </div>
-            <div class="acts">
-              <button type="button" class="btn pri" data-act="start" ${locked?'disabled':''}>${icon('play')} Start</button>
-              <button type="button" class="btn" data-act="check" ${ch.solved||locked?'disabled':''}>${icon('check')} Check</button>
-              <button type="button" class="btn" data-act="hint" ${locked?'disabled':''}>${icon('hint')} Hint</button>
-            </div>
-            <div class="hints" id="hints-${esc(ch.id)}"></div>
-            <div class="fb" id="fb-${esc(ch.id)}"></div>
-          </div>
+        <p class="m">${esc(ch.mission || ch.description || '')}</p>
+        ${steps ? `<ol class="steps" style="margin:0.65rem 0 0;padding:0;list-style:none;display:grid;gap:0.3rem">${steps}</ol>` : ''}
+        <div class="ws" id="ws-${esc(ch.id)}"></div>
+        <div class="acts">
+          <button type="button" class="go" data-act="start" ${locked?'disabled':''}>1 · Start</button>
+          <button type="button" class="go" data-act="done" ${locked||ch.solved?'disabled':''}>3 · Done</button>
+          <button type="button" class="ghost" data-act="hint" ${locked?'disabled':''}>Hint</button>
         </div>
+        <div class="flagrow">
+          <input id="flag-${esc(ch.id)}" placeholder="or paste flag{…}" ${ch.solved||locked?'disabled':''}/>
+          <button type="button" class="ghost" data-act="flag" ${ch.solved||locked?'disabled':''}>Go</button>
+        </div>
+        <div class="hints" id="hints-${esc(ch.id)}"></div>
+        <div class="fb" id="fb-${esc(ch.id)}"></div>
       `;
-
-      head.onclick = () => {
-        const open = wrap.classList.toggle('open');
-        if (open) document.querySelectorAll('.pc-item.open').forEach(el => {
-          if (el !== wrap) el.classList.remove('open');
-        });
-      };
-
-      body.addEventListener('click', async (ev) => {
-        const btn = ev.target.closest('[data-act]');
-        if (!btn) return;
+      head.onclick = () => wrap.classList.toggle('open');
+      body.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-act]');
+        if (!btn || btn.disabled) return;
         const act = btn.dataset.act;
         const fb = body.querySelector('#fb-' + CSS.escape(ch.id));
-        const input = body.querySelector('#flag-' + CSS.escape(ch.id));
         try {
-          btn.disabled = true;
           if (act === 'start') {
-            fb.className = 'fb'; fb.textContent = 'Starting…';
-            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/start', {
-              method: 'POST', body: JSON.stringify({ open_terminal: true }),
-            });
-            body.querySelector('#ws-' + CSS.escape(ch.id)).textContent = data.workspace;
-            const term = data.terminal || {};
-            fb.className = 'fb ok';
-            fb.textContent = term.ok ? 'Terminal opened (cleared).' : 'Started — open a terminal in the workspace.';
-            toast(term.ok ? 'Terminal ready' : 'Started', ch.id, 'ok');
-            refreshStatus();
-          } else if (act === 'submit') {
-            const flag = (input.value || '').trim();
-            fb.className = 'fb'; fb.textContent = flag ? 'Submitting…' : 'Checking…';
-            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/submit', {
-              method: 'POST', body: JSON.stringify({ flag }),
-            });
-            if (data.ok) {
-              celebrate(); fb.className = 'fb ok'; fb.textContent = 'Cleared.';
-              toast('Cleared', ch.title, 'ok'); input.value = '';
-              markChallengeSolved(wrap, ch);
-              refreshStatus(); if (currentDojo) openDojo(currentDojo, true);
-            } else {
-              fb.className = 'fb bad'; fb.textContent = data.error || data.detail || 'Not yet.';
-              toast('Keep going', data.error || data.detail || 'Not yet', 'bad');
+            const ws = await startChallenge(ch.id, fb);
+            body.querySelector('#ws-' + CSS.escape(ch.id)).textContent = 'Folder: ' + ws;
+          } else if (act === 'done') {
+            if (await doneChallenge(ch.id, '', fb, { title: ch.title })) {
+              wrap.classList.add('solved');
+              head.querySelector('.r').className = 'r ok';
+              head.querySelector('.r').textContent = 'cleared';
+              await load(true);
+              if (!detail.classList.contains('hidden')) {
+                const m = (location.hash || '').match(/^#dojo\/(.+)$/);
+                if (m) await openDojo(decodeURIComponent(m[1]), true);
+              }
             }
-          } else if (act === 'check') {
-            fb.className = 'fb'; fb.textContent = 'Checking…';
-            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/check', {
-              method: 'POST', body: '{}',
-            });
-            if (data.ok) {
-              celebrate(); fb.className = 'fb ok'; fb.textContent = 'Cleared.';
-              toast('Check ok', ch.title, 'ok');
-              markChallengeSolved(wrap, ch);
-              refreshStatus(); if (currentDojo) openDojo(currentDojo, true);
-            } else {
-              fb.className = 'fb bad'; fb.textContent = data.error || 'Not yet.';
-              toast('Keep going', data.error || 'Check failed', 'bad');
+          } else if (act === 'flag') {
+            const flag = (body.querySelector('input').value || '').trim();
+            if (!flag) { fb.className = 'fb bad'; fb.textContent = 'Paste a flag, or press Done.'; return; }
+            if (await doneChallenge(ch.id, flag, fb, { title: ch.title })) {
+              wrap.classList.add('solved');
+              await load(true);
+              if (!detail.classList.contains('hidden')) {
+                const m = (location.hash || '').match(/^#dojo\/(.+)$/);
+                if (m) await openDojo(decodeURIComponent(m[1]), true);
+              }
             }
           } else if (act === 'hint') {
-            const data = await api('/api/challenges/' + encodeURIComponent(ch.id) + '/hint', {
-              method: 'POST', body: '{}',
-            });
-            const row = document.createElement('div');
-            row.className = 'h';
-            row.textContent = (data.text || 'No more hints.');
-            body.querySelector('#hints-' + CSS.escape(ch.id)).appendChild(row);
+            await hintChallenge(ch.id, body.querySelector('#hints-' + CSS.escape(ch.id)));
           }
         } catch (err) {
-          fb.className = 'fb bad'; fb.textContent = err.message || String(err);
-          toast('Error', err.message || String(err), 'bad');
-        } finally {
-          if (!ch.solved) btn.disabled = false;
+          fb.className = 'fb bad';
+          fb.textContent = err.message || String(err);
         }
       });
-
-      const input = body.querySelector('input');
-      if (input) input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') body.querySelector('[data-act="submit"]')?.click();
-      });
-
       wrap.appendChild(head);
       wrap.appendChild(body);
       return wrap;
@@ -913,120 +1438,287 @@
 
     async function openDojo(id, keep) {
       const d = await api('/api/dojos/' + encodeURIComponent(id));
-      currentDojo = id;
-      const color = d.belt_color || '#e08a4f';
-      const kind = ICONS[d.id] || 'terminal';
-      const hero = document.getElementById('dhero');
-      hero.style.setProperty('--c', color);
-      document.getElementById('d-ico').innerHTML = dojoIcon(ICONS[d.id] || 'terminal');
-      document.getElementById('d-belt').innerHTML = beltIcon(color, d.belt);
-      document.getElementById('d-title').textContent = d.title;
-      document.getElementById('d-sub').textContent =
-        (d.belt_label || '') + (d.locked ? ' · locked' : ` · ${d.solved}/${d.challenges}`);
-
-      const intro = document.getElementById('d-intro');
-      const paras = [];
-      if (d.tagline) paras.push(`<p>${esc(d.tagline)}</p>`);
-      paras.push(`<p>This dojo is a belt on the core path. Read each module briefing, then work the challenges in order. Start a challenge to open a terminal, solve it, and submit the flag here.</p>`);
-      if (d.locked) {
-        paras.push('<p>This belt is locked until you clear the previous core dojo.</p>');
-      }
-      intro.innerHTML = paras.join('');
-
-      const root = document.getElementById('d-modules');
+      document.getElementById('dhero').innerHTML = `
+        <img src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
+        <div>
+          <h2>${esc(d.title)}</h2>
+          <p>${esc(d.belt_label || '')} · ${d.solved}/${d.challenges}${d.locked ? ' · locked' : ''}</p>
+        </div>
+      `;
+      const root = document.getElementById('clist');
       root.innerHTML = '';
+      const focus = (nextCh && nextCh.dojo_id === id) ? nextCh.id : d.next_challenge_id;
       (d.modules_detail || []).forEach(mod => {
-        root.appendChild(moduleRow(mod));
-        (mod.challenges || []).forEach(ch => root.appendChild(challengeRow(ch, d.locked)));
+        (mod.challenges || []).forEach(ch => {
+          root.appendChild(challengeRow(ch, d.locked, ch.id === focus && !ch.solved));
+        });
       });
-
+      intro.classList.add('hidden');
       home.classList.add('hidden');
+      profile.classList.add('hidden');
       detail.classList.remove('hidden');
       if (!keep) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         history.pushState({ view: 'dojo', id }, '', '#dojo/' + id);
+        const open = root.querySelector('.crow.open');
+        if (open) open.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
 
-    function showHome() {
-      currentDojo = null;
-      detail.classList.add('hidden');
-      home.classList.remove('hidden');
-      history.pushState({ view: 'home' }, '', '#');
+    function levelForCount(n) {
+      if (n <= 0) return 0;
+      if (n === 1) return 1;
+      if (n === 2) return 2;
+      if (n <= 4) return 3;
+      return 4;
     }
 
-    async function refreshStatus() {
-      const s = await api('/api/status');
-      document.getElementById('progress').textContent = s.solved + '/' + s.total;
-      paintXp(s.solved, s.total);
+    function paintContrib(days) {
+      const wrap = document.getElementById('contrib');
+      const today = new Date();
+      today.setHours(12, 0, 0, 0);
+      // Align grid to Sunday columns (GitHub-style)
+      const end = new Date(today);
+      const start = new Date(today);
+      start.setDate(start.getDate() - end.getDay() - 52 * 7);
+
+      const weekCount = 53;
+      const cells = [];
+      const monthAtWeek = new Array(weekCount).fill('');
+      let cursor = new Date(start);
+      let prevMonth = -1;
+      for (let w = 0; w < weekCount; w++) {
+        for (let d = 0; d < 7; d++) {
+          const key = [
+            cursor.getFullYear(),
+            String(cursor.getMonth() + 1).padStart(2, '0'),
+            String(cursor.getDate()).padStart(2, '0')
+          ].join('-');
+          const future = cursor > end;
+          const count = future ? 0 : (days[key] || 0);
+          const lvl = future ? 0 : levelForCount(count);
+          const title = future
+            ? ''
+            : (count
+              ? `${count} clear${count === 1 ? '' : 's'} on ${key}`
+              : `No clears on ${key}`);
+          if (d === 0) {
+            const m = cursor.getMonth();
+            if (m !== prevMonth) {
+              monthAtWeek[w] = cursor.toLocaleString('en', { month: 'short' });
+              prevMonth = m;
+            }
+          }
+          cells.push({ lvl, title, future });
+          cursor.setDate(cursor.getDate() + 1);
+        }
+      }
+
+      wrap.innerHTML = `
+        <div class="contrib-inner">
+          <div class="contrib-dows">
+            <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
+          </div>
+          <div class="contrib-main">
+            <div class="contrib-months" style="grid-template-columns:repeat(${weekCount},11px);gap:3px">
+              ${monthAtWeek.map(l => `<span>${esc(l)}</span>`).join('')}
+            </div>
+            <div class="contrib-grid">
+              ${cells.map(c =>
+                `<div class="cday${c.lvl ? ' l' + c.lvl : ''}" title="${esc(c.title)}"></div>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="contrib-legend">
+          Less
+          <i class="cday"></i><i class="cday l1"></i><i class="cday l2"></i><i class="cday l3"></i><i class="cday l4"></i>
+          More
+        </div>
+      `;
     }
 
-    function paintXp(solved, total, dojos) {
-      const pct = total ? Math.round(100 * solved / total) : 0;
-      const fill = document.getElementById('xp-fill');
-      if (!fill) return;
-      fill.style.width = pct + '%';
-      fill.classList.toggle('empty', pct === 0);
-      document.getElementById('xp-count').textContent = solved;
-      document.getElementById('xp-total').textContent = total;
-      const box = document.getElementById('xp-belts');
-      if (!box || !dojos) return;
-      box.innerHTML = '';
-      dojos.filter(d => d.kind === 'core').forEach(d => {
-        const done = d.challenges > 0 && d.solved >= d.challenges;
-        const active = !d.locked && !done && d.solved > 0;
-        const p = d.challenges ? Math.round(100 * d.solved / d.challenges) : 0;
-        const el = document.createElement('div');
-        el.className = 'xp-belt' + (done ? ' done' : '') + (active || (!d.locked && !done && d.solved === 0 && !d.locked) ? ' active' : '');
-        // only bob the first unlocked incomplete
-        el.innerHTML = `
-          <img src="/icons/${BELT_ICON[d.belt] || 'belt-white'}.png" alt=""/>
-          <div class="pip" style="--bc:${esc(d.belt_color || '#e08a4f')}"><i style="width:${p}%"></i></div>
-          <span>${esc((d.belt_label || d.belt || '').replace(/ Belt$/i,''))}</span>
-        `;
-        box.appendChild(el);
+    function paintMountain(belts, ascentPct) {
+      const el = document.getElementById('mountain');
+      const n = Math.max(1, (belts || []).length);
+      // Station positions along a ridge (left base → right peak)
+      const stations = (belts || []).map((b, i) => {
+        const t = n === 1 ? 0.5 : i / (n - 1);
+        const x = 36 + t * 280;
+        const y = 168 - t * 118 - Math.sin(t * Math.PI) * 8;
+        return { ...b, x, y, t };
       });
-      // mark only the continue target as active bob
-      const cores = [...box.children];
-      cores.forEach(el => el.classList.remove('active'));
-      if (continueTarget) {
-        const idx = dojos.filter(d => d.kind === 'core').findIndex(d => d.id === continueTarget.id);
-        if (idx >= 0 && cores[idx]) cores[idx].classList.add('active');
+      // Climber sits on the ascent fraction along the polyline
+      let cx = stations[0]?.x || 36;
+      let cy = stations[0]?.y || 168;
+      const target = Math.min(1, Math.max(0, (ascentPct || 0) / 100));
+      if (stations.length >= 2) {
+        const pos = target * (stations.length - 1);
+        const i0 = Math.floor(pos);
+        const i1 = Math.min(stations.length - 1, i0 + 1);
+        const f = pos - i0;
+        cx = stations[i0].x + (stations[i1].x - stations[i0].x) * f;
+        cy = stations[i0].y + (stations[i1].y - stations[i0].y) * f;
+      }
+
+      const ridge = stations.map((s, i) => `${i ? 'L' : 'M'}${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' ');
+      const fillPath = `M20,190 L${stations.map(s => `${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' L')} L320,190 Z`;
+
+      el.innerHTML = `
+        <svg viewBox="0 0 340 210" role="img" aria-label="Belt ascent ${ascentPct || 0} percent">
+          <defs>
+            <linearGradient id="mtnFill" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#5b6b7c" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#8fa3b5" stop-opacity="0.55"/>
+            </linearGradient>
+            <linearGradient id="mtnSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#9eb6c8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#5b6b7c" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="340" height="210" fill="url(#mtnSky)"/>
+          <path d="${fillPath}" fill="url(#mtnFill)" stroke="none"/>
+          <path d="${ridge}" fill="none" stroke="#3d4a58" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="${ridge}" fill="none" stroke="#c5d0dc" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+          ${stations.map((s, i) => {
+            const done = s.complete;
+            const r = done ? 7 : 5.5;
+            const fill = done ? '#22c55e' : '#e0e5ec';
+            const stroke = done ? '#15803d' : '#3d4a58';
+            const short = (s.belt_label || s.belt || '').replace(/ Belt$/i, '');
+            return `
+              <circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+              <text class="mtn-label" x="${s.x}" y="${s.y - 14}" text-anchor="middle">${esc(short)}</text>
+              <text class="mtn-sub" x="${s.x}" y="${s.y + 18}" text-anchor="middle">${s.solved}/${s.challenges}</text>
+            `;
+          }).join('')}
+          <g class="climber">
+            <circle cx="${cx}" cy="${cy - 14}" r="6" fill="#ff4757" stroke="#fff" stroke-width="1.5"/>
+            <circle cx="${cx}" cy="${cy - 14}" r="2.2" fill="#fff"/>
+          </g>
+          <text class="mtn-sub" x="170" y="202" text-anchor="middle">Summit · Blue Belt</text>
+        </svg>
+      `;
+    }
+
+    async function paintProfile() {
+      const data = await api('/api/profile');
+      lastProfile = data;
+      const name = playerName();
+      document.getElementById('prof-name').textContent = name ? `${name}'s path` : 'Your path';
+      document.getElementById('prof-cleared').textContent = `${data.solved}/${data.total}`;
+      document.getElementById('prof-streak').textContent =
+        (data.streak || 0) === 1 ? '1 day' : `${data.streak || 0} days`;
+      document.getElementById('prof-ascent').textContent = `${data.ascent_pct || 0}%`;
+      paintContrib(data.days || {});
+      paintMountain(data.belts || [], data.ascent_pct || 0);
+
+      const recent = document.getElementById('recent-list');
+      recent.innerHTML = '';
+      const rows = data.recent || [];
+      if (!rows.length) {
+        recent.innerHTML = '<p class="lede" style="margin:0">No clears yet — enter the lab and take White Belt.</p>';
+        return;
+      }
+      rows.forEach(r => {
+        const when = r.completed_at
+          ? new Date(r.completed_at * 1000).toLocaleString(undefined, {
+              month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            })
+          : '';
+        const row = document.createElement('div');
+        row.className = 'recent-row';
+        row.innerHTML = `
+          <img src="/icons/${BELT[r.belt] || 'belt-white'}.png" alt=""/>
+          <div class="t">
+            <strong>${esc(r.title)}</strong>
+            <span>${esc(r.belt_label || '')}${when ? ' · ' + esc(when) : ''}</span>
+          </div>
+        `;
+        recent.appendChild(row);
+      });
+    }
+
+    async function load(stay) {
+      const [status, cat] = await Promise.all([api('/api/status'), api('/api/dojos')]);
+      catalogIntro = cat.intro || '';
+      nextCh = cat.next_challenge || null;
+      if (nextCh && status.current_challenge_id === nextCh.id) {
+        nextCh.started = true;
+        nextCh.workspace = status.current_workspace;
+      }
+      paintHello();
+      paintNow();
+      paintBelts(cat.dojos || [], status.solved, status.total);
+
+      const hash = location.hash || '';
+      if (stay && !detail.classList.contains('hidden')) {
+        const m = hash.match(/^#dojo\/(.+)$/);
+        if (m) await openDojo(decodeURIComponent(m[1]), true);
+        return;
+      }
+      if (stay && !profile.classList.contains('hidden')) {
+        await paintProfile();
+        return;
+      }
+      if (hash.startsWith('#dojo/')) {
+        await openDojo(decodeURIComponent(hash.slice(6)));
+      } else if (hash === '#lab') {
+        showHome();
+      } else if (hash === '#profile') {
+        await showProfile();
+      } else {
+        showIntro();
       }
     }
 
-    async function load() {
-      const [status, catalog] = await Promise.all([api('/api/status'), api('/api/dojos')]);
-      document.getElementById('progress').textContent = status.solved + '/' + status.total;
-      const core = (catalog.dojos || []).filter(d => d.kind === 'core');
-      const side = (catalog.dojos || []).filter(d => d.kind !== 'core');
-      continueTarget = core.find(d => !d.locked && d.solved < d.challenges) || null;
-      paintXp(status.solved, status.total, catalog.dojos || []);
-      const coreEl = document.getElementById('core');
-      const sideEl = document.getElementById('side');
-      coreEl.innerHTML = ''; sideEl.innerHTML = '';
-      core.forEach(d => coreEl.appendChild(card(d, continueTarget && d.id === continueTarget.id)));
-      side.forEach(d => sideEl.appendChild(card(d, false)));
-      const sideSec = sideEl.previousElementSibling;
-      if (sideSec) sideSec.classList.toggle('hidden', side.length === 0);
-      sideEl.classList.toggle('hidden', side.length === 0);
-
-      document.getElementById('btn-go').onclick = () => {
-        if (continueTarget) openDojo(continueTarget.id);
-      };
-
-      const m = (location.hash || '').match(/^#dojo\/(.+)$/);
-      if (m) openDojo(decodeURIComponent(m[1]));
-    }
-
+    document.getElementById('btn-enter').onclick = () => askNameThen(true);
+    document.getElementById('btn-howto').onclick = () => {
+      document.querySelector('#view-intro .guide')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    document.getElementById('btn-intro').onclick = showIntro;
     document.getElementById('btn-back').onclick = showHome;
-    document.getElementById('home-link').onclick = (e) => { e.preventDefault(); showHome(); };
+    document.getElementById('btn-profile').onclick = () => showProfile();
+    document.getElementById('btn-profile-back').onclick = showHome;
+    document.getElementById('btn-score').onclick = () => showProfile();
+    document.getElementById('home-link').onclick = (e) => {
+      e.preventDefault();
+      showIntro();
+    };
+
+    (function themeToggle() {
+      const btn = document.getElementById('btn-theme');
+      function sync() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? 'Light' : 'Dark';
+        btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      }
+      btn.onclick = () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('academy-theme', next); } catch (e) {}
+        sync();
+      };
+      sync();
+    })();
+
+    paintHello();
+    document.getElementById('hello').onclick = () => {
+      // Allow renaming anytime
+      try { localStorage.removeItem('academy-player-name'); } catch (e) {}
+      paintHello();
+      askNameThen(false);
+    };
+    document.getElementById('hello').style.cursor = 'pointer';
+    document.getElementById('hello').title = 'Change name';
+
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view === 'dojo' && e.state.id) openDojo(e.state.id);
-      else { detail.classList.add('hidden'); home.classList.remove('hidden'); }
+      else if (e.state && e.state.view === 'home') showHome();
+      else if (e.state && e.state.view === 'profile') showProfile();
+      else showIntro();
     });
-
-    load().catch(err => toast('Load failed', err.message || String(err), 'bad'));
+    load().catch(err => toast('Load failed', err.message || String(err)));
   </script>
 </body>
 </html>

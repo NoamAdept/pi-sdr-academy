@@ -1,9 +1,8 @@
-intro: 'Offline lab — five belts from shell to IQ. Fifty challenges. No cloud.
-
-  '
-rules: 'Learn first. Prefer figuring it out over spoilers.
-
-  '
+intro: >
+  Offline hands-on lab. Fifty challenges. Five belts. Shell to radio.
+  No cloud. No accounts. Just you, a terminal, and the next puzzle.
+rules: >
+  Learn first. Take a hint only when stuck. Belts unlock in order.
 core:
 - id: intro-lab
   title: Intro to the Lab

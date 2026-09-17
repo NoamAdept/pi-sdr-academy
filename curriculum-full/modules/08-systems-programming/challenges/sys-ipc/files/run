@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-cc -Wall -Wextra ipc.c -o ipc
-./ipc

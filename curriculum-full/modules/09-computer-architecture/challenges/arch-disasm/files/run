@@ -1,8 +1,0 @@
-#!/bin/sh
-set -eu
-cc -O0 beacon.c -o beacon
-if command -v objdump >/dev/null 2>&1; then objdump -d beacon > disassembly.txt
-elif command -v llvm-objdump >/dev/null 2>&1; then llvm-objdump -d beacon > disassembly.txt
-else cc -S -O0 beacon.c -o disassembly.txt
-fi
-echo 'Wrote disassembly.txt'

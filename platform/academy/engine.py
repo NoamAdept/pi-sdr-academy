@@ -323,31 +323,58 @@ class AcademyEngine:
                 yield challenge.path
 
 
+def _allowed_session_flag_plant(target: Path) -> bool:
+    """Live flags may only land in intentional flag/secret files — never scripts."""
+    name = target.name
+    if name == "lab_shell.sh":
+        return True
+    if name in {".beacon_secret", ".relay_secret", ".lab_env", "flag.txt"}:
+        return True
+    if name.endswith(".flag"):
+        return True
+    return False
+
+
 def _plant_session_flag(target: Path, flag: str) -> None:
     """Write/replace flag text in a planted puzzle file without leaking via checkers."""
     import re
+
+    name = target.name
+    if not _allowed_session_flag_plant(target):
+        raise RuntimeError(
+            f"Refusing to plant session flag into {target.name!r}; "
+            "use a one-shot secret or flag file (e.g. .beacon_secret, flag.txt)"
+        )
 
     if target.exists() and target.is_file():
         try:
             text = target.read_text(encoding="utf-8")
         except OSError:
             text = ""
-        name = target.name
-        # Split across LAB_FLAG_PART1 / PART2 for the environment challenge.
-        if name == "lab_shell.sh" and "LAB_FLAG_PART1" in text:
+        # Environment challenge: never leave the live flag inside lab_shell.sh
+        # (students could `cat` it). Plant a one-shot .lab_env instead.
+        if name == "lab_shell.sh":
             mid = max(1, len(flag) // 2)
             part1, part2 = flag[:mid], flag[mid:]
+            env_path = target.parent / ".lab_env"
+            env_path.write_text(
+                f"export LAB_FLAG_PART1={part1!r}\nexport LAB_FLAG_PART2={part2!r}\n",
+                encoding="utf-8",
+            )
+            try:
+                os.chmod(env_path, 0o600)
+            except OSError:
+                pass
             text = re.sub(
                 r"export LAB_FLAG_PART1=.*",
-                f"export LAB_FLAG_PART1={part1!r}",
+                "unset LAB_FLAG_PART1 2>/dev/null || true",
                 text,
             )
             text = re.sub(
                 r"export LAB_FLAG_PART2=.*",
-                f"export LAB_FLAG_PART2={part2!r}",
+                "unset LAB_FLAG_PART2 2>/dev/null || true",
                 text,
             )
-            # Keep decoy wrong
             text = re.sub(
                 r"export DECOY_FLAG=.*",
                 "export DECOY_FLAG='flag{wrong_source_use_lab_vars}'",

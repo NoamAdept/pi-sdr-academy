@@ -1,36 +1,45 @@
 System Investigation
 ====================
 
-You are already in the challenge folder.
+Goal
+----
+EchoRelay is broken in more than one place. Repair it until verify prints
+a flag. The flag exists only in the live PING reply — not in the scripts
+on disk.
 
-EchoRelay has more than one problem. Fix it one step at a time.
+What you have
+-------------
+  echorelay/relayctl.sh              start / stop / status / logs
+  echorelay/verify.sh                contract check (do not edit)
+  echorelay/config/relay.conf        broken config (fix this)
+  echorelay/config/relay.conf.example   known-good example
+  echorelay/dropbox/                 token file the worker must read
+  BRIEFING.md                        short incident note
 
-1) Try to start and verify it:
+Steps
+-----
+1) Press Start in the dojo.
+
+2) Try the service and the contract:
 
      ./echorelay/relayctl.sh start
      ./echorelay/verify.sh
 
-2) Read the service logs:
+3) When something fails, read why:
 
      ./echorelay/relayctl.sh logs
 
-3) Compare the current config with the working example:
+4) Triage one fault at a time:
+   - Is the worker still running? (`./echorelay/relayctl.sh status`)
+   - Does config match the example? (listen port, dropbox path)
+   - Can the worker read the token? (`ls -l echorelay/dropbox`)
 
-     echorelay/config/relay.conf
-     echorelay/config/relay.conf.example
-
-4) Check whether the real token file exists and can be read:
-
-     ls -l echorelay/dropbox
-
-5) After each fix, stop and start the worker again:
+5) After each fix, restart and re-check:
 
      ./echorelay/relayctl.sh stop
      ./echorelay/relayctl.sh start
      ./echorelay/verify.sh
 
-When verify prints a flag, submit it with quotes:
+6) When verify prints a flag{...}, paste it in the dojo — or press Done.
 
-     academy submit 'flag{...}'
-
-Do not edit verify.sh. You do not need sudo or the Internet.
+Do not edit verify.sh. No sudo. No internet.

@@ -1,5 +1,18 @@
-Run ./run and use GDB.
-Break at capture and inspect a backtrace.
-Write outermost-to-innermost names like:
-main -> name -> capture
-to answer.txt, then ./check.
+Follow the Stack
+================
+
+Goal
+----
+At capture, read a backtrace and record the call chain.
+
+Deliverable
+-----------
+  answer.txt — outermost to innermost, like:
+    main -> name -> capture
+
+Steps
+-----
+1) Press Start, then: ./run
+2) GDB: break capture → run → backtrace (bt)
+3) Write answer.txt, then: ./check
+4) Press Done when check passes.

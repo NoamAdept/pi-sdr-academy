@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -14,14 +15,14 @@ from .ui_flavor import display_title
 
 
 BELT_COLORS = {
-    "white": "#f2f2f2",
-    "yellow": "#e6c84a",
-    "orange": "#e08a3c",
-    "green": "#2f6b3a",
-    "blue": "#3b7dd8",
-    "purple": "#8b5cf6",
-    "brown": "#8b5a2b",
-    "black": "#222222",
+    "white": "#E8EDF5",
+    "yellow": "#E9C46A",  # amber vertex
+    "orange": "#E76F51",  # coral vertex
+    "green": "#2A9D8F",   # teal vertex
+    "blue": "#6C7AE0",    # indigo vertex
+    "purple": "#6C7AE0",
+    "brown": "#8B95A8",
+    "black": "#0E1218",
 }
 
 
@@ -206,19 +207,47 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
         while lines and lines[0] == "":
             lines.pop(0)
 
+    # Strip decorative ==== underlines left after title removal
+    if lines and set(lines[0].strip()) <= {"=", "-", "*"} and len(lines[0].strip()) >= 3:
+        lines = lines[1:]
+        while lines and lines[0] == "":
+            lines.pop(0)
+
     steps: list[str] = []
     mission_parts: list[str] = []
     in_workflow = False
     skip_cmd_block = False
     for line in lines:
         low = line.lower().rstrip(":")
+        # Skip stock workspace boilerplate — confuses people before Start
+        if "already in the challenge folder" in low:
+            continue
+        if low in {"goal", "mission", "task", "what is this?", "what is this"}:
+            in_workflow = False
+            skip_cmd_block = False
+            continue
         if low in {"workflow", "steps", "what to do"} or low.startswith("workflow"):
             in_workflow = True
             skip_cmd_block = False
             continue
         if in_workflow:
             step = line.lstrip("0123456789.-) ").strip()
-            if step:
+            if not step:
+                continue
+            # Skip bare shell crumbs — keep human instructions only
+            toks = step.replace("`", "").split()
+            cmd = toks[0] if toks else ""
+            if (
+                "academy" in step.lower()
+                or "flagpath" in step.lower()
+                or cmd.startswith("./")
+                or cmd in {
+                    "ls", "pwd", "cat", "find", "chmod", "ps", "curl",
+                    "printenv", "printf", "exit", "cd", "grep",
+                }
+            ):
+                continue
+            if len(step) < 90:
                 steps.append(step)
             continue
 
@@ -227,12 +256,11 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
             len(line.split()) <= 4
             and all(tok.startswith((".", "/", "`")) or tok in {"pwd", "ls", "cd", "find", "cat", "FILE", "-la", "-type", "f"} for tok in line.replace("`", "").split())
         ):
-            # bare command lines — fold into tools/steps later, not mission prose
             continue
 
         if line.startswith("#"):
             heading = line.lstrip("#").strip().lower()
-            if heading in {"mission", "task", "goal"}:
+            if heading in {"mission", "task", "goal", "what is this?", "what is this"}:
                 continue
             continue
 
@@ -247,6 +275,8 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
                 "copy it to the academy flag",
                 "when you find a value shaped like",
                 "when you find it, either",
+                "keep the quotes",
+                "back in the challenge folder, write the flag",
             )
         ):
             skip_cmd_block = True
@@ -259,44 +289,43 @@ def challenge_ui_copy(challenge) -> dict[str, Any]:
 
     mission = " ".join(mission_parts)
     mission = " ".join(mission.split())
-    # Drop dangling lead-ins left after stripping command lists
     mission = mission.rstrip(":").rstrip()
     for tail in ("Explore with", "Use", "Tools", "Try"):
         if mission.lower().endswith(tail.lower()):
             mission = mission[: -len(tail)].rstrip(" :")
             break
 
-    # Keep ~3 sentences max — enough detail, still brief
+    # One or two sentences — instant clarity
     sentences = [
         s.strip()
         for s in mission.replace("?", "?|").replace("!", "!|").replace(". ", ".|").split("|")
         if s.strip()
     ]
-    mission = " ".join(sentences[:3]).strip()
-    if len(mission) > 380:
-        mission = mission[:377].rstrip() + "…"
+    mission = " ".join(sentences[:2]).strip()
+    if len(mission) > 220:
+        mission = mission[:217].rstrip() + "…"
 
-    blurb = " ".join(sentences[:2]).strip() if sentences else (challenge.title or challenge.id or "Challenge")
+    blurb = sentences[0].strip() if sentences else (challenge.title or challenge.id or "Challenge")
     if blurb and not blurb.endswith((".", "!", "?")):
         blurb += "."
-    if len(blurb) > 220:
-        blurb = blurb[:217].rstrip() + "…"
+    if len(blurb) > 160:
+        blurb = blurb[:157].rstrip() + "…"
 
     clean_steps: list[str] = []
-    for step in steps[:5]:
+    for step in steps[:4]:
         s = " ".join(step.replace("`", "").split())
-        if len(s) > 110:
-            s = s[:107].rstrip() + "…"
+        if "academy" in s.lower() or "flagpath" in s.lower():
+            continue
+        if len(s) > 90:
+            s = s[:87].rstrip() + "…"
         clean_steps.append(s)
 
     if not clean_steps:
-        tools = list(challenge.expected_tools or [])[:4]
-        if any(t in {"./check", "check", "./run", "run"} for t in (challenge.expected_tools or [])):
-            clean_steps = ["Start challenge", "Follow README.txt in the workspace", "Run Check or Submit in the dojo"]
-        elif tools:
-            clean_steps = ["Start challenge", "Use: " + ", ".join(tools), "Submit flag in the dojo"]
-        else:
-            clean_steps = ["Start challenge", "Read README.txt in the workspace", "Submit flag in the dojo"]
+        clean_steps = [
+            "Press Start",
+            "Open the challenge folder → read README.txt",
+            "Press Done when finished",
+        ]
 
     return {
         "blurb": blurb or (challenge.title or ""),
@@ -379,9 +408,37 @@ def next_dojo(engine: AcademyEngine) -> DojoStats | None:
     return None
 
 
+def next_challenge_payload(engine: AcademyEngine) -> dict[str, Any] | None:
+    """Single 'do this next' card for the minimal dojo UI."""
+    dojo = next_dojo(engine)
+    if dojo is None or not dojo.next_challenge_id:
+        return None
+    try:
+        ch = engine.get_challenge(dojo.next_challenge_id)
+    except KeyError:
+        return None
+    copy = challenge_ui_copy(ch)
+    store = engine.progress()
+    return {
+        "dojo_id": dojo.id,
+        "dojo_title": dojo.title,
+        "belt": dojo.belt,
+        "belt_label": dojo.belt_label,
+        "belt_color": dojo.belt_color,
+        "id": ch.id,
+        "title": display_title(ch.id, ch.title),
+        "mission": copy["mission"],
+        "steps": copy["steps"],
+        "hints_total": len(ch.hints or []),
+        "workspace": store.current_workspace if store.current_challenge_id == ch.id else None,
+        "started": store.current_challenge_id == ch.id,
+    }
+
+
 def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
     catalog = load_dojos(engine.curriculum_root)
     stats = dojo_stats(engine)
+    nxt = next_dojo(engine)
     return {
         "intro": catalog.intro,
         "rules": catalog.rules,
@@ -403,5 +460,114 @@ def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
             }
             for d in stats
         ],
-        "next": (n.id if (n := next_dojo(engine)) else None),
+        "next": (nxt.id if nxt else None),
+        "next_challenge": next_challenge_payload(engine),
+    }
+
+
+def _day_key(ts: float) -> str:
+    return datetime.fromtimestamp(ts, tz=timezone.utc).date().isoformat()
+
+
+def _streak(days: dict[str, int], today: date | None = None) -> int:
+    """Consecutive days with ≥1 solve, ending today or yesterday."""
+    today = today or datetime.now(tz=timezone.utc).date()
+    cursor = today
+    if days.get(cursor.isoformat(), 0) <= 0:
+        cursor = today - timedelta(days=1)
+        if days.get(cursor.isoformat(), 0) <= 0:
+            return 0
+    streak = 0
+    while days.get(cursor.isoformat(), 0) > 0:
+        streak += 1
+        cursor -= timedelta(days=1)
+    return streak
+
+
+def profile_payload(engine: AcademyEngine) -> dict[str, Any]:
+    """Operator profile: solve calendar + belt mountain progress."""
+    store = engine.progress()
+    summary = engine.status_summary()
+    stats = [d for d in dojo_stats(engine, store) if d.kind == "core"]
+
+    cid_to_belt: dict[str, tuple[str, str]] = {}
+    for d in stats:
+        for slug in d.module_slugs:
+            try:
+                for c in engine.module_challenges(slug):
+                    cid_to_belt[c.id] = (d.belt, d.belt_label)
+            except KeyError:
+                continue
+
+    day_counts: dict[str, int] = {}
+    recent: list[dict[str, Any]] = []
+    for cid, prog in store.challenges.items():
+        if not prog.solved:
+            continue
+        ts = prog.completed_at or prog.started_at
+        if ts:
+            key = _day_key(ts)
+            day_counts[key] = day_counts.get(key, 0) + 1
+        belt, belt_label = cid_to_belt.get(cid, ("", ""))
+        try:
+            ch = engine.get_challenge(cid)
+            title = display_title(cid, ch.title)
+        except KeyError:
+            title = cid
+        recent.append(
+            {
+                "id": cid,
+                "title": title,
+                "completed_at": prog.completed_at or prog.started_at,
+                "belt": belt,
+                "belt_label": belt_label,
+            }
+        )
+
+    recent.sort(key=lambda r: r["completed_at"] or 0, reverse=True)
+
+    # Fractional ascent: each core belt is an equal terrace on the mountain.
+    n_belts = max(1, len(stats))
+    ascent = 0.0
+    current_belt = stats[0].belt if stats else "white"
+    current_set = False
+    for i, d in enumerate(stats):
+        frac = (d.solved / d.challenges) if d.challenges else 0.0
+        ascent += frac / n_belts
+        if not current_set and d.solved < d.challenges:
+            current_belt = d.belt
+            current_set = True
+        elif not current_set and i == len(stats) - 1 and d.challenges and d.solved >= d.challenges:
+            current_belt = d.belt
+            current_set = True
+
+    best_day = None
+    if day_counts:
+        best_key = max(day_counts, key=lambda k: (day_counts[k], k))
+        best_day = {"date": best_key, "count": day_counts[best_key]}
+
+    return {
+        "solved": summary["solved"],
+        "total": summary["total"],
+        "streak": _streak(day_counts),
+        "best_day": best_day,
+        "days": day_counts,
+        "belts": [
+            {
+                "id": d.id,
+                "title": d.title,
+                "belt": d.belt,
+                "belt_label": d.belt_label,
+                "belt_color": d.belt_color,
+                "tagline": d.tagline,
+                "solved": d.solved,
+                "challenges": d.challenges,
+                "complete": d.challenges > 0 and d.solved >= d.challenges,
+                "locked": d.locked,
+            }
+            for d in stats
+        ],
+        "recent": recent[:12],
+        "current_belt": current_belt,
+        "ascent_pct": round(100 * min(1.0, ascent), 1),
     }

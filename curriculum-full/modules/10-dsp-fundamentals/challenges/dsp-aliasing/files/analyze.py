@@ -1,3 +1,0 @@
-import numpy as np
-x=np.load("signal.npy"); fs=1000
-# TODO: estimate the positive apparent FFT frequency; write alias_hz=...

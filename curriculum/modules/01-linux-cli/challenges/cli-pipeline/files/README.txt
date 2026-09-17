@@ -1,7 +1,25 @@
-Your task
-=========
-readings.csv has: callsign,region,strength
-Write the three strongest north callsigns to answer.txt, one per line,
-strongest first. Try to solve it with grep, sort, head, and cut.
+Pipeline Practice
+=================
 
-Run: ./check
+Goal
+----
+From readings.csv (callsign,region,strength), list the three strongest
+north callsigns.
+
+Deliverable
+-----------
+  answer.txt — three callsigns, one per line, strongest first.
+
+Tools
+-----
+  grep   sort   head   cut   ./check
+
+Steps
+-----
+1) Press Start.
+2) Filter region=north, sort by strength, take the top three callsigns.
+3) Write answer.txt, then:
+
+     ./check
+
+4) Press Done when check passes.

@@ -1,32 +1,33 @@
 Process Hunt
 ============
 
-What is this?
--------------
-A "process" is a program that is currently running.
-Every process has a process number.
+Goal
+----
+A helper process is running in the background. Gather five facts about it
+into report.txt, then prove them with ./check.
 
-Your job is to find a helper program after you start it, learn a few
-facts about it, and write those facts in report.txt.
+Tools
+-----
+  ./run   ps   cat   /proc   ./check
 
 Steps
 -----
-1) Start it:
+1) Press Start in the dojo, then launch the helper:
+
      ./run
 
-2) Find its process number:
+2) Find its process id (PID):
+
      ps aux | grep helper
 
-3) Learn its full start command and its folder
-   (see README / challenge text for Linux vs Mac commands).
+3) From /proc/<PID>/, learn the full start command and working directory
+   (see notes in this folder if you need the exact paths).
 
-4) In the start command, find:
-     --notes /some/path/note.txt
-   Open that file with cat. Copy the secret_code.
+4) In the start command, find --notes /some/path/note.txt — open that file
+   and copy secret_code.
 
-5) Fill report.txt (all 5 lines), then:
+5) Fill every line in report.txt (use report.template as the shape), then:
+
      ./check
 
-6) If check succeeds, submit in the dojo UI (Go with an empty flag box, or paste the flag).
-
-You cannot (and should not need to) read how ./run or ./check work inside.
+6) Press Done in the dojo when check passes.

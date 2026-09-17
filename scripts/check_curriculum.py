@@ -136,8 +136,32 @@ def main() -> int:
                     check((dest / ".challenge").read_text().strip() == ch.id, f"start {ch.id}: .challenge marker")
                     staged = [p for p in dest.iterdir() if p.name not in {".challenge", ".flagpath"}]
                     check(len(staged) >= 1, f"start {ch.id}: nothing staged")
+                    leak = _live_flag_leak(engine, ch.id, dest)
+                    check(leak is None, f"start {ch.id}: live flag readable in {leak}")
                 except Exception as exc:  # noqa: BLE001
                     check(False, f"start {ch.id}: {exc}")
+
+    # Static curriculum: no concrete template flag inside scripts/source under files/
+    for ypath in yaml_files:
+        cid = ypath.parent.name
+        data = load_yaml(ypath)
+        template = str((data.get("flags") or {}).get("value") or "").strip()
+        if not template.startswith("flag{"):
+            continue
+        files_dir = ypath.parent / "files"
+        for path in files_dir.rglob("*"):
+            if not path.is_file():
+                continue
+            if _is_intentional_flag_file(path):
+                continue
+            if path.suffix.lower() not in {".py", ".sh", ".bash", ".json", ".c", ".h", ".js"}:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            if template in text:
+                check(False, f"{cid}: template flag hardcoded in {path.relative_to(files_dir)}")
 
     print(f"PASS {ok}  FAIL {len(fails)}")
     for line in fails[:40]:
@@ -149,6 +173,53 @@ def main() -> int:
         print(f"Need >=100 passing checks, got {ok}")
         return 1
     return 1 if fails else 0
+
+
+_INTENTIONAL_FLAG_NAMES = {
+    "flag.txt",
+    "secret.flag",
+    ".beacon_secret",
+    ".relay_secret",
+    ".lab_env",
+}
+_DECOY_OK = {"decoy.env", "lab_shell.sh"}
+
+
+def _is_intentional_flag_file(path: Path) -> bool:
+    name = path.name
+    if name in _INTENTIONAL_FLAG_NAMES or name.endswith(".flag"):
+        return True
+    if name in _DECOY_OK:
+        return True
+    return False
+
+
+def _live_flag_leak(engine: "AcademyEngine", challenge_id: str, dest: Path) -> str | None:
+    """Return a relative path if the live session flag appears outside allowlisted files."""
+    from academy.secrets import load_session_flag
+
+    live = load_session_flag(engine.data_dir, challenge_id)
+    if not live:
+        return None
+    for path in dest.rglob("*"):
+        if not path.is_file():
+            continue
+        if _is_intentional_flag_file(path):
+            continue
+        # Split env parts are only in .lab_env (allowlisted); skip binaries
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if live in text:
+            return str(path.relative_to(dest))
+        # Environment: parts alone in non-allowlisted files also count
+        if challenge_id == "orient-environment":
+            mid = max(1, len(live) // 2)
+            if live[:mid] in text or live[mid:] in text:
+                if path.name not in _DECOY_OK:
+                    return str(path.relative_to(dest))
+    return None
 
 
 if __name__ == "__main__":

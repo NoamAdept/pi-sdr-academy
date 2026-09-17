@@ -1,6 +1,0 @@
-INCIDENT 0xBEAC
-===============
-Beacon failed health checks during last lab image bake.
-Students report: "start returns error" and "connection refused".
-
-Do not rebuild the image. Fix the local config and data path.

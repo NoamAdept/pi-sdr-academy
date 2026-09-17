@@ -181,6 +181,15 @@ def serve_api(
                 if not icon.is_file():
                     return self._json(404, {"error": "not found"})
                 return self._bytes(200, icon.read_bytes(), "image/png")
+            if path.startswith("/fonts/"):
+                name = unquote(path[len("/fonts/") :].lstrip("/"))
+                if "/" in name or "\\" in name or name.startswith(".") or not name.endswith((".woff2", ".woff")):
+                    return self._json(404, {"error": "not found"})
+                font = STATIC_DIR / "fonts" / name
+                if not font.is_file():
+                    return self._json(404, {"error": "not found"})
+                ctype = "font/woff2" if name.endswith(".woff2") else "font/woff"
+                return self._bytes(200, font.read_bytes(), ctype)
             if path == "/api/admin/overview":
                 denied = self._admin_required()
                 if denied:
@@ -215,6 +224,10 @@ def serve_api(
                 )
             if path == "/api/status":
                 return self._json(200, engine.status_summary())
+            if path == "/api/profile":
+                from .dojos import profile_payload
+
+                return self._json(200, profile_payload(engine))
             if path == "/api/dojos":
                 return self._json(200, catalog_payload(engine))
             if path.startswith("/api/dojos/"):

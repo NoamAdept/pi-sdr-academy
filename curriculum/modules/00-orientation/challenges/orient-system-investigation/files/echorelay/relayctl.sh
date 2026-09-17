@@ -3,7 +3,8 @@ set -eu
 ROOT="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
 PIDFILE="$ROOT/relay.pid"
 LOG="$ROOT/logs/relay.log"
-mkdir -p "$ROOT/logs"
+SECRET="$ROOT/data/.relay_secret"
+mkdir -p "$ROOT/logs" "$ROOT/data"
 cmd="${1:-status}"
 case "$cmd" in
   start)
@@ -12,6 +13,17 @@ case "$cmd" in
       exit 0
     fi
     : > "$LOG"
+    # Load session flag into this process, then remove the on-disk secret
+    # so the live flag only exists in the running worker (and PING replies).
+    if [ -f "$SECRET" ]; then
+      RELAY_SESSION_FLAG=$(cat "$SECRET")
+      export RELAY_SESSION_FLAG
+      rm -f "$SECRET"
+    else
+      # Already consumed on a prior start — keep serving without re-planting.
+      # Student must Start the challenge again in the dojo for a fresh secret.
+      :
+    fi
     cd "$ROOT/.."
     python3 "$ROOT/bin/relay_worker.py" >>"$LOG" 2>&1 &
     echo $! > "$PIDFILE"

@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-cc trace.c -o trace
-./trace

@@ -4,15 +4,9 @@ venv
 __pycache__
 *.pyc
 .academy-data
+challenge
 .pytest_cache
 *.egg-info
-offline_bundle
-instructor
-docs
-tools
-curriculum-full
 dist
-packages.lock
-*.md
 .env
 .DS_Store

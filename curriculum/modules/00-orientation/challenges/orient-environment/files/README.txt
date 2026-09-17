@@ -1,27 +1,30 @@
 Environment
 ===========
 
-You are already in the challenge folder.
+Goal
+----
+The flag is split across two environment variables inside a lab shell. Join them.
 
-1) Open the prepared lab shell:
+Tools
+-----
+  ./lab_shell.sh   printenv   printf
+
+Steps
+-----
+1) Press Start in the dojo.
+
+2) Enter the prepared lab shell:
 
      ./lab_shell.sh
 
-2) Inside it, list the environment variables:
+3) List lab variables:
 
      printenv | grep '^LAB_'
 
-3) The flag is split into PART1 and PART2. Join them:
+4) Join PART1 and PART2:
 
      printf '%s\n' "${LAB_FLAG_PART1}${LAB_FLAG_PART2}"
 
-4) Copy the complete flag, then leave the lab shell:
+5) Copy the complete flag, type exit, then paste it in the dojo (or press Done).
 
-     exit
-
-5) Back in the challenge folder, write the flag and submit:
-
-     printf '%s\n' 'flag{...}' > "$(cat .flagpath 2>/dev/null || echo $HOME/flag.txt)"
-     academy submit
-
-The value in decoy.env is not the answer.
+Tip: reading lab_shell.sh will not show the live flag — use the environment.

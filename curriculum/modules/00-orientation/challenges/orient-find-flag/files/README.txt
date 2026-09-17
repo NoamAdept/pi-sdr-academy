@@ -1,21 +1,17 @@
 Find the Flag
 =============
 
-You are already in the challenge folder.
+Goal
+----
+Find a secret shaped like flag{...} hidden under labyrinth/.
 
-The real flag is hidden somewhere under labyrinth/. Explore with:
+Tools
+-----
+  pwd   ls   ls -la   find   cat
 
-  pwd
-  ls -la
-  find . -type f
-  cat FILE
-
-README and hint files may help. When you find a value shaped like
-flag{...}, either copy it to the academy flag file and submit:
-
-  printf '%s\n' 'flag{...}' > "$(cat .flagpath 2>/dev/null || echo $HOME/flag.txt)"
-  academy submit
-
-Or submit it directly (keep the quotes in zsh):
-
-  academy submit 'flag{...}'
+Steps
+-----
+1) Press Start in the dojo (files land in this challenge folder).
+2) Look around: pwd, then ls -la.
+3) Explore labyrinth/ (try find) until you open the file that holds flag{...}.
+4) Paste that flag in the dojo — or press Done.

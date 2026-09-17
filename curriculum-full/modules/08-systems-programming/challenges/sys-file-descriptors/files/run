@@ -1,5 +1,0 @@
-#!/bin/sh
-set -eu
-printf 'IQ sample 01\nIQ sample 02\n' > input.txt
-cc -Wall -Wextra copy.c -o copy
-./copy input.txt output.txt

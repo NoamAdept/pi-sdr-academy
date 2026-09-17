@@ -1,3 +1,0 @@
-Lab assistants should be able to read operational memos.
-Flags in this vault are user-private until an instructor unlocks them —
-or until you demonstrate you understand chmod.

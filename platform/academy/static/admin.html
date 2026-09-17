@@ -6,16 +6,20 @@
   <title>Admin · Pi SDR Academy</title>
   <style>
     :root {
-      --bg: #1a1512;
-      --panel: #221c18;
-      --fg: #e8e4df;
-      --muted: #8a8278;
-      --lime: #e08a4f;
-      --cyan: #c4a484;
-      --ink: #1a1512;
-      --line: #3a322c;
-      --danger: #e06a5c;
-      --warn: #e08a4f;
+      --teal: #2A9D8F;
+      --coral: #E76F51;
+      --indigo: #6C7AE0;
+      --amber: #E9C46A;
+      --bg: #0E1218;
+      --panel: #161C26;
+      --fg: #E8EDF5;
+      --muted: #8B95A8;
+      --lime: var(--teal);
+      --cyan: var(--indigo);
+      --ink: #0E1218;
+      --line: #2A3444;
+      --danger: var(--coral);
+      --warn: var(--amber);
       --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
       --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
@@ -29,14 +33,14 @@
     .bg {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(900px 480px at 12% -8%, rgba(224,138,79,0.08), transparent 55%),
-        #1a1512;
+        radial-gradient(720px 360px at 8% -10%, rgba(42,157,143,0.12), transparent 55%),
+        var(--bg);
     }
 
     .top {
       position: sticky; top: 0; z-index: 30;
       backdrop-filter: blur(14px);
-      background: rgba(26,21,18,0.94);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
       border-bottom: 1px solid var(--line);
     }
     .top-inner {

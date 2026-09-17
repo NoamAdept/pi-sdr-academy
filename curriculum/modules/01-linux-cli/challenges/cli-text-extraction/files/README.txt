@@ -1,3 +1,20 @@
-Extract all decimal MHz frequencies from bulletin.txt.
-Create frequencies.txt with one unique number per line in numeric order.
-Do not include the word MHz. Run ./check when done.
+Text Extraction
+===============
+
+Goal
+----
+Pull every decimal MHz frequency out of bulletin.txt.
+
+Deliverable
+-----------
+  frequencies.txt — unique numbers only (no "MHz"), one per line, numeric order.
+
+Steps
+-----
+1) Press Start and read bulletin.txt.
+2) Extract the numbers (grep -oE / sort -n / uniq help).
+3) Write frequencies.txt, then:
+
+     ./check
+
+4) Press Done when check passes.
