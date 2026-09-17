@@ -52,6 +52,59 @@ def test_env_challenge_flag_not_in_lab_shell(engine, tmp_path):
     assert live not in script
 
 
+def test_silent_port_flag_not_in_json(engine):
+    """Silent Port flag must not sit in beacon_ok.json for a casual cat."""
+    import json
+    import os
+    import subprocess
+    from academy.progress import ChallengeProgress
+
+    store = engine.progress()
+    for cid in ("orient-process-hunt", "orient-environment"):
+        store.challenges[cid] = ChallengeProgress(solved=True)
+    engine.progress_repo.save(store)
+
+    dest = engine.start_challenge("orient-broken-service")
+    ok_json = dest / "service" / "data" / "beacon_ok.json"
+    secret = dest / "service" / "data" / ".beacon_secret"
+    assert secret.is_file()
+    live = secret.read_text(encoding="utf-8").strip()
+    assert live.startswith("flag{")
+    data = json.loads(ok_json.read_text(encoding="utf-8"))
+    assert "flag" not in data or not str(data.get("flag", "")).startswith("flag{local")
+    assert live not in ok_json.read_text(encoding="utf-8")
+
+    # Fix config so the service can start, then prove /health gets the flag
+    # only after beaconctl consumes the secret.
+    conf = dest / "service" / "config" / "beacon.conf"
+    conf.write_text(
+        "listen_host=127.0.0.1\n"
+        "listen_port=18765\n"
+        "data_path=service/data/beacon_ok.json\n"
+        "log_path=service/logs/beacon.log\n",
+        encoding="utf-8",
+    )
+    ctl = dest / "service" / "beaconctl.sh"
+    os.chmod(ctl, 0o755)
+    start = subprocess.run(
+        ["bash", str(ctl), "start"],
+        cwd=str(dest),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert start.returncode == 0, start.stdout + start.stderr
+    assert not secret.exists()  # consumed at start
+    try:
+        import urllib.request
+
+        with urllib.request.urlopen("http://127.0.0.1:18765/health", timeout=3) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+        assert body.get("flag") == live
+    finally:
+        subprocess.run(["bash", str(ctl), "stop"], cwd=str(dest), check=False)
+
+
 def test_orientation_challenges(engine):
     chs = engine.module_challenges("orientation")
     ids = {c.id for c in chs}

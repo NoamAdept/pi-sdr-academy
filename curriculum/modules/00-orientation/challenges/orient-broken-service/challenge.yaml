@@ -61,28 +61,26 @@ flags:
   value: flag{local_service_restored_on_loopback}
   validation: session
   plant_files:
-  - service/data/beacon_ok.json
+  - service/data/.beacon_secret
 hints:
 - level: 1
-  text: 'Read `INCIDENT.txt`, then run `./service/beaconctl.sh start` and inspect
-    logs.
+  text: 'Read INCIDENT.txt and README.txt, then run ./service/beaconctl.sh start and check logs.
 
     '
 - level: 2
-  text: 'Compare `service/config/beacon.conf` against `service/config/beacon.conf.example`.
+  text: 'Compare service/config/beacon.conf with service/config/beacon.conf.example.
 
     '
 - level: 3
-  text: 'One setting points at a bad listen address or port; another references a
-    missing data file path.
+  text: 'One setting points at a bad listen address or port; another references a missing data file path.
 
     '
 - level: 4
-  text: 'After a clean start, `curl http://127.0.0.1:PORT/health` (port from config).
+  text: 'After a clean start, curl the localhost /health URL using the port from the config.
 
     '
 - level: 5
-  text: 'The health JSON field `flag` is what you submit.
+  text: 'The flag appears only in the live /health JSON from the running service.
 
     '
 solution: '1. Fix `listen_host` to `127.0.0.1`

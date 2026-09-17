@@ -1,6 +1,10 @@
-INCIDENT 0xBEAC
-===============
-Beacon failed health checks during last lab image bake.
-Students report: "start returns error" and "connection refused".
+INCIDENT 0xBEAC — Silent Port
+=============================
+Beacon failed health checks during the last lab image bake.
 
-Do not rebuild the image. Fix the local config and data path.
+Symptoms students report:
+  - "./service/beaconctl.sh start" errors or exits
+  - curl to the health URL → connection refused
+
+Do not rebuild anything. Fix the local config (and data path), start the
+service on localhost, then read the flag from the live /health response.
