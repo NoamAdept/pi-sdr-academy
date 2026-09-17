@@ -1,4 +1,19 @@
+Automate an Investigation
+=========================
+
+Goal
+----
 Complete investigate(input_path, output_path).
-Use only LOCKED rows. Include stations with at least 3 such rows.
-For each: count and average_snr rounded to one decimal.
-Write JSON with sorted station keys. Run ./check.
+
+Rules
+-----
+  Use only LOCKED rows.
+  Keep stations with at least 3 LOCKED rows.
+  For each: count and average_snr (one decimal).
+  Write JSON with station keys sorted.
+
+Steps
+-----
+1) Press Start and open the starter.
+2) Implement investigate, then: ./check
+3) Press Done when check passes.

@@ -323,16 +323,34 @@ class AcademyEngine:
                 yield challenge.path
 
 
+def _allowed_session_flag_plant(target: Path) -> bool:
+    """Live flags may only land in intentional flag/secret files — never scripts."""
+    name = target.name
+    if name == "lab_shell.sh":
+        return True
+    if name in {".beacon_secret", ".relay_secret", ".lab_env", "flag.txt"}:
+        return True
+    if name.endswith(".flag"):
+        return True
+    return False
+
+
 def _plant_session_flag(target: Path, flag: str) -> None:
     """Write/replace flag text in a planted puzzle file without leaking via checkers."""
     import re
+
+    name = target.name
+    if not _allowed_session_flag_plant(target):
+        raise RuntimeError(
+            f"Refusing to plant session flag into {target.name!r}; "
+            "use a one-shot secret or flag file (e.g. .beacon_secret, flag.txt)"
+        )
 
     if target.exists() and target.is_file():
         try:
             text = target.read_text(encoding="utf-8")
         except OSError:
             text = ""
-        name = target.name
         # Environment challenge: never leave the live flag inside lab_shell.sh
         # (students could `cat` it). Plant a one-shot .lab_env instead.
         if name == "lab_shell.sh":

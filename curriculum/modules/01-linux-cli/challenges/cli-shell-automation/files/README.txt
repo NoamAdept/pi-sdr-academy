@@ -1,8 +1,24 @@
-Complete inventory.sh.
+Shell Automation
+================
 
-Usage: ./inventory.sh DIRECTORY
-Output: manifest.txt in the current directory
-Line format: filename,size,sha256
-Include only .iq files and sort by filename.
+Goal
+----
+Finish inventory.sh so it builds a manifest of .iq files.
 
-Run ./check. It tests your script with a new temporary directory.
+Deliverable
+-----------
+  Running: ./inventory.sh DIRECTORY
+  Creates: manifest.txt in the current directory
+  Lines:   filename,size,sha256  (only .iq files, sorted by name)
+
+Steps
+-----
+1) Press Start and open inventory.sh.
+2) Implement the script for the usage above.
+3) Prove it:
+
+     ./check
+
+   Check uses a fresh temporary directory — your script must work generally.
+
+4) Press Done when check passes.

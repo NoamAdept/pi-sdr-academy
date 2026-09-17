@@ -5,15 +5,19 @@ Goal
 ----
 The flag is split across two environment variables inside a lab shell. Join them.
 
+Tools
+-----
+  ./lab_shell.sh   printenv   printf
+
 Steps
 -----
 1) Press Start in the dojo.
 
-2) Open the prepared lab shell:
+2) Enter the prepared lab shell:
 
      ./lab_shell.sh
 
-3) List the lab variables:
+3) List lab variables:
 
      printenv | grep '^LAB_'
 

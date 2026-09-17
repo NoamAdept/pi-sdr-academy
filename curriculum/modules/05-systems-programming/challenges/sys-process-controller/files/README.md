@@ -1,12 +1,12 @@
 # Control a Child Process
 
-fork creates a child, exec replaces its program, and waitpid collects its status.
+## Goal
+Complete `controller.c` to run `/bin/echo child_ok` in a child and verify exit status zero.
+(`fork` creates the child, `exec` replaces its program, `waitpid` collects status.)
 
-## Mission
-Complete controller.c to run `/bin/echo child_ok` in a child and verify exit status zero.
+## Steps
+1. Press Start, then run `./run`.
+2. Open the starter and finish the TODO comments.
+3. Run `./check` until it passes, then press Done.
 
-1. Run `./run` to build or generate the tiny local fixture.
-2. Open the starter file(s) and complete the TODO comments.
-3. Run `./check`. It explains what is still missing.
-
-All paths are relative to this workspace. The lab is offline and intentionally small.
+Offline, one workspace, no hardware.

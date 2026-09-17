@@ -12,22 +12,18 @@ mastery_evidence:
 - understand
 - implement
 - apply
-description: '## Mission
+description: '## Goal
 
-  Resolve whether positive real means zero or one.
+  Resolve whether positive real means zero or one using the known preamble, then decode.
 
 
-  Digital signal processing (DSP) changes or measures sampled signals with
+  ## Steps
 
-  arithmetic. IQ samples are complex numbers: I is the real (in-phase) part
+  1. Read `README.txt` and `preamble.txt`, then run `./run`.
 
-  and Q is the imaginary (quadrature) part. Read `README.txt`, then run
+  2. Write the recovered ASCII flag to `answer.txt`.
 
-  `./run`. It reports the exact deliverable and useful starter measurements.
-
-  Finish by running `./check`; a correct result writes the flag to `.flagpath`
-
-  (or `ACADEMY_FLAG_PATH`, with `/home/flag.txt` as the Pi fallback).
+  3. Run `./check`, then press Done.
 
   '
 environment:
@@ -55,17 +51,15 @@ flags:
   validation: session
 hints:
 - level: 1
-  text: Run ./run and inspect README.txt. Start with the printed sample count and
-    spectrum.
+  text: Run ./run and inspect README.txt. Start with the printed sample count and spectrum.
 - level: 2
-  text: Load IQ with np.fromfile(..., dtype='<f4').reshape(-1, 2), then use a[:,0]
-    + 1j*a[:,1].
+  text: Load IQ with np.fromfile(..., dtype='<f4').reshape(-1, 2), then use a[:,0] + 1j*a[:,1].
 - level: 3
-  text: Use np.fft.fftfreq/fftshift for frequency; average all samples in one symbol
-    before slicing.
+  text: Use np.fft.fftfreq/fftshift for frequency; average all samples in one symbol before
+    slicing.
 - level: 4
-  text: Build the solution one measured stage at a time; the instructor reference
-    uses fewer than 25 lines of Python.
+  text: Build the solution one measured stage at a time; the instructor reference uses fewer
+    than 25 lines of Python.
 solution: 'The challenge''s hidden `solution/reference_solution.py` is executable
 
   documentation. Run it from a copy of the staged files, inspect the generated
@@ -75,8 +69,8 @@ solution: 'The challenge''s hidden `solution/reference_solution.py` is executabl
   implementation and comments the important DSP operation.
 
   '
-explanation: 'Resolve whether positive real means zero or one. The key habit is to
-  verify every stage numerically: inspect the
+explanation: 'Resolve whether positive real means zero or one. The key habit is to verify
+  every stage numerically: inspect the
 
   spectrum, apply one operation, and measure again. This is the same workflow
 
@@ -85,8 +79,8 @@ explanation: 'Resolve whether positive real means zero or one. The key habit is 
   '
 extension:
   title: Stress the receiver
-  description: Change one parameter in a copy of the generator or add noise, then
-    find where your method fails.
-performance_notes: Captures contain fewer than 200,000 complex float32 samples and
-  checks normally finish in seconds.
+  description: Change one parameter in a copy of the generator or add noise, then find where
+    your method fails.
+performance_notes: Captures contain fewer than 200,000 complex float32 samples and checks
+  normally finish in seconds.
 optional_hardware: []

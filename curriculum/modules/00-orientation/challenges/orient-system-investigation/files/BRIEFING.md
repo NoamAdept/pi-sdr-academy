@@ -1,11 +1,12 @@
 # EchoRelay Incident
 
-EchoRelay should answer on localhost with a lab flag derived from a dropbox token.
+EchoRelay should answer PING on localhost and include a lab flag in the reply.
 
-Symptoms reported:
-- verify script fails
-- sometimes "connection refused"
-- sometimes "permission denied"
-- sometimes wrong port
+Symptoms:
+- verify fails
+- connection refused
+- permission denied reading the token
+- wrong listen port
 
-Fix the system. Do not rewrite verify.sh — make the service match the contract.
+Fix the running system so `./echorelay/verify.sh` passes.
+Do not rewrite verify.sh — make the service match the contract.

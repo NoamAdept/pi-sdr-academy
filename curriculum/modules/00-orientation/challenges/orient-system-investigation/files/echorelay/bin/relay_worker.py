@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
 import socket
 import sys
 from pathlib import Path
@@ -46,7 +47,14 @@ def main() -> int:
         log(f"ERROR: unexpected token")
         return 3
 
-    flag = "flag{multi_signal_systems_triage}"
+    # Live flag comes from the process environment (set by relayctl at start).
+    # It is never stored in this script on disk.
+    flag = os.environ.get("RELAY_SESSION_FLAG", "").strip()
+    if not flag:
+        log("ERROR: RELAY_SESSION_FLAG missing — restart via relayctl after Start")
+        print("missing RELAY_SESSION_FLAG", file=sys.stderr)
+        return 4
+
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     srv.bind((host, port))

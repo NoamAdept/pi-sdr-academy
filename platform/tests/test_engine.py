@@ -189,6 +189,84 @@ def test_session_flag_randomized_and_flag_file_cleared(engine, tmp_path):
     assert not eng.submit("orient-find-flag", "flag{pwd_ls_find_cat_navigator}")
 
 
+def test_system_investigation_flag_not_in_scripts(engine):
+    """System Investigation live flag must not sit in cat-able scripts."""
+    import socket
+    import subprocess
+    import time
+    from academy.progress import ChallengeProgress
+    from academy.secrets import load_session_flag
+
+    store = engine.progress()
+    for cid in (
+        "orient-find-flag",
+        "orient-permissions",
+        "orient-process-hunt",
+        "orient-environment",
+        "orient-broken-service",
+    ):
+        store.challenges[cid] = ChallengeProgress(solved=True)
+    engine.progress_repo.save(store)
+
+    dest = engine.start_challenge("orient-system-investigation")
+    live = load_session_flag(engine.data_dir, "orient-system-investigation")
+    assert live and live.startswith("flag{")
+
+    worker = dest / "echorelay" / "bin" / "relay_worker.py"
+    verify = dest / "echorelay" / "verify.sh"
+    ctl = dest / "echorelay" / "relayctl.sh"
+    secret = dest / "echorelay" / "data" / ".relay_secret"
+    assert secret.is_file()
+    assert secret.read_text(encoding="utf-8").strip() == live
+    assert live not in worker.read_text(encoding="utf-8")
+    assert live not in verify.read_text(encoding="utf-8")
+    assert live not in ctl.read_text(encoding="utf-8")
+
+    # Align config + dropbox mode so the worker can serve, then prove PING.
+    conf = dest / "echorelay" / "config" / "relay.conf"
+    conf.write_text(
+        "listen_host=127.0.0.1\n"
+        "listen_port=9471\n"
+        "dropbox_path=echorelay/dropbox/token.txt\n"
+        "log_path=echorelay/logs/relay.log\n",
+        encoding="utf-8",
+    )
+    token = dest / "echorelay" / "dropbox" / "token.txt"
+    os.chmod(token, 0o644)
+    os.chmod(ctl, 0o755)
+    start = subprocess.run(
+        ["bash", str(ctl), "start"],
+        cwd=str(dest),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert start.returncode == 0, start.stdout + start.stderr
+    assert not secret.exists()
+    try:
+        time.sleep(0.2)
+        with socket.create_connection(("127.0.0.1", 9471), timeout=2) as sock:
+            sock.sendall(b"PING\n")
+            resp = sock.recv(256).decode("utf-8", errors="replace")
+        assert live in resp
+    finally:
+        subprocess.run(["bash", str(ctl), "stop"], cwd=str(dest), check=False)
+
+
+def test_plant_refuses_script_targets(engine, tmp_path):
+    """Engine must refuse planting a live flag into a .py/.sh path."""
+    from academy.engine import _plant_session_flag
+
+    script = tmp_path / "evil.py"
+    script.write_text('flag = "flag{template_value_here}"\n', encoding="utf-8")
+    try:
+        _plant_session_flag(script, "flag{session_should_not_land}")
+        raise AssertionError("expected RuntimeError")
+    except RuntimeError as exc:
+        assert "Refusing" in str(exc)
+    assert "flag{session_should_not_land}" not in script.read_text(encoding="utf-8")
+
+
 def test_verify_awards_session_flag(engine, tmp_path, monkeypatch):
     import os
     from academy.grading import award_flag, expected_answer
