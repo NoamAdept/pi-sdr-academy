@@ -615,6 +615,112 @@
       .card { grid-template-columns: auto 1fr; }
       .card .chip { grid-column: 2; justify-self: start; }
     }
+
+    /* —— top progress —— */
+    .top-progress {
+      height: 6px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      overflow: hidden;
+    }
+    .top-progress > i {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, #ff7b86, var(--accent));
+      transition: width .55s var(--ease);
+      box-shadow: 0 0 10px rgba(255,71,87,0.45);
+    }
+    .hello {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      color: var(--muted); letter-spacing: 0.04em;
+      max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .hello b { color: var(--fg); font-weight: 700; }
+
+    /* —— name gate + celebrate —— */
+    .overlay {
+      position: fixed; inset: 0; z-index: 80;
+      display: grid; place-items: center;
+      padding: var(--pad);
+      background: color-mix(in srgb, var(--bg) 55%, rgba(0,0,0,0.35));
+      backdrop-filter: blur(6px);
+      animation: fadein .2s ease;
+    }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    .overlay.hidden { display: none !important; }
+    .overlay-card {
+      width: min(26rem, 100%);
+      background: var(--bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow-float);
+      padding: 1.35rem 1.25rem 1.3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background-image:
+        radial-gradient(circle at 12px 12px, rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 12px) 12px, rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at 12px calc(100% - 12px), rgba(0,0,0,0.16) 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), rgba(0,0,0,0.16) 2px, transparent 3px);
+      animation: popin .35s var(--ease);
+    }
+    @keyframes popin {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); }
+      to { opacity: 1; transform: none; }
+    }
+    .overlay-card h2 { margin: 0.35rem 0 0; }
+    .overlay-card .sub {
+      margin: 0.55rem 0 0;
+      color: var(--muted); font-size: 0.95rem;
+    }
+    .overlay-card .flagrow { margin-top: 1rem; text-align: left; }
+    .overlay-card .cta-row { justify-content: center; margin-top: 1.1rem; }
+    .stamp {
+      display: inline-block;
+      margin-top: 0.85rem;
+      padding: 0.35rem 0.85rem;
+      border: 3px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      font-family: var(--mono); font-weight: 800; font-size: 1.05rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      transform: rotate(-8deg) scale(0.6);
+      opacity: 0;
+      animation: stamp .55s var(--ease) .15s forwards;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    @keyframes stamp {
+      0% { opacity: 0; transform: rotate(-18deg) scale(1.4); }
+      60% { opacity: 1; transform: rotate(-6deg) scale(1.05); }
+      100% { opacity: 1; transform: rotate(-8deg) scale(1); }
+    }
+    .burst-bits {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    }
+    .burst-bits span {
+      position: absolute; top: 45%; left: 50%;
+      width: 8px; height: 8px; border-radius: 2px;
+      background: var(--accent);
+      animation: confetti 900ms ease-out forwards;
+      opacity: 0;
+    }
+    .burst-bits span:nth-child(odd) { background: var(--ok); width: 6px; height: 6px; border-radius: 999px; }
+    .burst-bits span:nth-child(3n) { background: #e9c46a; }
+    @keyframes confetti {
+      0% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(220deg) scale(0.4); }
+    }
+    .cele-bar {
+      margin-top: 1rem;
+      height: 10px; border-radius: 999px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      overflow: hidden;
+    }
+    .cele-bar > i {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, #ff7b86, var(--accent));
+      transition: width .7s var(--ease);
+    }
   </style>
   <script>
     (function () {
@@ -636,9 +742,11 @@
         Pi SDR Academy
       </a>
       <span class="led" id="led"><i></i><span>Ready</span></span>
+      <span class="hello" id="hello"></span>
       <div class="score"><strong id="progress">…</strong></div>
       <button type="button" class="theme-btn" id="btn-theme" aria-label="Toggle dark mode">Dark</button>
     </div>
+    <div class="top-progress" aria-label="Overall progress"><i id="top-fill"></i></div>
   </header>
 
   <main class="wrap">
@@ -737,6 +845,35 @@
 
   <div class="toasts" id="toasts"></div>
 
+  <div class="overlay hidden" id="name-gate" role="dialog" aria-modal="true" aria-labelledby="name-title">
+    <div class="overlay-card">
+      <p class="lbl">Operator ID</p>
+      <h2 id="name-title">What should we call you?</h2>
+      <p class="sub">Saved on this machine only. Makes clears feel like yours.</p>
+      <div class="flagrow">
+        <input id="name-input" maxlength="32" placeholder="Your name" autocomplete="nickname"/>
+      </div>
+      <div class="cta-row">
+        <button type="button" class="go" id="btn-save-name">Save & enter</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="celebrate" role="dialog" aria-modal="true" aria-labelledby="cele-title">
+    <div class="overlay-card" id="cele-card">
+      <div class="burst-bits" id="cele-bits" aria-hidden="true"></div>
+      <p class="lbl">Challenge cleared</p>
+      <h2 id="cele-title">Nice work</h2>
+      <div class="stamp">Cleared</div>
+      <p class="sub" id="cele-sub"></p>
+      <div class="cele-bar"><i id="cele-fill"></i></div>
+      <p class="sub" id="cele-count" style="margin-top:0.45rem;font-family:var(--mono);font-size:0.78rem"></p>
+      <div class="cta-row">
+        <button type="button" class="go" id="btn-cele-next">Next challenge</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const BELT = { white:'belt-white', yellow:'belt-yellow', orange:'belt-orange', green:'belt-green', blue:'belt-blue' };
     const intro = document.getElementById('view-intro');
@@ -744,22 +881,110 @@
     const detail = document.getElementById('view-dojo');
     let nextCh = null;
     let catalogIntro = '';
+    let lastSolved = 0;
+    let lastTotal = 50;
 
     function esc(s) {
       return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function playerName() {
+      try { return (localStorage.getItem('academy-player-name') || '').trim(); }
+      catch (e) { return ''; }
+    }
+    function setPlayerName(name) {
+      const n = String(name || '').trim().slice(0, 32);
+      try { if (n) localStorage.setItem('academy-player-name', n); } catch (e) {}
+      paintHello();
+      return n;
+    }
+    function paintHello() {
+      const el = document.getElementById('hello');
+      const n = playerName();
+      el.innerHTML = n ? `Hi, <b>${esc(n)}</b>` : '';
+    }
+    function setTopProgress(solved, total) {
+      lastSolved = solved;
+      lastTotal = total || 50;
+      const pct = lastTotal ? Math.round(100 * solved / lastTotal) : 0;
+      const fill = document.getElementById('top-fill');
+      if (fill) fill.style.width = pct + '%';
+      document.getElementById('progress').textContent = solved + '/' + lastTotal;
     }
     function toast(t, d, kind='ok') {
       const el = document.createElement('div');
       el.className = 'toast';
       el.innerHTML = `<b>${esc(t)}</b><span>${esc(d||'')}</span>`;
       document.getElementById('toasts').appendChild(el);
-      setTimeout(() => el.remove(), 3000);
+      setTimeout(() => el.remove(), 2800);
     }
     async function api(path, opts) {
       const r = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || r.statusText || 'request failed');
       return data;
+    }
+
+    function askNameThen(enterLab) {
+      if (playerName()) {
+        if (enterLab) showHome();
+        return;
+      }
+      const gate = document.getElementById('name-gate');
+      const input = document.getElementById('name-input');
+      gate.classList.remove('hidden');
+      input.value = '';
+      setTimeout(() => input.focus(), 50);
+      const save = () => {
+        const n = setPlayerName(input.value);
+        if (!n) { input.focus(); return; }
+        gate.classList.add('hidden');
+        if (enterLab) showHome();
+      };
+      document.getElementById('btn-save-name').onclick = save;
+      input.onkeydown = (e) => { if (e.key === 'Enter') save(); };
+    }
+
+    function celebrateClear({ title, explanation, solved, total }) {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('celebrate');
+        const name = playerName();
+        document.getElementById('cele-title').textContent =
+          name ? `Cleared, ${name}!` : 'Challenge cleared!';
+        document.getElementById('cele-sub').textContent =
+          explanation || (title ? `You finished “${title}”.` : 'Nice work.');
+        document.getElementById('cele-count').textContent =
+          `${solved} / ${total} challenges`;
+
+        const bits = document.getElementById('cele-bits');
+        bits.innerHTML = '';
+        for (let i = 0; i < 18; i++) {
+          const s = document.createElement('span');
+          const ang = (Math.PI * 2 * i) / 18;
+          const dist = 60 + (i % 5) * 22;
+          s.style.setProperty('--x', Math.cos(ang) * dist + 'px');
+          s.style.setProperty('--y', Math.sin(ang) * dist + 'px');
+          s.style.animationDelay = (i * 18) + 'ms';
+          bits.appendChild(s);
+        }
+
+        const fill = document.getElementById('cele-fill');
+        fill.style.width = '0%';
+        overlay.classList.remove('hidden');
+        const pct = total ? Math.round(100 * solved / total) : 0;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { fill.style.width = pct + '%'; });
+        });
+        setTopProgress(solved, total);
+
+        const btn = document.getElementById('btn-cele-next');
+        const finish = () => {
+          overlay.classList.add('hidden');
+          btn.onclick = null;
+          resolve();
+        };
+        btn.onclick = finish;
+        btn.focus();
+      });
     }
 
     function showIntro() {
@@ -776,6 +1001,7 @@
       document.getElementById('led').querySelector('span').textContent = 'Lab';
       history.pushState({ view: 'home' }, '', '#lab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      paintNow();
     }
 
     async function startChallenge(id, fb) {
@@ -787,7 +1013,7 @@
       toast('Started', id);
       return ws;
     }
-    async function doneChallenge(id, flag, fb) {
+    async function doneChallenge(id, flag, fb, meta) {
       fb.className = 'fb';
       fb.textContent = flag ? 'Submitting…' : 'Checking…';
       const data = flag
@@ -795,8 +1021,14 @@
         : await api('/api/challenges/' + encodeURIComponent(id) + '/check', { method: 'POST', body: '{}' });
       if (data.ok) {
         fb.className = 'fb ok';
-        fb.textContent = data.explanation || 'Cleared.';
-        toast('Cleared', id);
+        fb.textContent = 'Cleared!';
+        const status = await api('/api/status');
+        await celebrateClear({
+          title: (meta && meta.title) || id,
+          explanation: data.explanation || '',
+          solved: status.solved,
+          total: status.total,
+        });
         return true;
       }
       fb.className = 'fb bad';
@@ -814,8 +1046,9 @@
 
     function paintNow() {
       const box = document.getElementById('now');
+      const name = playerName();
       if (!nextCh) {
-        box.innerHTML = `<p class="lbl">Path complete</p><p class="done-msg">All fifty challenges cleared.</p>`;
+        box.innerHTML = `<p class="lbl">Path complete</p><p class="done-msg">${name ? esc(name) + ', you' : 'You'} cleared all fifty challenges.</p>`;
         return;
       }
       const ch = nextCh;
@@ -824,7 +1057,7 @@
       ).join('');
       box.innerHTML = `
         <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
-        <p class="lbl">Do this next</p>
+        <p class="lbl">${name ? esc(name) + ' · ' : ''}Do this next</p>
         <h2>${esc(ch.title)}</h2>
         <div class="belt">${esc(ch.belt_label)} · ${esc(ch.dojo_title)}</div>
         <p class="mission">${esc(ch.mission || '')}</p>
@@ -854,14 +1087,22 @@
         } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
       };
       document.getElementById('now-done').onclick = async () => {
-        try { if (await doneChallenge(ch.id, '', fb())) await load(); }
-        catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+        try {
+          if (await doneChallenge(ch.id, '', fb(), { title: ch.title })) {
+            await load(true);
+            showHome();
+          }
+        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
       };
       document.getElementById('now-flag-go').onclick = async () => {
         const flag = (document.getElementById('now-flag').value || '').trim();
         if (!flag) { fb().className = 'fb bad'; fb().textContent = 'Paste a flag, or press Done.'; return; }
-        try { if (await doneChallenge(ch.id, flag, fb())) await load(); }
-        catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
+        try {
+          if (await doneChallenge(ch.id, flag, fb(), { title: ch.title })) {
+            await load(true);
+            showHome();
+          }
+        } catch (e) { fb().className = 'fb bad'; fb().textContent = e.message; }
       };
       document.getElementById('now-hint').onclick = async () => {
         try { await hintChallenge(ch.id, document.getElementById('now-hints')); }
@@ -877,7 +1118,7 @@
       document.getElementById('xp-fill').style.width = pct + '%';
       document.getElementById('xp-count').textContent = solved;
       document.getElementById('xp-total').textContent = total;
-      document.getElementById('progress').textContent = solved + '/' + total;
+      setTopProgress(solved, total);
 
       const cores = (dojos || []).filter(d => d.kind === 'core');
       const belts = document.getElementById('belts');
@@ -961,18 +1202,26 @@
             const ws = await startChallenge(ch.id, fb);
             body.querySelector('#ws-' + CSS.escape(ch.id)).textContent = 'Folder: ' + ws;
           } else if (act === 'done') {
-            if (await doneChallenge(ch.id, '', fb)) {
+            if (await doneChallenge(ch.id, '', fb, { title: ch.title })) {
               wrap.classList.add('solved');
               head.querySelector('.r').className = 'r ok';
               head.querySelector('.r').textContent = 'cleared';
               await load(true);
+              if (!detail.classList.contains('hidden')) {
+                const m = (location.hash || '').match(/^#dojo\/(.+)$/);
+                if (m) await openDojo(decodeURIComponent(m[1]), true);
+              }
             }
           } else if (act === 'flag') {
             const flag = (body.querySelector('input').value || '').trim();
             if (!flag) { fb.className = 'fb bad'; fb.textContent = 'Paste a flag, or press Done.'; return; }
-            if (await doneChallenge(ch.id, flag, fb)) {
+            if (await doneChallenge(ch.id, flag, fb, { title: ch.title })) {
               wrap.classList.add('solved');
               await load(true);
+              if (!detail.classList.contains('hidden')) {
+                const m = (location.hash || '').match(/^#dojo\/(.+)$/);
+                if (m) await openDojo(decodeURIComponent(m[1]), true);
+              }
             }
           } else if (act === 'hint') {
             await hintChallenge(ch.id, body.querySelector('#hints-' + CSS.escape(ch.id)));
@@ -1023,6 +1272,7 @@
         nextCh.started = true;
         nextCh.workspace = status.current_workspace;
       }
+      paintHello();
       paintNow();
       paintBelts(cat.dojos || [], status.solved, status.total);
 
@@ -1041,7 +1291,7 @@
       }
     }
 
-    document.getElementById('btn-enter').onclick = showHome;
+    document.getElementById('btn-enter').onclick = () => askNameThen(true);
     document.getElementById('btn-howto').onclick = () => {
       document.querySelector('#view-intro .guide')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
