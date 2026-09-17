@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -461,4 +462,110 @@ def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
         ],
         "next": (nxt.id if nxt else None),
         "next_challenge": next_challenge_payload(engine),
+    }
+
+
+def _day_key(ts: float) -> str:
+    return datetime.fromtimestamp(ts, tz=timezone.utc).date().isoformat()
+
+
+def _streak(days: dict[str, int], today: date | None = None) -> int:
+    """Consecutive days with ≥1 solve, ending today or yesterday."""
+    today = today or datetime.now(tz=timezone.utc).date()
+    cursor = today
+    if days.get(cursor.isoformat(), 0) <= 0:
+        cursor = today - timedelta(days=1)
+        if days.get(cursor.isoformat(), 0) <= 0:
+            return 0
+    streak = 0
+    while days.get(cursor.isoformat(), 0) > 0:
+        streak += 1
+        cursor -= timedelta(days=1)
+    return streak
+
+
+def profile_payload(engine: AcademyEngine) -> dict[str, Any]:
+    """Operator profile: solve calendar + belt mountain progress."""
+    store = engine.progress()
+    summary = engine.status_summary()
+    stats = [d for d in dojo_stats(engine, store) if d.kind == "core"]
+
+    cid_to_belt: dict[str, tuple[str, str]] = {}
+    for d in stats:
+        for slug in d.module_slugs:
+            try:
+                for c in engine.module_challenges(slug):
+                    cid_to_belt[c.id] = (d.belt, d.belt_label)
+            except KeyError:
+                continue
+
+    day_counts: dict[str, int] = {}
+    recent: list[dict[str, Any]] = []
+    for cid, prog in store.challenges.items():
+        if not prog.solved:
+            continue
+        ts = prog.completed_at or prog.started_at
+        if ts:
+            key = _day_key(ts)
+            day_counts[key] = day_counts.get(key, 0) + 1
+        belt, belt_label = cid_to_belt.get(cid, ("", ""))
+        try:
+            ch = engine.get_challenge(cid)
+            title = display_title(cid, ch.title)
+        except KeyError:
+            title = cid
+        recent.append(
+            {
+                "id": cid,
+                "title": title,
+                "completed_at": prog.completed_at or prog.started_at,
+                "belt": belt,
+                "belt_label": belt_label,
+            }
+        )
+
+    recent.sort(key=lambda r: r["completed_at"] or 0, reverse=True)
+
+    # Fractional ascent: each core belt is an equal terrace on the mountain.
+    n_belts = max(1, len(stats))
+    ascent = 0.0
+    current_belt = stats[0].belt if stats else "white"
+    for i, d in enumerate(stats):
+        frac = (d.solved / d.challenges) if d.challenges else 0.0
+        ascent += frac / n_belts
+        if d.solved < d.challenges:
+            current_belt = d.belt
+            break
+        if i == len(stats) - 1 and d.challenges and d.solved >= d.challenges:
+            current_belt = d.belt
+
+    best_day = None
+    if day_counts:
+        best_key = max(day_counts, key=lambda k: (day_counts[k], k))
+        best_day = {"date": best_key, "count": day_counts[best_key]}
+
+    return {
+        "solved": summary["solved"],
+        "total": summary["total"],
+        "streak": _streak(day_counts),
+        "best_day": best_day,
+        "days": day_counts,
+        "belts": [
+            {
+                "id": d.id,
+                "title": d.title,
+                "belt": d.belt,
+                "belt_label": d.belt_label,
+                "belt_color": d.belt_color,
+                "tagline": d.tagline,
+                "solved": d.solved,
+                "challenges": d.challenges,
+                "complete": d.challenges > 0 and d.solved >= d.challenges,
+                "locked": d.locked,
+            }
+            for d in stats
+        ],
+        "recent": recent[:12],
+        "current_belt": current_belt,
+        "ascent_pct": round(100 * min(1.0, ascent), 1),
     }

@@ -731,6 +731,129 @@
       box-shadow: 4px 4px 10px rgba(20,100,50,0.3), -2px -2px 6px rgba(120,220,150,0.25);
       border-color: rgba(255,255,255,0.2);
     }
+
+    /* —— profile —— */
+    .profile-btn {
+      appearance: none; border: 0; border-radius: 10px;
+      background: var(--bg); color: var(--muted);
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      min-height: 36px; padding: 0.35rem 0.7rem;
+      box-shadow: var(--shadow-card);
+    }
+    .profile-btn:hover { color: var(--accent); }
+    .profile-btn:active { box-shadow: var(--shadow-press); }
+    .score { cursor: pointer; }
+    .score:hover strong { text-decoration: underline; }
+
+    .prof-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem;
+      margin-top: 0.85rem;
+    }
+    @media (max-width: 520px) { .prof-stats { grid-template-columns: 1fr; } }
+    .prof-stat {
+      background: var(--muted-bg); border-radius: 12px;
+      box-shadow: var(--shadow-recess); padding: 0.75rem 0.8rem;
+    }
+    .prof-stat b {
+      display: block; font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+    .prof-stat strong {
+      font-family: var(--mono); font-size: 1.15rem; font-weight: 700; color: var(--fg);
+    }
+
+    .contrib {
+      margin-top: 0.85rem;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: 0.25rem;
+    }
+    .contrib-inner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.35rem 0.45rem;
+      align-items: start;
+      min-width: 620px;
+    }
+    .contrib-dows {
+      display: grid; grid-template-rows: repeat(7, 11px); gap: 3px;
+      font-family: var(--mono); font-size: 0.58rem; color: var(--muted);
+      padding-top: 1.1rem;
+    }
+    .contrib-dows span { line-height: 11px; height: 11px; }
+    .contrib-main { display: grid; gap: 0.35rem; }
+    .contrib-months {
+      display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+      font-family: var(--mono); font-size: 0.58rem; color: var(--muted);
+      height: 0.9rem;
+    }
+    .contrib-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(7, 11px);
+      grid-auto-columns: 11px;
+      gap: 3px;
+    }
+    .cday {
+      width: 11px; height: 11px; border-radius: 2px;
+      background: var(--muted-bg);
+      box-shadow: inset 1px 1px 1px rgba(0,0,0,0.06);
+    }
+    .cday.l1 { background: color-mix(in srgb, var(--ok) 28%, var(--muted-bg)); }
+    .cday.l2 { background: color-mix(in srgb, var(--ok) 52%, var(--muted-bg)); }
+    .cday.l3 { background: color-mix(in srgb, var(--ok) 78%, #16a34a); }
+    .cday.l4 { background: var(--ok); box-shadow: 0 0 0 1px rgba(34,197,94,0.25); }
+    .cday:hover { outline: 1px solid var(--fg); outline-offset: 1px; }
+    .contrib-legend {
+      display: flex; align-items: center; gap: 0.3rem; justify-content: flex-end;
+      margin-top: 0.55rem;
+      font-family: var(--mono); font-size: 0.6rem; color: var(--muted);
+    }
+    .contrib-legend i {
+      width: 11px; height: 11px; border-radius: 2px; display: inline-block;
+      font-style: normal;
+    }
+
+    .mountain-wrap {
+      margin-top: 0.75rem;
+      border-radius: 16px;
+      background: var(--muted-bg);
+      box-shadow: var(--shadow-recess);
+      padding: 0.75rem 0.5rem 0.35rem;
+      overflow: hidden;
+    }
+    .mountain-wrap svg { width: 100%; height: auto; display: block; }
+    .mtn-label {
+      font-family: var(--mono); font-size: 9px; font-weight: 600;
+      fill: var(--fg); letter-spacing: 0.04em;
+    }
+    .mtn-sub { font-family: var(--mono); font-size: 8px; fill: var(--muted); }
+    .climber {
+      transition: cx .7s var(--ease), cy .7s var(--ease);
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+    }
+    @keyframes mtn-rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mountain-wrap { animation: mtn-rise .55s var(--ease) both; }
+
+    .recent-list { display: grid; gap: 0.4rem; margin-top: 0.75rem; }
+    .recent-row {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.55rem 0.65rem; border-radius: 10px;
+      background: var(--bg); box-shadow: var(--shadow-card);
+    }
+    .recent-row img { width: 22px; height: 22px; object-fit: contain; }
+    .recent-row .t { flex: 1; min-width: 0; }
+    .recent-row .t strong {
+      display: block; font-size: 0.88rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .recent-row .t span {
+      font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+    }
   </style>
   <script>
     (function () {
@@ -753,7 +876,8 @@
       </a>
       <span class="led" id="led"><i></i><span>Ready</span></span>
       <span class="hello" id="hello"></span>
-      <div class="score"><strong id="progress">…</strong></div>
+      <div class="score" id="btn-score" title="Open profile"><strong id="progress">…</strong></div>
+      <button type="button" class="profile-btn" id="btn-profile">Profile</button>
       <button type="button" class="theme-btn" id="btn-theme" aria-label="Toggle dark mode">Dark</button>
     </div>
     <div class="top-progress" aria-label="Overall progress"><i id="top-fill"></i></div>
@@ -851,6 +975,54 @@
       </section>
       <div class="clist" id="clist"></div>
     </div>
+
+    <!-- PROFILE -->
+    <div id="view-profile" class="hidden">
+      <div class="cta-row" style="margin:0 0 0.85rem">
+        <button type="button" class="ghost" id="btn-profile-back">← Lab</button>
+      </div>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Operator profile</p>
+        <h2 id="prof-name">Your path</h2>
+        <p class="lede" id="prof-lede" style="max-width:42ch">
+          Clears on this machine — when you solved, and how far up the belts you’ve climbed.
+        </p>
+        <div class="prof-stats">
+          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/50</strong></div>
+          <div class="prof-stat"><b>Streak</b><strong id="prof-streak">0 days</strong></div>
+          <div class="prof-stat"><b>Ascent</b><strong id="prof-ascent">0%</strong></div>
+        </div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Activity</p>
+        <h2>Solve calendar</h2>
+        <p class="lede" style="max-width:42ch;font-size:0.95rem">
+          Each square is a day. Darker green means more challenges cleared that day.
+        </p>
+        <div class="contrib" id="contrib" aria-label="Contribution calendar"></div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Belt path</p>
+        <h2>The mountain</h2>
+        <p class="lede" style="max-width:42ch;font-size:0.95rem">
+          White belt base camp to Blue belt summit. Your marker climbs as you clear each belt.
+        </p>
+        <div class="mountain-wrap" id="mountain" aria-label="Belt mountain progress"></div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Recent clears</p>
+        <h2>Latest work</h2>
+        <div class="recent-list" id="recent-list"></div>
+      </section>
+    </div>
   </main>
 
   <div class="toasts" id="toasts"></div>
@@ -889,10 +1061,12 @@
     const intro = document.getElementById('view-intro');
     const home = document.getElementById('view-home');
     const detail = document.getElementById('view-dojo');
+    const profile = document.getElementById('view-profile');
     let nextCh = null;
     let catalogIntro = '';
     let lastSolved = 0;
     let lastTotal = 50;
+    let lastProfile = null;
 
     function esc(s) {
       return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1005,6 +1179,7 @@
     function showIntro() {
       home.classList.add('hidden');
       detail.classList.add('hidden');
+      profile.classList.add('hidden');
       intro.classList.remove('hidden');
       document.getElementById('led').querySelector('span').textContent = 'Ready';
       history.replaceState({ view: 'intro' }, '', '#intro');
@@ -1012,11 +1187,22 @@
     function showHome() {
       intro.classList.add('hidden');
       detail.classList.add('hidden');
+      profile.classList.add('hidden');
       home.classList.remove('hidden');
       document.getElementById('led').querySelector('span').textContent = 'Lab';
       history.pushState({ view: 'home' }, '', '#lab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       paintNow();
+    }
+    async function showProfile() {
+      intro.classList.add('hidden');
+      home.classList.add('hidden');
+      detail.classList.add('hidden');
+      profile.classList.remove('hidden');
+      document.getElementById('led').querySelector('span').textContent = 'Profile';
+      history.pushState({ view: 'profile' }, '', '#profile');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      await paintProfile();
     }
 
     async function startChallenge(id, fb) {
@@ -1269,6 +1455,7 @@
       });
       intro.classList.add('hidden');
       home.classList.add('hidden');
+      profile.classList.add('hidden');
       detail.classList.remove('hidden');
       if (!keep) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1276,6 +1463,180 @@
         const open = root.querySelector('.crow.open');
         if (open) open.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+    }
+
+    function levelForCount(n) {
+      if (n <= 0) return 0;
+      if (n === 1) return 1;
+      if (n === 2) return 2;
+      if (n <= 4) return 3;
+      return 4;
+    }
+
+    function paintContrib(days) {
+      const wrap = document.getElementById('contrib');
+      const today = new Date();
+      today.setHours(12, 0, 0, 0);
+      // Align grid to Sunday columns (GitHub-style)
+      const end = new Date(today);
+      const start = new Date(today);
+      start.setDate(start.getDate() - end.getDay() - 52 * 7);
+
+      const weekCount = 53;
+      const cells = [];
+      const monthAtWeek = new Array(weekCount).fill('');
+      let cursor = new Date(start);
+      let prevMonth = -1;
+      for (let w = 0; w < weekCount; w++) {
+        for (let d = 0; d < 7; d++) {
+          const key = [
+            cursor.getFullYear(),
+            String(cursor.getMonth() + 1).padStart(2, '0'),
+            String(cursor.getDate()).padStart(2, '0')
+          ].join('-');
+          const future = cursor > end;
+          const count = future ? 0 : (days[key] || 0);
+          const lvl = future ? 0 : levelForCount(count);
+          const title = future
+            ? ''
+            : (count
+              ? `${count} clear${count === 1 ? '' : 's'} on ${key}`
+              : `No clears on ${key}`);
+          if (d === 0) {
+            const m = cursor.getMonth();
+            if (m !== prevMonth) {
+              monthAtWeek[w] = cursor.toLocaleString('en', { month: 'short' });
+              prevMonth = m;
+            }
+          }
+          cells.push({ lvl, title, future });
+          cursor.setDate(cursor.getDate() + 1);
+        }
+      }
+
+      wrap.innerHTML = `
+        <div class="contrib-inner">
+          <div class="contrib-dows">
+            <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
+          </div>
+          <div class="contrib-main">
+            <div class="contrib-months" style="grid-template-columns:repeat(${weekCount},11px);gap:3px">
+              ${monthAtWeek.map(l => `<span>${esc(l)}</span>`).join('')}
+            </div>
+            <div class="contrib-grid">
+              ${cells.map(c =>
+                `<div class="cday${c.lvl ? ' l' + c.lvl : ''}" title="${esc(c.title)}"></div>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="contrib-legend">
+          Less
+          <i class="cday"></i><i class="cday l1"></i><i class="cday l2"></i><i class="cday l3"></i><i class="cday l4"></i>
+          More
+        </div>
+      `;
+    }
+
+    function paintMountain(belts, ascentPct) {
+      const el = document.getElementById('mountain');
+      const n = Math.max(1, (belts || []).length);
+      // Station positions along a ridge (left base → right peak)
+      const stations = (belts || []).map((b, i) => {
+        const t = n === 1 ? 0.5 : i / (n - 1);
+        const x = 36 + t * 280;
+        const y = 168 - t * 118 - Math.sin(t * Math.PI) * 8;
+        return { ...b, x, y, t };
+      });
+      // Climber sits on the ascent fraction along the polyline
+      let cx = stations[0]?.x || 36;
+      let cy = stations[0]?.y || 168;
+      const target = Math.min(1, Math.max(0, (ascentPct || 0) / 100));
+      if (stations.length >= 2) {
+        const pos = target * (stations.length - 1);
+        const i0 = Math.floor(pos);
+        const i1 = Math.min(stations.length - 1, i0 + 1);
+        const f = pos - i0;
+        cx = stations[i0].x + (stations[i1].x - stations[i0].x) * f;
+        cy = stations[i0].y + (stations[i1].y - stations[i0].y) * f;
+      }
+
+      const ridge = stations.map((s, i) => `${i ? 'L' : 'M'}${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' ');
+      const fillPath = `M20,190 L${stations.map(s => `${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' L')} L320,190 Z`;
+
+      el.innerHTML = `
+        <svg viewBox="0 0 340 210" role="img" aria-label="Belt ascent ${ascentPct || 0} percent">
+          <defs>
+            <linearGradient id="mtnFill" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#5b6b7c" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#8fa3b5" stop-opacity="0.55"/>
+            </linearGradient>
+            <linearGradient id="mtnSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#9eb6c8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#5b6b7c" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="340" height="210" fill="url(#mtnSky)"/>
+          <path d="${fillPath}" fill="url(#mtnFill)" stroke="none"/>
+          <path d="${ridge}" fill="none" stroke="#3d4a58" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="${ridge}" fill="none" stroke="#c5d0dc" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+          ${stations.map((s, i) => {
+            const done = s.complete;
+            const r = done ? 7 : 5.5;
+            const fill = done ? '#22c55e' : '#e0e5ec';
+            const stroke = done ? '#15803d' : '#3d4a58';
+            const short = (s.belt_label || s.belt || '').replace(/ Belt$/i, '');
+            return `
+              <circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+              <text class="mtn-label" x="${s.x}" y="${s.y - 14}" text-anchor="middle">${esc(short)}</text>
+              <text class="mtn-sub" x="${s.x}" y="${s.y + 18}" text-anchor="middle">${s.solved}/${s.challenges}</text>
+            `;
+          }).join('')}
+          <g class="climber">
+            <circle cx="${cx}" cy="${cy - 14}" r="6" fill="#ff4757" stroke="#fff" stroke-width="1.5"/>
+            <circle cx="${cx}" cy="${cy - 14}" r="2.2" fill="#fff"/>
+          </g>
+          <text class="mtn-sub" x="170" y="202" text-anchor="middle">Summit · Blue Belt</text>
+        </svg>
+      `;
+    }
+
+    async function paintProfile() {
+      const data = await api('/api/profile');
+      lastProfile = data;
+      const name = playerName();
+      document.getElementById('prof-name').textContent = name ? `${name}'s path` : 'Your path';
+      document.getElementById('prof-cleared').textContent = `${data.solved}/${data.total}`;
+      document.getElementById('prof-streak').textContent =
+        (data.streak || 0) === 1 ? '1 day' : `${data.streak || 0} days`;
+      document.getElementById('prof-ascent').textContent = `${data.ascent_pct || 0}%`;
+      paintContrib(data.days || {});
+      paintMountain(data.belts || [], data.ascent_pct || 0);
+
+      const recent = document.getElementById('recent-list');
+      recent.innerHTML = '';
+      const rows = data.recent || [];
+      if (!rows.length) {
+        recent.innerHTML = '<p class="lede" style="margin:0">No clears yet — enter the lab and take White Belt.</p>';
+        return;
+      }
+      rows.forEach(r => {
+        const when = r.completed_at
+          ? new Date(r.completed_at * 1000).toLocaleString(undefined, {
+              month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            })
+          : '';
+        const row = document.createElement('div');
+        row.className = 'recent-row';
+        row.innerHTML = `
+          <img src="/icons/${BELT[r.belt] || 'belt-white'}.png" alt=""/>
+          <div class="t">
+            <strong>${esc(r.title)}</strong>
+            <span>${esc(r.belt_label || '')}${when ? ' · ' + esc(when) : ''}</span>
+          </div>
+        `;
+        recent.appendChild(row);
+      });
     }
 
     async function load(stay) {
@@ -1296,10 +1657,16 @@
         if (m) await openDojo(decodeURIComponent(m[1]), true);
         return;
       }
+      if (stay && !profile.classList.contains('hidden')) {
+        await paintProfile();
+        return;
+      }
       if (hash.startsWith('#dojo/')) {
         await openDojo(decodeURIComponent(hash.slice(6)));
       } else if (hash === '#lab') {
         showHome();
+      } else if (hash === '#profile') {
+        await showProfile();
       } else {
         showIntro();
       }
@@ -1311,6 +1678,9 @@
     };
     document.getElementById('btn-intro').onclick = showIntro;
     document.getElementById('btn-back').onclick = showHome;
+    document.getElementById('btn-profile').onclick = () => showProfile();
+    document.getElementById('btn-profile-back').onclick = showHome;
+    document.getElementById('btn-score').onclick = () => showProfile();
     document.getElementById('home-link').onclick = (e) => {
       e.preventDefault();
       showIntro();
@@ -1345,6 +1715,7 @@
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view === 'dojo' && e.state.id) openDojo(e.state.id);
       else if (e.state && e.state.view === 'home') showHome();
+      else if (e.state && e.state.view === 'profile') showProfile();
       else showIntro();
     });
     load().catch(err => toast('Load failed', err.message || String(err)));

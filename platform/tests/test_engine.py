@@ -286,3 +286,35 @@ def test_verify_awards_session_flag(engine, tmp_path, monkeypatch):
     awarded = award_flag(dest, silent=True)
     assert awarded == session
     assert flag_path.read_text().strip() == session
+
+
+def test_profile_payload_calendar_and_mountain(engine):
+    import time
+    from academy.dojos import profile_payload
+    from academy.progress import ChallengeProgress
+
+    store = engine.progress()
+    now = time.time()
+    store.challenges["orient-find-flag"] = ChallengeProgress(
+        started_at=now - 100,
+        completed_at=now - 50,
+        solved=True,
+    )
+    store.challenges["orient-permissions"] = ChallengeProgress(
+        started_at=now - 40,
+        completed_at=now - 20,
+        solved=True,
+    )
+    engine.progress_repo.save(store)
+
+    profile = profile_payload(engine)
+    assert profile["solved"] == 2
+    assert profile["total"] == 50
+    assert profile["ascent_pct"] > 0
+    assert len(profile["belts"]) == 5
+    assert profile["belts"][0]["belt"] == "white"
+    assert profile["belts"][0]["solved"] == 2
+    assert profile["days"]
+    assert sum(profile["days"].values()) == 2
+    assert profile["recent"][0]["id"] in {"orient-find-flag", "orient-permissions"}
+    assert profile["streak"] >= 1
