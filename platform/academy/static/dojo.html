@@ -677,16 +677,17 @@
     .stamp {
       display: inline-block;
       margin-top: 0.85rem;
-      padding: 0.35rem 0.85rem;
-      border: 3px solid var(--accent);
+      padding: 0.4rem 0.95rem;
+      border: 3px solid var(--ok);
       border-radius: 8px;
-      color: var(--accent);
-      font-family: var(--mono); font-weight: 800; font-size: 1.05rem;
+      color: var(--ok);
+      font-family: var(--mono); font-weight: 800; font-size: 1.1rem;
       letter-spacing: 0.14em; text-transform: uppercase;
       transform: rotate(-8deg) scale(0.6);
       opacity: 0;
       animation: stamp .55s var(--ease) .15s forwards;
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent),
+                  0 0 18px rgba(34,197,94,0.35);
     }
     @keyframes stamp {
       0% { opacity: 0; transform: rotate(-18deg) scale(1.4); }
@@ -697,17 +698,18 @@
       position: absolute; inset: 0; pointer-events: none; overflow: hidden;
     }
     .burst-bits span {
-      position: absolute; top: 45%; left: 50%;
-      width: 8px; height: 8px; border-radius: 2px;
-      background: var(--accent);
-      animation: confetti 900ms ease-out forwards;
+      position: absolute;
+      top: -8%;
+      left: var(--left, 50%);
+      width: var(--w, 8px); height: var(--h, 10px);
+      border-radius: 2px;
+      background: var(--c, var(--ok));
       opacity: 0;
+      animation: confetti-fall var(--dur, 1.2s) var(--ease) var(--delay, 0ms) forwards;
     }
-    .burst-bits span:nth-child(odd) { background: var(--ok); width: 6px; height: 6px; border-radius: 999px; }
-    .burst-bits span:nth-child(3n) { background: #e9c46a; }
-    @keyframes confetti {
-      0% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
-      100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(220deg) scale(0.4); }
+    @keyframes confetti-fall {
+      0% { opacity: 1; transform: translate3d(0,0,0) rotate(0deg); }
+      100% { opacity: 0; transform: translate3d(var(--dx), 110vh, 0) rotate(var(--rot)); }
     }
     .cele-bar {
       margin-top: 1rem;
@@ -718,8 +720,16 @@
     }
     .cele-bar > i {
       display: block; height: 100%; width: 0%;
-      background: linear-gradient(90deg, #ff7b86, var(--accent));
+      background: linear-gradient(90deg, #4ade80, var(--ok));
       transition: width .7s var(--ease);
+      box-shadow: 0 0 8px rgba(34,197,94,0.45);
+    }
+    #cele-title { color: var(--ok-text); }
+    html[data-theme="dark"] #cele-title { color: #4ade80; }
+    .go.ok-btn {
+      background: var(--ok);
+      box-shadow: 4px 4px 10px rgba(20,100,50,0.3), -2px -2px 6px rgba(120,220,150,0.25);
+      border-color: rgba(255,255,255,0.2);
     }
   </style>
   <script>
@@ -862,14 +872,14 @@
   <div class="overlay hidden" id="celebrate" role="dialog" aria-modal="true" aria-labelledby="cele-title">
     <div class="overlay-card" id="cele-card">
       <div class="burst-bits" id="cele-bits" aria-hidden="true"></div>
-      <p class="lbl">Challenge cleared</p>
-      <h2 id="cele-title">Nice work</h2>
-      <div class="stamp">Cleared</div>
+      <p class="lbl">Nice work</p>
+      <h2 id="cele-title">Challenge cleared</h2>
+      <div class="stamp">Success</div>
       <p class="sub" id="cele-sub"></p>
       <div class="cele-bar"><i id="cele-fill"></i></div>
       <p class="sub" id="cele-count" style="margin-top:0.45rem;font-family:var(--mono);font-size:0.78rem"></p>
       <div class="cta-row">
-        <button type="button" class="go" id="btn-cele-next">Next challenge</button>
+        <button type="button" class="go ok-btn" id="btn-cele-next">Next challenge</button>
       </div>
     </div>
   </div>
@@ -944,26 +954,31 @@
       input.onkeydown = (e) => { if (e.key === 'Enter') save(); };
     }
 
-    function celebrateClear({ title, explanation, solved, total }) {
+    function celebrateClear({ title, solved, total }) {
       return new Promise((resolve) => {
         const overlay = document.getElementById('celebrate');
         const name = playerName();
         document.getElementById('cele-title').textContent =
-          name ? `Cleared, ${name}!` : 'Challenge cleared!';
+          name ? `You did it, ${name}!` : 'You did it!';
         document.getElementById('cele-sub').textContent =
-          explanation || (title ? `You finished “${title}”.` : 'Nice work.');
+          title ? `“${title}” is cleared. On to the next one.` : 'Challenge cleared. On to the next one.';
         document.getElementById('cele-count').textContent =
           `${solved} / ${total} challenges`;
 
         const bits = document.getElementById('cele-bits');
         bits.innerHTML = '';
-        for (let i = 0; i < 18; i++) {
+        const colors = ['#22c55e', '#4ade80', '#86efac', '#e9c46a', '#38bdf8', '#a3e635'];
+        for (let i = 0; i < 42; i++) {
           const s = document.createElement('span');
-          const ang = (Math.PI * 2 * i) / 18;
-          const dist = 60 + (i % 5) * 22;
-          s.style.setProperty('--x', Math.cos(ang) * dist + 'px');
-          s.style.setProperty('--y', Math.sin(ang) * dist + 'px');
-          s.style.animationDelay = (i * 18) + 'ms';
+          s.style.setProperty('--left', (4 + Math.random() * 92) + '%');
+          s.style.setProperty('--dx', ((Math.random() - 0.5) * 160) + 'px');
+          s.style.setProperty('--rot', ((Math.random() * 720) - 360) + 'deg');
+          s.style.setProperty('--dur', (0.9 + Math.random() * 0.9) + 's');
+          s.style.setProperty('--delay', (Math.random() * 280) + 'ms');
+          s.style.setProperty('--c', colors[i % colors.length]);
+          s.style.setProperty('--w', (5 + Math.random() * 7) + 'px');
+          s.style.setProperty('--h', (7 + Math.random() * 9) + 'px');
+          if (i % 4 === 0) s.style.borderRadius = '999px';
           bits.appendChild(s);
         }
 
@@ -1025,7 +1040,6 @@
         const status = await api('/api/status');
         await celebrateClear({
           title: (meta && meta.title) || id,
-          explanation: data.explanation || '',
           solved: status.solved,
           total: status.total,
         });
@@ -1317,6 +1331,16 @@
       };
       sync();
     })();
+
+    paintHello();
+    document.getElementById('hello').onclick = () => {
+      // Allow renaming anytime
+      try { localStorage.removeItem('academy-player-name'); } catch (e) {}
+      paintHello();
+      askNameThen(false);
+    };
+    document.getElementById('hello').style.cursor = 'pointer';
+    document.getElementById('hello').title = 'Change name';
 
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view === 'dojo' && e.state.id) openDojo(e.state.id);

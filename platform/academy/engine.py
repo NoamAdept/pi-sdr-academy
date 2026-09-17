@@ -333,21 +333,30 @@ def _plant_session_flag(target: Path, flag: str) -> None:
         except OSError:
             text = ""
         name = target.name
-        # Split across LAB_FLAG_PART1 / PART2 for the environment challenge.
-        if name == "lab_shell.sh" and "LAB_FLAG_PART1" in text:
+        # Environment challenge: never leave the live flag inside lab_shell.sh
+        # (students could `cat` it). Plant a one-shot .lab_env instead.
+        if name == "lab_shell.sh":
             mid = max(1, len(flag) // 2)
             part1, part2 = flag[:mid], flag[mid:]
+            env_path = target.parent / ".lab_env"
+            env_path.write_text(
+                f"export LAB_FLAG_PART1={part1!r}\nexport LAB_FLAG_PART2={part2!r}\n",
+                encoding="utf-8",
+            )
+            try:
+                os.chmod(env_path, 0o600)
+            except OSError:
+                pass
             text = re.sub(
                 r"export LAB_FLAG_PART1=.*",
-                f"export LAB_FLAG_PART1={part1!r}",
+                "unset LAB_FLAG_PART1 2>/dev/null || true",
                 text,
             )
             text = re.sub(
                 r"export LAB_FLAG_PART2=.*",
-                f"export LAB_FLAG_PART2={part2!r}",
+                "unset LAB_FLAG_PART2 2>/dev/null || true",
                 text,
             )
-            # Keep decoy wrong
             text = re.sub(
                 r"export DECOY_FLAG=.*",
                 "export DECOY_FLAG='flag{wrong_source_use_lab_vars}'",

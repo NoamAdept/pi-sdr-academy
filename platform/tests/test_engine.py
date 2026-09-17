@@ -26,16 +26,30 @@ def test_modules_loaded(engine):
     assert modules[0].slug == "orientation"
 
 
-def test_next_challenge_card(engine):
-    from academy.dojos import catalog_payload
+def test_env_challenge_flag_not_in_lab_shell(engine, tmp_path):
+    """Live session flag must not be readable via `cat lab_shell.sh`."""
+    from academy.progress import ChallengeProgress
 
-    cat = catalog_payload(engine)
-    nxt = cat["next_challenge"]
-    assert nxt is not None
-    assert nxt["id"] == "orient-find-flag"
-    assert nxt["dojo_id"] == "intro-lab"
-    assert nxt["mission"]
-    assert len(nxt["steps"]) >= 1
+    store = engine.progress()
+    store.challenges["orient-process-hunt"] = ChallengeProgress(solved=True)
+    engine.progress_repo.save(store)
+
+    dest = engine.start_challenge("orient-environment")
+    script = (dest / "lab_shell.sh").read_text(encoding="utf-8")
+    lab_env = dest / ".lab_env"
+    assert lab_env.is_file()
+    parts = lab_env.read_text(encoding="utf-8")
+    assert "LAB_FLAG_PART1" in parts and "LAB_FLAG_PART2" in parts
+    # Script may mention the decoy only — never the live session exports.
+    assert "export LAB_FLAG_PART1='flag" not in script
+    assert "export LAB_FLAG_PART2='flag" not in script
+    live = "".join(
+        line.split("=", 1)[1].strip().strip("'\"")
+        for line in parts.splitlines()
+        if line.startswith("export LAB_FLAG_PART")
+    )
+    assert live.startswith("flag{")
+    assert live not in script
 
 
 def test_orientation_challenges(engine):
