@@ -51,6 +51,13 @@ def test_users_and_per_user_progress_branches(engine):
     data = json.loads(alice_file.read_text(encoding="utf-8"))
     assert data["challenges"]["orient-find-flag"]["solved"] is True
 
+    # Login rejects unknown usernames
+    try:
+        engine.set_user("not-a-real-user")
+        raise AssertionError("expected unknown username to fail")
+    except RuntimeError as exc:
+        assert "Unknown username" in str(exc)
+
 
 def test_delete_challenge(tmp_path, engine):
     from academy.admin import create_challenge, default_challenge_draft, delete_challenge

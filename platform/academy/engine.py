@@ -64,14 +64,17 @@ class AcademyEngine:
 
         return HookedProgressRepository(path, on_save=_commit)
 
-    def set_user(self, user_id: str) -> str:
+    def set_user(self, user_id: str, *, create_if_missing: bool = False) -> str:
         """Switch the active operator; progress loads from that user's branch file."""
         from .users import slugify_user_id
 
         uid = slugify_user_id(user_id)
         user = self.users.get(uid)
         if user is None:
-            # Auto-register students who type a new name at the dojo gate.
+            if not create_if_missing:
+                raise RuntimeError(
+                    f"Unknown username “{uid}”. Ask your instructor to add you in Admin → Users."
+                )
             user = self.users.upsert(user_id=uid, display_name=user_id, role="student")
         if not user.active:
             raise RuntimeError(f"User {uid} is disabled")

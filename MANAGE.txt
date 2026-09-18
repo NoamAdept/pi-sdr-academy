@@ -11,8 +11,8 @@ Start the lab
 Or:  python3 -m academy.cli admin
 
 
-1) Users
---------
+1) Users / login
+----------------
 Admin UI → Users, or CLI:
 
   academy users add alice --name Alice
@@ -20,7 +20,8 @@ Admin UI → Users, or CLI:
   academy users list
   academy users disable bob
 
-On the dojo, operators sign in with their id. That selects their progress.
+On the dojo, students **Log in** with their username (accounts are created
+by the instructor — unknown usernames are rejected).
 
 
 2) Curriculum — add / remove challenges

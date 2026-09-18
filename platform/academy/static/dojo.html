@@ -830,7 +830,7 @@
     }
     .mtn-sub { font-family: var(--mono); font-size: 8px; fill: var(--muted); }
     .climber {
-      transition: cx .7s var(--ease), cy .7s var(--ease);
+      transition: transform .7s var(--ease);
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
     }
     @keyframes mtn-rise {
@@ -838,6 +838,9 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .mountain-wrap { animation: mtn-rise .55s var(--ease) both; }
+    html[data-theme="dark"] .mountain-wrap { background: #151a21; }
+    html[data-theme="dark"] .mtn-label { fill: #e8edf5; }
+    html[data-theme="dark"] .mtn-sub { fill: #9aa3b5; }
 
     .recent-list { display: grid; gap: 0.4rem; margin-top: 0.75rem; }
     .recent-row {
@@ -853,6 +856,43 @@
     }
     .recent-row .t span {
       font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+    }
+
+    /* —— login —— */
+    .login-label {
+      display: block;
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      margin: 0.85rem 0 0.35rem;
+    }
+    .login-users {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-top: 0.75rem; min-height: 0;
+    }
+    .login-users:empty { display: none; }
+    .login-chip {
+      appearance: none; border: 0; border-radius: 10px;
+      background: var(--bg); color: var(--fg);
+      font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+      padding: 0.45rem 0.7rem;
+      box-shadow: var(--shadow-card);
+    }
+    .login-chip:hover { color: var(--accent); }
+    .login-chip.on {
+      background: var(--accent); color: var(--accent-fg);
+      box-shadow: var(--shadow-accent);
+    }
+    .login-chip .u {
+      display: block; font-size: 0.62rem; font-weight: 500;
+      opacity: 0.75; letter-spacing: 0.04em;
+    }
+    .login-err {
+      margin: 0.55rem 0 0;
+      color: var(--accent);
+      font-family: var(--mono); font-size: 0.75rem;
+    }
+    .hello .at {
+      font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: 0.78rem;
     }
   </style>
   <script>
@@ -1029,14 +1069,17 @@
 
   <div class="overlay hidden" id="name-gate" role="dialog" aria-modal="true" aria-labelledby="name-title">
     <div class="overlay-card">
-      <p class="lbl">Operator ID</p>
-      <h2 id="name-title">What should we call you?</h2>
-      <p class="sub">Saved on this machine only. Makes clears feel like yours.</p>
+      <p class="lbl">Account</p>
+      <h2 id="name-title">Log in</h2>
+      <p class="sub" id="login-sub">Enter your username. Your instructor creates accounts in Admin → Users.</p>
+      <div id="login-users" class="login-users" aria-label="Registered usernames"></div>
+      <label class="login-label" for="name-input">Username</label>
       <div class="flagrow">
-        <input id="name-input" maxlength="32" placeholder="Your name" autocomplete="nickname"/>
+        <input id="name-input" maxlength="32" placeholder="username" autocomplete="username" spellcheck="false"/>
       </div>
+      <p class="login-err hidden" id="login-err" role="alert"></p>
       <div class="cta-row">
-        <button type="button" class="go" id="btn-save-name">Save & enter</button>
+        <button type="button" class="go" id="btn-save-name">Log in</button>
       </div>
     </div>
   </div>
@@ -1100,7 +1143,13 @@
     function paintHello() {
       const el = document.getElementById('hello');
       const n = playerName();
-      el.innerHTML = n ? `Hi, <b>${esc(n)}</b>` : '';
+      const uid = playerUserId();
+      if (uid) {
+        el.innerHTML = `<span class="at">@${esc(uid)}</span>` +
+          (n && n !== uid ? ` <b>${esc(n)}</b>` : '');
+      } else {
+        el.innerHTML = n ? `<b>${esc(n)}</b>` : '';
+      }
     }
     function setTopProgress(solved, total) {
       lastSolved = solved;
@@ -1128,50 +1177,73 @@
     }
 
     function askNameThen(enterLab) {
-      if (playerUserId() && playerName()) {
-        // Re-bind session on this server process
+      if (playerUserId()) {
         setSessionUser(playerUserId()).then(() => {
           if (enterLab) showHome();
         }).catch(() => {
-          if (enterLab) showHome();
+          // Stored username no longer valid — force login
+          try {
+            localStorage.removeItem('academy-user-id');
+            localStorage.removeItem('academy-player-name');
+          } catch (e) {}
+          openLogin(enterLab);
         });
         return;
       }
+      openLogin(enterLab);
+    }
+
+    function openLogin(enterLab) {
       const gate = document.getElementById('name-gate');
       const input = document.getElementById('name-input');
-      const sub = gate.querySelector('.sub');
+      const chips = document.getElementById('login-users');
+      const err = document.getElementById('login-err');
+      err.classList.add('hidden');
+      err.textContent = '';
       gate.classList.remove('hidden');
-      input.value = playerName() || '';
-      // Offer known users when the lab has a directory
+      input.value = playerUserId() || '';
+      chips.innerHTML = '';
+
       api('/api/users').then(data => {
-        const users = data.users || [];
-        if (users.length && sub) {
-          sub.textContent = 'Pick your operator id (saved on this machine). Progress is tracked per user.';
-          // Prefill datalist
-          let list = document.getElementById('user-datalist');
-          if (!list) {
-            list = document.createElement('datalist');
-            list.id = 'user-datalist';
-            document.body.appendChild(list);
-            input.setAttribute('list', 'user-datalist');
-          }
-          list.innerHTML = users.map(u =>
-            `<option value="${esc(u.id)}">${esc(u.display_name)}</option>`
-          ).join('');
+        const users = (data.users || []).filter(u => u.id !== 'local' || (data.users || []).length === 1);
+        const show = (data.users || []);
+        chips.innerHTML = show.map(u => `
+          <button type="button" class="login-chip" data-user="${esc(u.id)}">
+            ${esc(u.display_name || u.id)}
+            <span class="u">@${esc(u.id)}</span>
+          </button>
+        `).join('');
+        chips.querySelectorAll('.login-chip').forEach(btn => {
+          btn.onclick = () => {
+            chips.querySelectorAll('.login-chip').forEach(b => b.classList.remove('on'));
+            btn.classList.add('on');
+            input.value = btn.dataset.user;
+            err.classList.add('hidden');
+          };
+        });
+        if (!show.length) {
+          document.getElementById('login-sub').textContent =
+            'No accounts yet. Instructor: ACADEMY_ADMIN=1 ./run.sh → Admin → Users.';
         }
       }).catch(() => {});
+
       setTimeout(() => input.focus(), 50);
       const save = async () => {
-        const raw = (input.value || '').trim();
+        const raw = (input.value || '').trim().toLowerCase();
         if (!raw) { input.focus(); return; }
+        err.classList.add('hidden');
         try {
           await setSessionUser(raw);
           gate.classList.add('hidden');
           if (enterLab) {
             await load(true);
             showHome();
+          } else {
+            await load(true);
           }
         } catch (e) {
+          err.textContent = e.message || String(e);
+          err.classList.remove('hidden');
           toast('Login failed', e.message || String(e));
         }
       };
@@ -1591,16 +1663,17 @@
 
     function paintMountain(belts, ascentPct) {
       const el = document.getElementById('mountain');
-      const n = Math.max(1, (belts || []).length);
-      // Station positions along a ridge (left base → right peak)
-      const stations = (belts || []).map((b, i) => {
-        const t = n === 1 ? 0.5 : i / (n - 1);
-        const x = 36 + t * 280;
-        const y = 168 - t * 118 - Math.sin(t * Math.PI) * 8;
+      const list = belts || [];
+      const n = Math.max(1, list.length);
+      // Trail stations climb the main face toward the summit (right peak)
+      const stations = list.map((b, i) => {
+        const t = n === 1 ? 1 : i / (n - 1);
+        // Ease up the left shoulder → summit
+        const x = 48 + t * 230;
+        const y = 168 - Math.pow(t, 0.85) * 112;
         return { ...b, x, y, t };
       });
-      // Climber sits on the ascent fraction along the polyline
-      let cx = stations[0]?.x || 36;
+      let cx = stations[0]?.x || 48;
       let cy = stations[0]?.y || 168;
       const target = Math.min(1, Math.max(0, (ascentPct || 0) / 100));
       if (stations.length >= 2) {
@@ -1611,43 +1684,105 @@
         cx = stations[i0].x + (stations[i1].x - stations[i0].x) * f;
         cy = stations[i0].y + (stations[i1].y - stations[i0].y) * f;
       }
-
-      const ridge = stations.map((s, i) => `${i ? 'L' : 'M'}${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' ');
-      const fillPath = `M20,190 L${stations.map(s => `${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' L')} L320,190 Z`;
+      const trail = stations.map((s, i) => `${i ? 'L' : 'M'}${s.x.toFixed(1)},${s.y.toFixed(1)}`).join(' ');
 
       el.innerHTML = `
-        <svg viewBox="0 0 340 210" role="img" aria-label="Belt ascent ${ascentPct || 0} percent">
+        <svg viewBox="0 0 340 220" role="img" aria-label="Belt mountain ${ascentPct || 0} percent to summit">
           <defs>
-            <linearGradient id="mtnFill" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stop-color="#5b6b7c" stop-opacity="0.35"/>
-              <stop offset="100%" stop-color="#8fa3b5" stop-opacity="0.55"/>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7a92a8"/>
+              <stop offset="55%" stop-color="#b7c5d1"/>
+              <stop offset="100%" stop-color="#d5dde6"/>
             </linearGradient>
-            <linearGradient id="mtnSky" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#9eb6c8" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#5b6b7c" stop-opacity="0"/>
+            <linearGradient id="farRock" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8a9aaa"/>
+              <stop offset="100%" stop-color="#6a7a88"/>
+            </linearGradient>
+            <linearGradient id="mainRock" x1="0" y1="0" x2="0.35" y2="1">
+              <stop offset="0%" stop-color="#6d7c8c"/>
+              <stop offset="45%" stop-color="#4e5c6a"/>
+              <stop offset="100%" stop-color="#3a4652"/>
+            </linearGradient>
+            <linearGradient id="shadeFace" x1="0" y1="0" x2="1" y2="0.4">
+              <stop offset="0%" stop-color="#2c3640" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#1a222a" stop-opacity="0.55"/>
+            </linearGradient>
+            <linearGradient id="snowGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f4f7fa"/>
+              <stop offset="100%" stop-color="#c5d0dc"/>
+            </linearGradient>
+            <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5a6b52"/>
+              <stop offset="100%" stop-color="#3e4a3c"/>
             </linearGradient>
           </defs>
-          <rect x="0" y="0" width="340" height="210" fill="url(#mtnSky)"/>
-          <path d="${fillPath}" fill="url(#mtnFill)" stroke="none"/>
-          <path d="${ridge}" fill="none" stroke="#3d4a58" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="${ridge}" fill="none" stroke="#c5d0dc" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
-          ${stations.map((s, i) => {
+
+          <!-- sky -->
+          <rect width="340" height="220" fill="url(#skyGrad)"/>
+          <ellipse cx="268" cy="42" rx="34" ry="12" fill="#e8eef4" opacity="0.55"/>
+          <ellipse cx="290" cy="38" rx="18" ry="8" fill="#f5f8fb" opacity="0.4"/>
+
+          <!-- far range -->
+          <path d="M0,150 L40,118 L72,138 L110,95 L148,128 L190,88 L230,120 L270,78 L310,115 L340,98 L340,220 L0,220 Z"
+                fill="url(#farRock)" opacity="0.55"/>
+
+          <!-- main mountain mass -->
+          <path d="M8,200
+                   L55,150 L78,165 L115,95 L145,125
+                   L175,70 L205,105 L248,38 L290,95
+                   L320,78 L340,110 L340,210 L8,210 Z"
+                fill="url(#mainRock)"/>
+          <!-- shaded lee face -->
+          <path d="M175,70 L248,38 L290,95 L248,130 L205,105 Z"
+                fill="url(#shadeFace)"/>
+          <!-- snow cap + couloirs -->
+          <path d="M232,58 L248,38 L268,62 L255,68 L248,55 L240,68 Z"
+                fill="url(#snowGrad)"/>
+          <path d="M248,38 L258,52 L252,54 Z" fill="#ffffff" opacity="0.85"/>
+
+          <!-- rocky ledges -->
+          <path d="M95,130 L125,108 L140,118" fill="none" stroke="#2a3340" stroke-width="1.2" opacity="0.45"/>
+          <path d="M200,100 L225,78 L245,92" fill="none" stroke="#2a3340" stroke-width="1.2" opacity="0.4"/>
+          <path d="M130,155 L160,140 L185,148" fill="none" stroke="#2a3340" stroke-width="1" opacity="0.35"/>
+
+          <!-- treeline / foothills -->
+          <path d="M0,188 C40,180 80,192 120,185 C160,178 200,190 240,184 C280,178 320,186 340,182 L340,220 L0,220 Z"
+                fill="url(#groundGrad)" opacity="0.85"/>
+          <g fill="#2f3c30" opacity="0.7">
+            <path d="M28,188 L34,168 L40,188 Z"/>
+            <path d="M48,190 L55,166 L62,190 Z"/>
+            <path d="M70,189 L76,172 L82,189 Z"/>
+            <path d="M300,186 L308,164 L316,186 Z"/>
+            <path d="M318,188 L324,170 L330,188 Z"/>
+          </g>
+
+          <!-- climbing trail -->
+          <path d="${trail}" fill="none" stroke="#1a222a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
+          <path d="${trail}" fill="none" stroke="#e8edf2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 4"/>
+
+          <!-- belt stations as trail cairns / markers -->
+          ${stations.map((s) => {
             const done = s.complete;
-            const r = done ? 7 : 5.5;
-            const fill = done ? '#22c55e' : '#e0e5ec';
-            const stroke = done ? '#15803d' : '#3d4a58';
             const short = (s.belt_label || s.belt || '').replace(/ Belt$/i, '');
+            const post = done ? '#22c55e' : '#e8edf2';
+            const ring = done ? '#15803d' : '#2a3340';
             return `
-              <circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
-              <text class="mtn-label" x="${s.x}" y="${s.y - 14}" text-anchor="middle">${esc(short)}</text>
-              <text class="mtn-sub" x="${s.x}" y="${s.y + 18}" text-anchor="middle">${s.solved}/${s.challenges}</text>
+              <line x1="${s.x}" y1="${s.y}" x2="${s.x}" y2="${s.y - 16}" stroke="${ring}" stroke-width="2"/>
+              <rect x="${s.x - 7}" y="${s.y - 24}" width="14" height="10" rx="1.5" fill="${post}" stroke="${ring}" stroke-width="1"/>
+              <circle cx="${s.x}" cy="${s.y}" r="3.5" fill="${post}" stroke="${ring}" stroke-width="1.2"/>
+              <text class="mtn-label" x="${s.x}" y="${s.y - 30}" text-anchor="middle">${esc(short)}</text>
+              <text class="mtn-sub" x="${s.x}" y="${s.y + 14}" text-anchor="middle">${s.solved}/${s.challenges}</text>
             `;
           }).join('')}
-          <g class="climber">
-            <circle cx="${cx}" cy="${cy - 14}" r="6" fill="#ff4757" stroke="#fff" stroke-width="1.5"/>
-            <circle cx="${cx}" cy="${cy - 14}" r="2.2" fill="#fff"/>
+
+          <!-- climber -->
+          <g class="climber" transform="translate(${cx}, ${cy - 10})">
+            <circle cx="0" cy="-10" r="4.5" fill="#ff4757" stroke="#fff" stroke-width="1.2"/>
+            <path d="M0,-5 L0,4 M0,0 L-5,6 M0,0 L5,6 M0,4 L-4,12 M0,4 L4,12"
+                  stroke="#ff4757" stroke-width="2" stroke-linecap="round" fill="none"/>
           </g>
-          <text class="mtn-sub" x="170" y="202" text-anchor="middle">Summit · Blue Belt</text>
+
+          <text class="mtn-sub" x="170" y="214" text-anchor="middle">Base camp → Blue Belt summit</text>
         </svg>
       `;
     }
@@ -1656,7 +1791,10 @@
       const data = await api('/api/profile');
       lastProfile = data;
       const name = playerName();
-      document.getElementById('prof-name').textContent = name ? `${name}'s path` : 'Your path';
+      const uid = playerUserId();
+      document.getElementById('prof-name').textContent = uid
+        ? `@${uid}'s path`
+        : (name ? `${name}'s path` : 'Your path');
       document.getElementById('prof-cleared').textContent = `${data.solved}/${data.total}`;
       document.getElementById('prof-streak').textContent =
         (data.streak || 0) === 1 ? '1 day' : `${data.streak || 0} days`;
@@ -1691,6 +1829,11 @@
     }
 
     async function load(stay) {
+      // Restore operator session before fetching progress-scoped APIs
+      const uid = playerUserId();
+      if (uid) {
+        try { await setSessionUser(uid); } catch (e) { /* first boot ok */ }
+      }
       const [status, cat] = await Promise.all([api('/api/status'), api('/api/dojos')]);
       catalogIntro = cat.intro || '';
       nextCh = cat.next_challenge || null;
@@ -1760,10 +1903,10 @@
         localStorage.removeItem('academy-user-id');
       } catch (e) {}
       paintHello();
-      askNameThen(false);
+      openLogin(false);
     };
     document.getElementById('hello').style.cursor = 'pointer';
-    document.getElementById('hello').title = 'Change name';
+    document.getElementById('hello').title = 'Switch user / log in';
 
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view === 'dojo' && e.state.id) openDojo(e.state.id);
