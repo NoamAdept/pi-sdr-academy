@@ -612,6 +612,97 @@ def cmd_admin(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_users(args: argparse.Namespace) -> int:
+    eng = _engine()
+    action = args.action
+    if action == "list":
+        for u in eng.users.list_users():
+            flag = "on " if u.active else "off"
+            print(f"  [{flag}] {u.id:16}  {u.role:11}  {u.display_name}")
+        return 0
+    if action == "add":
+        if not args.user_id:
+            print("usage: academy users add <id> [--name NAME] [--role student|instructor]", file=sys.stderr)
+            return 2
+        user = eng.users.upsert(
+            user_id=args.user_id,
+            display_name=args.name or args.user_id,
+            role=args.role,
+        )
+        eng.git_mirror.repo_for(user.id).load()
+        eng.git_mirror.commit_user(user.id, message=f"register {user.id}")
+        print(f"{_tag('+')} user {user.id}  branch progress/{user.id}")
+        return 0
+    if action in {"disable", "enable"}:
+        if not args.user_id:
+            print(f"usage: academy users {action} <id>", file=sys.stderr)
+            return 2
+        user = eng.users.set_active(args.user_id, action == "enable")
+        if not user:
+            print(f"unknown user: {args.user_id}", file=sys.stderr)
+            return 1
+        print(f"{_tag('+')} {user.id} active={user.active}")
+        return 0
+    return 2
+
+
+def cmd_whoami(args: argparse.Namespace) -> int:
+    eng = _engine()
+    if args.user_id:
+        try:
+            uid = eng.set_user(args.user_id)
+        except RuntimeError as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
+        print(f"{_tag('+')} active operator → {uid}")
+        return 0
+    user = eng.users.get(eng.current_user_id)
+    name = user.display_name if user else eng.current_user_id
+    print(f"{eng.current_user_id}  ({name})")
+    return 0
+
+
+def cmd_progress(args: argparse.Namespace) -> int:
+    eng = _engine()
+    action = args.action
+    if action == "status":
+        st = eng.git_mirror.status()
+        print(f"remote: {st.get('remote') or '(none)'}")
+        print(f"git:    {st.get('git_dir')}")
+        for b in st.get("branches") or []:
+            print(f"  {b['branch']}  {b['commit']}  {b.get('when', '')}")
+        return 0
+    if action == "remote":
+        if not args.remote_url:
+            print("usage: academy progress remote <git-url>", file=sys.stderr)
+            return 2
+        eng.git_mirror.set_remote(args.remote_url)
+        print(f"{_tag('+')} remote → {args.remote_url}")
+        return 0
+    if action == "commit":
+        rows = eng.git_mirror.commit_all_users()
+        for r in rows:
+            print(f"  {r.get('branch')}  {r.get('commit')}  {'(unchanged)' if r.get('unchanged') else ''}")
+        return 0
+    if action == "push":
+        res = eng.git_mirror.push_all()
+        print(res.get("stderr") or res.get("stdout") or "")
+        if not res.get("ok"):
+            print(res.get("error") or "push failed", file=sys.stderr)
+            return 1
+        print(f"{_tag('+')} pushed progress/* → {res.get('remote')}")
+        return 0
+    if action == "pull":
+        res = eng.git_mirror.pull_all()
+        print(res.get("stderr") or res.get("stdout") or "")
+        if not res.get("ok"):
+            print(res.get("error") or "pull failed", file=sys.stderr)
+            return 1
+        print(f"{_tag('+')} restored {', '.join(res.get('restored_users') or []) or '(none)'}")
+        return 0
+    return 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="academy",
@@ -690,6 +781,22 @@ def build_parser() -> argparse.ArgumentParser:
     p_admin.add_argument("--host", default="127.0.0.1")
     p_admin.add_argument("--port", type=int, default=8080)
     p_admin.set_defaults(func=cmd_admin)
+
+    p_users = sub.add_parser("users", help="List / add closed-network operators")
+    p_users.add_argument("action", nargs="?", default="list", choices=["list", "add", "disable", "enable"])
+    p_users.add_argument("user_id", nargs="?")
+    p_users.add_argument("--name", default="")
+    p_users.add_argument("--role", default="student", choices=["student", "instructor"])
+    p_users.set_defaults(func=cmd_users)
+
+    p_who = sub.add_parser("whoami", help="Show / switch active operator")
+    p_who.add_argument("user_id", nargs="?")
+    p_who.set_defaults(func=cmd_whoami)
+
+    p_prog = sub.add_parser("progress", help="Git-branch progress sync (GitHub / mirror)")
+    p_prog.add_argument("action", choices=["status", "commit", "push", "pull", "remote"])
+    p_prog.add_argument("remote_url", nargs="?")
+    p_prog.set_defaults(func=cmd_progress)
 
     return parser
 

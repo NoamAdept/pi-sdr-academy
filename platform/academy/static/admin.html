@@ -203,12 +203,24 @@
 
     <div id="screen-home" class="hidden">
       <h1>Curriculum <em>admin</em></h1>
-      <p class="sub">Add challenges with a guided wizard, or save curriculum suggestions for later review.</p>
+      <p class="sub">Manage users, add or remove challenges, and sync progress branches to GitHub when the network allows.</p>
       <div class="panel">
         <div class="cards">
+          <button type="button" class="card" id="btn-users">
+            <h3>Users</h3>
+            <p>Create operators. Each user’s progress becomes a <code>progress/&lt;id&gt;</code> git branch.</p>
+          </button>
           <button type="button" class="card" id="btn-new-challenge">
             <h3>+ New challenge</h3>
             <p>Write a description, hints, and flag — create files under an existing module.</p>
+          </button>
+          <button type="button" class="card" id="btn-manage-challenges">
+            <h3>Remove challenges</h3>
+            <p>Delete a challenge from the curriculum on this closed-network pack.</p>
+          </button>
+          <button type="button" class="card" id="btn-sync">
+            <h3>Progress sync</h3>
+            <p>Push / pull <code>progress/*</code> branches to a GitHub (or mirror) remote.</p>
           </button>
           <button type="button" class="card" id="btn-suggest-module">
             <h3>Suggest module / dojo change</h3>
@@ -224,6 +236,74 @@
         <h2>Curriculum snapshot</h2>
         <p class="hint" id="overview-stats">Loading…</p>
         <div id="overview-modules"></div>
+      </div>
+    </div>
+
+    <div id="screen-users" class="hidden">
+      <h1>Manage <em>users</em></h1>
+      <p class="sub">Students pick their id on the dojo. Progress is stored per user and mirrored to git branches.</p>
+      <div class="panel">
+        <h2>Add / update user</h2>
+        <div class="row">
+          <div>
+            <label for="user-id">User id</label>
+            <input type="text" id="user-id" placeholder="alice" autocomplete="off"/>
+          </div>
+          <div>
+            <label for="user-name">Display name</label>
+            <input type="text" id="user-name" placeholder="Alice"/>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="user-role">Role</label>
+            <select id="user-role">
+              <option value="student">student</option>
+              <option value="instructor">instructor</option>
+            </select>
+          </div>
+          <div>
+            <label for="user-notes">Notes</label>
+            <input type="text" id="user-notes" placeholder="optional"/>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" id="btn-users-back">← Back</button>
+          <button type="button" class="btn btn-primary" id="btn-user-save">Save user</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Directory</h2>
+        <div id="user-list"><p class="hint">Loading…</p></div>
+      </div>
+    </div>
+
+    <div id="screen-manage" class="hidden">
+      <h1>Remove <em>challenges</em></h1>
+      <p class="sub">Deletes the challenge folder and unregisters it from <code>module.yaml</code>. Cannot be undone without git.</p>
+      <div class="panel">
+        <div class="actions" style="margin-bottom:0.75rem">
+          <button type="button" class="btn btn-secondary" id="btn-manage-back">← Back</button>
+        </div>
+        <div id="challenge-manage-list"><p class="hint">Loading…</p></div>
+      </div>
+    </div>
+
+    <div id="screen-sync" class="hidden">
+      <h1>Progress <em>sync</em></h1>
+      <p class="sub">Closed network day-to-day: progress commits locally. When you can reach GitHub (or a mirror), push the <code>progress/*</code> branches.</p>
+      <div class="panel">
+        <h2>Remote</h2>
+        <label for="sync-remote">Git remote URL</label>
+        <input type="text" id="sync-remote" placeholder="https://github.com/ORG/academy-progress.git"/>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" id="btn-sync-back">← Back</button>
+          <button type="button" class="btn btn-secondary" id="btn-sync-save-remote">Save remote</button>
+          <button type="button" class="btn btn-secondary" id="btn-sync-commit">Commit all</button>
+          <button type="button" class="btn btn-primary" id="btn-sync-push">Push to GitHub</button>
+          <button type="button" class="btn btn-secondary" id="btn-sync-pull">Pull from GitHub</button>
+        </div>
+        <pre class="review" id="sync-status" style="margin-top:0.85rem;white-space:pre-wrap;font-family:var(--mono);font-size:0.8rem;color:var(--muted)"></pre>
       </div>
     </div>
 
@@ -400,7 +480,10 @@
     }
 
     function show(id) {
-      for (const screen of ["screen-disabled", "screen-home", "screen-wizard", "screen-module-suggest", "screen-proposals"]) {
+      for (const screen of [
+        "screen-disabled", "screen-home", "screen-wizard", "screen-module-suggest",
+        "screen-proposals", "screen-users", "screen-manage", "screen-sync"
+      ]) {
         document.getElementById(screen).classList.toggle("hidden", screen !== id);
       }
     }
@@ -625,6 +708,156 @@
       document.getElementById("btn-view-proposals").click();
     };
 
+    async function loadUsers() {
+      const data = await api("/api/admin/users");
+      const box = document.getElementById("user-list");
+      const rows = data.users || [];
+      if (!rows.length) {
+        box.innerHTML = "<p class='hint'>No users yet.</p>";
+        return;
+      }
+      box.innerHTML = rows.map(u => `
+        <div class="proposal-item">
+          <div class="meta">
+            <div class="k">${u.role} · ${u.active ? "active" : "disabled"} · branch progress/${u.id}</div>
+            <div class="t">${u.display_name} <span style="color:var(--muted)">(${u.id})</span></div>
+            <div class="s">${u.notes || ""}</div>
+          </div>
+          <button type="button" class="btn ${u.active ? "btn-danger" : "btn-primary"}" data-toggle="${u.id}" data-active="${u.active ? "0" : "1"}">
+            ${u.active ? "Disable" : "Enable"}
+          </button>
+        </div>
+      `).join("");
+      box.querySelectorAll("[data-toggle]").forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            await api("/api/admin/users", {
+              method: "POST",
+              body: JSON.stringify({
+                action: btn.dataset.active === "1" ? "enable" : "disable",
+                id: btn.dataset.toggle,
+              }),
+            });
+            toast("Updated.");
+            await loadUsers();
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    async function loadManageChallenges() {
+      overview = await api("/api/admin/overview");
+      const box = document.getElementById("challenge-manage-list");
+      const rows = [];
+      for (const dojo of overview.dojos || []) {
+        for (const mod of dojo.modules || []) {
+          for (const ch of mod.challenges || []) {
+            rows.push({ ...ch, module: mod.slug, module_title: mod.title, belt: dojo.belt_label || dojo.belt });
+          }
+        }
+      }
+      if (!rows.length) {
+        box.innerHTML = "<p class='hint'>No challenges found.</p>";
+        return;
+      }
+      box.innerHTML = rows.map(ch => `
+        <div class="proposal-item">
+          <div class="meta">
+            <div class="k">${ch.module_title} · ${ch.difficulty || ""} · ${ch.belt || ""}</div>
+            <div class="t">${ch.title} <span style="color:var(--muted)">(${ch.id})</span></div>
+          </div>
+          <button type="button" class="btn btn-danger" data-del="${ch.id}">Delete</button>
+        </div>
+      `).join("");
+      box.querySelectorAll("[data-del]").forEach(btn => {
+        btn.onclick = async () => {
+          if (!confirm(`Delete challenge ${btn.dataset.del}? This removes files on disk.`)) return;
+          try {
+            const res = await api("/api/admin/challenges/delete", {
+              method: "POST",
+              body: JSON.stringify({ id: btn.dataset.del }),
+            });
+            toast(res.ok ? "Deleted." : ((res.errors || []).join("; ") || "Failed"));
+            await loadManageChallenges();
+            await loadOverview();
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    async function refreshSyncStatus() {
+      const st = await api("/api/admin/progress");
+      document.getElementById("sync-remote").value = st.remote || "";
+      document.getElementById("sync-status").textContent = JSON.stringify(st, null, 2);
+    }
+
+    document.getElementById("btn-users").onclick = async () => {
+      show("screen-users");
+      await loadUsers();
+    };
+    document.getElementById("btn-users-back").onclick = () => show("screen-home");
+    document.getElementById("btn-user-save").onclick = async () => {
+      try {
+        const res = await api("/api/admin/users", {
+          method: "POST",
+          body: JSON.stringify({
+            id: document.getElementById("user-id").value.trim(),
+            display_name: document.getElementById("user-name").value.trim(),
+            role: document.getElementById("user-role").value,
+            notes: document.getElementById("user-notes").value.trim(),
+          }),
+        });
+        toast(res.ok ? "User saved." : (res.error || "Failed"));
+        await loadUsers();
+      } catch (e) { toast(e.message); }
+    };
+    document.getElementById("btn-manage-challenges").onclick = async () => {
+      show("screen-manage");
+      await loadManageChallenges();
+    };
+    document.getElementById("btn-manage-back").onclick = () => show("screen-home");
+    document.getElementById("btn-sync").onclick = async () => {
+      show("screen-sync");
+      await refreshSyncStatus();
+    };
+    document.getElementById("btn-sync-back").onclick = () => show("screen-home");
+    document.getElementById("btn-sync-save-remote").onclick = async () => {
+      try {
+        await api("/api/admin/progress/remote", {
+          method: "POST",
+          body: JSON.stringify({ remote: document.getElementById("sync-remote").value.trim() }),
+        });
+        toast("Remote saved.");
+        await refreshSyncStatus();
+      } catch (e) { toast(e.message); }
+    };
+    document.getElementById("btn-sync-commit").onclick = async () => {
+      try {
+        const res = await api("/api/admin/progress/sync", {
+          method: "POST", body: JSON.stringify({ direction: "commit" }),
+        });
+        toast(res.ok ? "Committed." : (res.error || "Commit failed"));
+        await refreshSyncStatus();
+      } catch (e) { toast(e.message); }
+    };
+    document.getElementById("btn-sync-push").onclick = async () => {
+      try {
+        const res = await api("/api/admin/progress/sync", {
+          method: "POST", body: JSON.stringify({ direction: "push" }),
+        });
+        toast(res.ok ? "Pushed progress/* branches." : (res.error || res.stderr || "Push failed"));
+        await refreshSyncStatus();
+      } catch (e) { toast(e.message); }
+    };
+    document.getElementById("btn-sync-pull").onclick = async () => {
+      try {
+        const res = await api("/api/admin/progress/sync", {
+          method: "POST", body: JSON.stringify({ direction: "pull" }),
+        });
+        toast(res.ok ? "Pulled." : (res.error || res.stderr || "Pull failed"));
+        await refreshSyncStatus();
+      } catch (e) { toast(e.message); }
+    };
     document.getElementById("field-module").onchange = () => loadDraftForModule(document.getElementById("field-module").value);
     document.getElementById("field-title").oninput = () => {
       const title = document.getElementById("field-title").value;

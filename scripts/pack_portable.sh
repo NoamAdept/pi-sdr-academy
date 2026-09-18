@@ -35,12 +35,13 @@ find "$OUT/curriculum" -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null
 cp "$ROOT/run.sh" "$OUT/run.sh"
 chmod +x "$OUT/run.sh"
 cp "$ROOT/LICENSE" "$OUT/LICENSE" 2>/dev/null || true
+cp "$ROOT/MANAGE.txt" "$OUT/MANAGE.txt" 2>/dev/null || true
 
 cat > "$OUT/START_HERE.txt" <<'EOF'
 CLOSED NETWORK — START HERE
 ===========================
 
-Needs on the target machine: python3 only.
+Needs on the target machine: python3 (+ git if you sync progress to GitHub).
 Does NOT need: pip, internet, venv, sudo, Docker.
 
 1) tar -xzf pi-sdr-academy.tar.gz
@@ -48,9 +49,12 @@ Does NOT need: pip, internet, venv, sudo, Docker.
 3) ./run.sh
 4) Open the URL it prints (usually http://127.0.0.1:8080/)
 
-Then: Start → solve in ./challenge → Done
+Student loop: Start → solve in ./challenge → Done
 
-That's the whole install.
+Instructor / management:
+  ACADEMY_ADMIN=1 ./run.sh
+  Open /admin  — users, add/remove challenges, progress sync
+  Read MANAGE.txt for GitHub progress branches (progress/<user>)
 EOF
 
 cp "$OUT/START_HERE.txt" "$OUT/README.txt"

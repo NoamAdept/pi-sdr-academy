@@ -1075,11 +1075,27 @@
       try { return (localStorage.getItem('academy-player-name') || '').trim(); }
       catch (e) { return ''; }
     }
+    function playerUserId() {
+      try { return (localStorage.getItem('academy-user-id') || '').trim(); }
+      catch (e) { return ''; }
+    }
     function setPlayerName(name) {
       const n = String(name || '').trim().slice(0, 32);
       try { if (n) localStorage.setItem('academy-player-name', n); } catch (e) {}
       paintHello();
       return n;
+    }
+    async function setSessionUser(raw) {
+      const data = await api('/api/session', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: raw, name: raw }),
+      });
+      try {
+        localStorage.setItem('academy-user-id', data.user_id || '');
+        localStorage.setItem('academy-player-name', data.display_name || data.user_id || '');
+      } catch (e) {}
+      paintHello();
+      return data;
     }
     function paintHello() {
       const el = document.getElementById('hello');
@@ -1102,27 +1118,62 @@
       setTimeout(() => el.remove(), 2800);
     }
     async function api(path, opts) {
-      const r = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
+      const headers = { 'Content-Type': 'application/json' };
+      const uid = playerUserId();
+      if (uid) headers['X-Academy-User'] = uid;
+      const r = await fetch(path, Object.assign({ headers }, opts || {}));
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || r.statusText || 'request failed');
       return data;
     }
 
     function askNameThen(enterLab) {
-      if (playerName()) {
-        if (enterLab) showHome();
+      if (playerUserId() && playerName()) {
+        // Re-bind session on this server process
+        setSessionUser(playerUserId()).then(() => {
+          if (enterLab) showHome();
+        }).catch(() => {
+          if (enterLab) showHome();
+        });
         return;
       }
       const gate = document.getElementById('name-gate');
       const input = document.getElementById('name-input');
+      const sub = gate.querySelector('.sub');
       gate.classList.remove('hidden');
-      input.value = '';
+      input.value = playerName() || '';
+      // Offer known users when the lab has a directory
+      api('/api/users').then(data => {
+        const users = data.users || [];
+        if (users.length && sub) {
+          sub.textContent = 'Pick your operator id (saved on this machine). Progress is tracked per user.';
+          // Prefill datalist
+          let list = document.getElementById('user-datalist');
+          if (!list) {
+            list = document.createElement('datalist');
+            list.id = 'user-datalist';
+            document.body.appendChild(list);
+            input.setAttribute('list', 'user-datalist');
+          }
+          list.innerHTML = users.map(u =>
+            `<option value="${esc(u.id)}">${esc(u.display_name)}</option>`
+          ).join('');
+        }
+      }).catch(() => {});
       setTimeout(() => input.focus(), 50);
-      const save = () => {
-        const n = setPlayerName(input.value);
-        if (!n) { input.focus(); return; }
-        gate.classList.add('hidden');
-        if (enterLab) showHome();
+      const save = async () => {
+        const raw = (input.value || '').trim();
+        if (!raw) { input.focus(); return; }
+        try {
+          await setSessionUser(raw);
+          gate.classList.add('hidden');
+          if (enterLab) {
+            await load(true);
+            showHome();
+          }
+        } catch (e) {
+          toast('Login failed', e.message || String(e));
+        }
       };
       document.getElementById('btn-save-name').onclick = save;
       input.onkeydown = (e) => { if (e.key === 'Enter') save(); };
@@ -1704,8 +1755,10 @@
 
     paintHello();
     document.getElementById('hello').onclick = () => {
-      // Allow renaming anytime
-      try { localStorage.removeItem('academy-player-name'); } catch (e) {}
+      try {
+        localStorage.removeItem('academy-player-name');
+        localStorage.removeItem('academy-user-id');
+      } catch (e) {}
       paintHello();
       askNameThen(false);
     };

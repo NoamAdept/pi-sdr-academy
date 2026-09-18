@@ -9,12 +9,13 @@ from typing import Iterable
 
 from .models import Challenge, Module, load_yaml
 from .paths import resolve_flag_path, resolve_workspace
-from .progress import ProgressRepository, ProgressStore
+from .progress import HookedProgressRepository, ProgressRepository, ProgressStore
 from .secrets import (
     mint_session_flag,
     normalize_answer,
     save_session_secret,
 )
+from .users import UserRegistry
 from .validation import validate_challenge_flag
 
 
@@ -24,16 +25,70 @@ class AcademyEngine:
         curriculum_root: Path,
         data_dir: Path,
         workspace_root: Path | None = None,
+        user_id: str | None = None,
     ):
         self.curriculum_root = Path(curriculum_root)
         self.data_dir = Path(data_dir)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
         self.workspace_root = Path(workspace_root) if workspace_root else resolve_workspace()
         self.flag_path = resolve_flag_path()
         self.modules_dir = self.curriculum_root / "modules"
-        self.progress_repo = ProgressRepository(self.data_dir / "progress.json")
+        self.users = UserRegistry(self.data_dir / "users.json")
+        self.users.ensure_local_default()
+
+        from .git_progress import GitProgressMirror
+
+        self.git_mirror = GitProgressMirror(self.data_dir)
+        self.git_mirror.load_remote_config()
+        # One-time migration from the old single progress.json
+        self.git_mirror.migrate_legacy(self.data_dir / "progress.json", user_id="local")
+
+        self._user_id = (user_id or os.environ.get("ACADEMY_USER") or "local").strip() or "local"
+        self.progress_repo = self._repo_for(self._user_id)
         self._modules: dict[str, Module] = {}
         self._challenges: dict[str, Challenge] = {}
         self.reload()
+
+    @property
+    def current_user_id(self) -> str:
+        return self._user_id
+
+    def _repo_for(self, user_id: str) -> ProgressRepository:
+        path = self.git_mirror.user_progress_path(user_id)
+
+        def _commit(_store: ProgressStore) -> None:
+            try:
+                self.git_mirror.commit_user(user_id)
+            except Exception:  # noqa: BLE001 — progress must never fail hard on git
+                pass
+
+        return HookedProgressRepository(path, on_save=_commit)
+
+    def set_user(self, user_id: str) -> str:
+        """Switch the active operator; progress loads from that user's branch file."""
+        from .users import slugify_user_id
+
+        uid = slugify_user_id(user_id)
+        user = self.users.get(uid)
+        if user is None:
+            # Auto-register students who type a new name at the dojo gate.
+            user = self.users.upsert(user_id=uid, display_name=user_id, role="student")
+        if not user.active:
+            raise RuntimeError(f"User {uid} is disabled")
+        self._user_id = user.id
+        os.environ["ACADEMY_USER"] = user.id
+        self.progress_repo = self._repo_for(user.id)
+        store = self.progress()
+        if store.student_id != user.id:
+            store.student_id = user.id
+            self.progress_repo.save(store)
+        return user.id
+
+    def progress(self) -> ProgressStore:
+        store = self.progress_repo.load()
+        if not store.student_id:
+            store.student_id = self._user_id
+        return store
 
     def reload(self) -> None:
         self._modules.clear()
@@ -315,6 +370,7 @@ class AcademyEngine:
             "modules": by_module,
             "current_challenge_id": store.current_challenge_id,
             "current_workspace": store.current_workspace,
+            "user_id": self.current_user_id,
         }
 
     def iter_challenge_paths(self) -> Iterable[Path]:

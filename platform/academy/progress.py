@@ -6,7 +6,7 @@ import json
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 @dataclass
@@ -96,3 +96,16 @@ class ProgressRepository:
             json.dump(store.to_dict(), fh, indent=2, sort_keys=True)
             fh.write("\n")
         tmp.replace(self.path)
+
+
+class HookedProgressRepository(ProgressRepository):
+    """ProgressRepository that runs a callback after each successful save."""
+
+    def __init__(self, path: Path, on_save: Callable[[ProgressStore], None] | None = None):
+        super().__init__(path)
+        self.on_save = on_save
+
+    def save(self, store: ProgressStore) -> None:
+        super().save(store)
+        if self.on_save is not None:
+            self.on_save(store)

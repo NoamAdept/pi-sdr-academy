@@ -375,6 +375,45 @@ def create_challenge(
     }
 
 
+def delete_challenge(engine: AcademyEngine, challenge_id: str) -> dict[str, Any]:
+    """Remove a challenge directory and unregister it from its module."""
+    import shutil
+
+    cid = str(challenge_id or "").strip()
+    if not cid:
+        return {"ok": False, "errors": ["Missing challenge id"]}
+    try:
+        challenge = engine.get_challenge(cid)
+    except KeyError:
+        return {"ok": False, "errors": [f"Unknown challenge: {cid}"]}
+
+    module_path = _module_path_for_slug(engine, challenge.module)
+    # Prefer the on-disk challenge folder next to challenge.yaml
+    challenge_dir = challenge.path.parent if challenge.path else None
+    if challenge_dir is None and module_path is not None:
+        challenge_dir = module_path / "challenges" / cid
+    if challenge_dir is None or not challenge_dir.is_dir():
+        return {"ok": False, "errors": [f"Challenge directory missing for {cid}"]}
+
+    # Unregister from module.yaml first
+    if module_path is not None:
+        module_yaml = module_path / "module.yaml"
+        if module_yaml.is_file():
+            module_data = load_yaml(module_yaml)
+            registered = [x for x in (module_data.get("challenges") or []) if x != cid]
+            module_data["challenges"] = registered
+            module_yaml.write_text(dump_yaml(module_data), encoding="utf-8")
+
+    shutil.rmtree(challenge_dir)
+    engine.reload()
+    return {
+        "ok": True,
+        "challenge_id": cid,
+        "removed": str(challenge_dir),
+        "module": challenge.module,
+    }
+
+
 def proposals_dir(curriculum_root: Path) -> Path:
     return Path(curriculum_root) / "proposals"
 

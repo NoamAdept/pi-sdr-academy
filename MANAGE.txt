@@ -1,0 +1,76 @@
+CLOSED NETWORK — MANAGE USERS, CURRICULUM, PROGRESS
+====================================================
+
+Needs: python3 + git (for progress branches). No pip. No internet day-to-day.
+
+Start the lab
+-------------
+  ./run.sh                         student dojo
+  ACADEMY_ADMIN=1 ./run.sh         dojo + admin at /admin
+
+Or:  python3 -m academy.cli admin
+
+
+1) Users
+--------
+Admin UI → Users, or CLI:
+
+  academy users add alice --name Alice
+  academy users add bob --name Bob --role student
+  academy users list
+  academy users disable bob
+
+On the dojo, operators sign in with their id. That selects their progress.
+
+
+2) Curriculum — add / remove challenges
+---------------------------------------
+Admin UI → "+ New challenge" (wizard) or "Remove challenges".
+
+CLI create goes through the admin UI / API. Deleting:
+
+  # from admin UI "Remove challenges"
+  # or API: POST /api/admin/challenges/delete  {"id":"my-challenge"}
+
+Curriculum files live under curriculum/. Keep that folder in git on the
+instructor machine so you can version and ship updated packs.
+
+
+3) Progress via GitHub branches
+-------------------------------
+Each operator gets a branch:
+
+  progress/<user_id>     contains only progress.json
+
+Offline, every clear commits into the local mirror:
+
+  .academy-data/progress/<user>/progress.json
+  .academy-data/progress-git/.git
+
+When you can reach GitHub (or an on-prem mirror):
+
+  # one-time: empty repo on GitHub, then
+  academy progress remote https://github.com/ORG/academy-progress.git
+  academy progress commit
+  academy progress push
+
+  # on another closed lab that should import progress
+  academy progress remote https://github.com/ORG/academy-progress.git
+  academy progress pull
+
+Admin UI → Progress sync does the same.
+
+
+Typical closed-network workflow
+-------------------------------
+1. Instructor laptop (has GitHub): maintain curriculum, build portable pack.
+2. USB the .tar.gz into the lab. Extract. ACADEMY_ADMIN=1 ./run.sh
+3. Create users. Students play offline. Progress commits locally.
+4. Periodically (USB or brief network window): academy progress push
+5. Review student branches on GitHub: progress/alice, progress/bob, …
+
+
+Ship an updated pack
+--------------------
+  bash scripts/pack_portable.sh
+  # copy dist/pi-sdr-academy.tar.gz (or portable/pi-sdr-academy.tar.gz)

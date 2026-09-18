@@ -17,6 +17,7 @@ from .admin import (
     create_challenge,
     curriculum_overview,
     default_challenge_draft,
+    delete_challenge,
     list_proposals,
     module_detail,
     save_proposal,
@@ -28,6 +29,7 @@ from .grading import award_flag
 from .paths import resolve_flag_path, resolve_workspace
 from .terminal_launch import open_workspace_terminal
 from .ui_flavor import challenge_thumb_svg, display_title
+from .users import UserRegistry, slugify_user_id
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DOJO_HTML = STATIC_DIR / "dojo.html"
@@ -164,6 +166,12 @@ def serve_api(
         def do_GET(self) -> None:  # noqa: N802
             parsed = urlparse(self.path)
             path = parsed.path
+            header_user = (self.headers.get("X-Academy-User") or "").strip()
+            if header_user and header_user != engine.current_user_id:
+                try:
+                    engine.set_user(header_user)
+                except RuntimeError:
+                    pass
             store = engine.progress()
 
             if path in ("/", "/index.html", "/dojo"):
@@ -194,7 +202,51 @@ def serve_api(
                 denied = self._admin_required()
                 if denied:
                     return denied
-                return self._json(200, curriculum_overview(engine))
+                overview = curriculum_overview(engine)
+                overview["users"] = [
+                    u.to_dict() for u in engine.users.list_users()
+                ]
+                overview["progress_sync"] = engine.git_mirror.status()
+                overview["current_user_id"] = engine.current_user_id
+                return self._json(200, overview)
+            if path == "/api/admin/users":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                return self._json(
+                    200,
+                    {
+                        "users": [u.to_dict() for u in engine.users.list_users()],
+                        "current_user_id": engine.current_user_id,
+                    },
+                )
+            if path == "/api/admin/progress":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                return self._json(200, engine.git_mirror.status())
+            if path == "/api/users":
+                # Student-facing: active users for the login picker
+                return self._json(
+                    200,
+                    {
+                        "users": [
+                            {"id": u.id, "display_name": u.display_name, "role": u.role}
+                            for u in engine.users.list_users(active_only=True)
+                        ],
+                        "current_user_id": engine.current_user_id,
+                    },
+                )
+            if path == "/api/session":
+                user = engine.users.get(engine.current_user_id)
+                return self._json(
+                    200,
+                    {
+                        "user_id": engine.current_user_id,
+                        "display_name": user.display_name if user else engine.current_user_id,
+                        "role": user.role if user else "student",
+                    },
+                )
             if path == "/api/admin/proposals":
                 denied = self._admin_required()
                 if denied:
@@ -305,6 +357,12 @@ def serve_api(
         def do_POST(self) -> None:  # noqa: N802
             parsed = urlparse(self.path)
             body = self._read_body()
+            header_user = (self.headers.get("X-Academy-User") or "").strip()
+            if header_user and header_user != engine.current_user_id and parsed.path != "/api/session":
+                try:
+                    engine.set_user(header_user)
+                except RuntimeError:
+                    pass
 
             if parsed.path == "/api/admin/challenges/validate":
                 denied = self._admin_required()
@@ -319,6 +377,86 @@ def serve_api(
                 if denied:
                     return denied
                 return self._json(200, create_challenge(engine, body))
+
+            if parsed.path == "/api/admin/challenges/delete":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                cid = str(body.get("id") or body.get("challenge_id") or "").strip()
+                return self._json(200, delete_challenge(engine, cid))
+
+            if parsed.path == "/api/admin/users":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                action = str(body.get("action") or "upsert").strip()
+                if action == "disable":
+                    user = engine.users.set_active(str(body.get("id") or "").strip(), False)
+                    if not user:
+                        return self._json(404, {"ok": False, "error": "user not found"})
+                    return self._json(200, {"ok": True, "user": user.to_dict()})
+                if action == "enable":
+                    user = engine.users.set_active(str(body.get("id") or "").strip(), True)
+                    if not user:
+                        return self._json(404, {"ok": False, "error": "user not found"})
+                    return self._json(200, {"ok": True, "user": user.to_dict()})
+                try:
+                    user = engine.users.upsert(
+                        user_id=str(body.get("id") or "").strip(),
+                        display_name=str(body.get("display_name") or body.get("id") or "").strip(),
+                        role=str(body.get("role") or "student").strip(),
+                        active=bool(body.get("active", True)),
+                        notes=str(body.get("notes") or ""),
+                    )
+                except ValueError as exc:
+                    return self._json(400, {"ok": False, "error": str(exc)})
+                # Ensure a progress branch file exists
+                engine.git_mirror.repo_for(user.id).load()
+                engine.git_mirror.commit_user(user.id, message=f"register user {user.id}")
+                return self._json(200, {"ok": True, "user": user.to_dict()})
+
+            if parsed.path == "/api/admin/progress/remote":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                url = str(body.get("remote") or body.get("url") or "").strip()
+                if not url:
+                    return self._json(400, {"ok": False, "error": "remote url required"})
+                engine.git_mirror.set_remote(url)
+                return self._json(200, {"ok": True, "status": engine.git_mirror.status()})
+
+            if parsed.path == "/api/admin/progress/sync":
+                denied = self._admin_required()
+                if denied:
+                    return denied
+                direction = str(body.get("direction") or "push").strip().lower()
+                if direction == "pull":
+                    return self._json(200, engine.git_mirror.pull_all())
+                if direction == "commit":
+                    return self._json(
+                        200,
+                        {"ok": True, "results": engine.git_mirror.commit_all_users()},
+                    )
+                return self._json(200, engine.git_mirror.push_all())
+
+            if parsed.path == "/api/session":
+                raw = str(body.get("user_id") or body.get("name") or "").strip()
+                if not raw:
+                    return self._json(400, {"ok": False, "error": "user_id required"})
+                try:
+                    uid = engine.set_user(raw)
+                except RuntimeError as exc:
+                    return self._json(403, {"ok": False, "error": str(exc)})
+                user = engine.users.get(uid)
+                return self._json(
+                    200,
+                    {
+                        "ok": True,
+                        "user_id": uid,
+                        "display_name": user.display_name if user else uid,
+                        "role": user.role if user else "student",
+                    },
+                )
 
             if parsed.path == "/api/admin/proposals":
                 denied = self._admin_required()
