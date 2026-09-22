@@ -422,7 +422,7 @@ def serve_api(
                 url = str(body.get("remote") or body.get("url") or "").strip()
                 if not url:
                     return self._json(400, {"ok": False, "error": "remote url required"})
-                engine.git_mirror.set_remote(url)
+                engine.git_mirror.set_remote(url, auto=False)
                 return self._json(200, {"ok": True, "status": engine.git_mirror.status()})
 
             if parsed.path == "/api/admin/progress/sync":
