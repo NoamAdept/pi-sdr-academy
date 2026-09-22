@@ -54,7 +54,8 @@ Student loop: Start → solve in ./challenge → Done
 Instructor / management:
   ACADEMY_ADMIN=1 ./run.sh
   Open /admin  — users, add/remove challenges, progress sync
-  Read MANAGE.txt for GitHub progress branches (progress/<user>)
+  First run creates academy-progress.git; each user’s progress/<id>
+  branch auto-updates on every solve. Read MANAGE.txt for details.
 EOF
 
 cp "$OUT/START_HERE.txt" "$OUT/README.txt"
