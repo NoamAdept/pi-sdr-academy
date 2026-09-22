@@ -203,7 +203,7 @@
 
     <div id="screen-home" class="hidden">
       <h1>Curriculum <em>admin</em></h1>
-      <p class="sub">Manage users, add or remove challenges, and sync progress branches to GitHub when the network allows.</p>
+      <p class="sub">Manage users, add or remove challenges, and watch progress branches auto-update on the first-run repo (or a GitHub remote).</p>
       <div class="panel">
         <div class="cards">
           <button type="button" class="card" id="btn-users">
@@ -220,7 +220,7 @@
           </button>
           <button type="button" class="card" id="btn-sync">
             <h3>Progress sync</h3>
-            <p>Push / pull <code>progress/*</code> branches to a GitHub (or mirror) remote.</p>
+            <p>First run creates a local progress repo; each user’s branch auto-updates. Optionally retarget to GitHub.</p>
           </button>
           <button type="button" class="card" id="btn-suggest-module">
             <h3>Suggest module / dojo change</h3>
@@ -291,17 +291,17 @@
 
     <div id="screen-sync" class="hidden">
       <h1>Progress <em>sync</em></h1>
-      <p class="sub">Closed network day-to-day: progress commits locally. When you can reach GitHub (or a mirror), push the <code>progress/*</code> branches.</p>
+      <p class="sub">On first run the lab creates <code>academy-progress.git</code>. Every solve auto-commits and pushes that operator’s <code>progress/&lt;user&gt;</code> branch. Replace the remote with GitHub when you need off-box sync.</p>
       <div class="panel">
         <h2>Remote</h2>
         <label for="sync-remote">Git remote URL</label>
-        <input type="text" id="sync-remote" placeholder="https://github.com/ORG/academy-progress.git"/>
+        <input type="text" id="sync-remote" placeholder="(auto) …/academy-progress.git or https://github.com/ORG/academy-progress.git"/>
         <div class="actions">
           <button type="button" class="btn btn-secondary" id="btn-sync-back">← Back</button>
           <button type="button" class="btn btn-secondary" id="btn-sync-save-remote">Save remote</button>
-          <button type="button" class="btn btn-secondary" id="btn-sync-commit">Commit all</button>
-          <button type="button" class="btn btn-primary" id="btn-sync-push">Push to GitHub</button>
-          <button type="button" class="btn btn-secondary" id="btn-sync-pull">Pull from GitHub</button>
+          <button type="button" class="btn btn-secondary" id="btn-sync-commit">Commit + auto-push all</button>
+          <button type="button" class="btn btn-primary" id="btn-sync-push">Push all branches</button>
+          <button type="button" class="btn btn-secondary" id="btn-sync-pull">Pull branches</button>
         </div>
         <pre class="review" id="sync-status" style="margin-top:0.85rem;white-space:pre-wrap;font-family:var(--mono);font-size:0.8rem;color:var(--muted)"></pre>
       </div>

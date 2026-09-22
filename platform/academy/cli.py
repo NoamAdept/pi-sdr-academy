@@ -667,16 +667,24 @@ def cmd_progress(args: argparse.Namespace) -> int:
     action = args.action
     if action == "status":
         st = eng.git_mirror.status()
-        print(f"remote: {st.get('remote') or '(none)'}")
+        auto = "  (auto, first-run)" if st.get("auto_remote") else ""
+        print(f"remote: {st.get('remote') or '(none)'}{auto}")
+        print(f"bare:   {st.get('bare_repo')}  exists={st.get('bare_exists')}")
         print(f"git:    {st.get('git_dir')}")
+        print("local branches:")
         for b in st.get("branches") or []:
             print(f"  {b['branch']}  {b['commit']}  {b.get('when', '')}")
+        remote_branches = st.get("remote_branches") or []
+        if remote_branches:
+            print("remote branches (auto-updated):")
+            for b in remote_branches:
+                print(f"  {b['branch']}  {b['commit']}  {b.get('when', '')}")
         return 0
     if action == "remote":
         if not args.remote_url:
             print("usage: academy progress remote <git-url>", file=sys.stderr)
             return 2
-        eng.git_mirror.set_remote(args.remote_url)
+        eng.git_mirror.set_remote(args.remote_url, auto=False)
         print(f"{_tag('+')} remote → {args.remote_url}")
         return 0
     if action == "commit":

@@ -39,7 +39,8 @@ echo "  Pi SDR Academy  (offline / closed network)"
 echo "  Open  http://$HOST:$PORT/"
 echo "  Then  Start → solve in ./challenge → Done"
 echo "  Admin ACADEMY_ADMIN=1 ./run.sh  →  http://$HOST:$PORT/admin"
-echo "  See   MANAGE.txt for users + GitHub progress branches"
+echo "  Progress auto-saves to progress/<user> on first-run repo"
+echo "  See   MANAGE.txt for users + progress branches"
 echo ""
 
 case "${ACADEMY_ADMIN:-0}" in

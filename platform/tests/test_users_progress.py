@@ -27,6 +27,14 @@ def test_users_and_per_user_progress_branches(engine):
     bob = engine.users.upsert(user_id="bob", display_name="Bob")
     assert alice.id == "alice"
 
+    # First-run bare progress repository is created and wired as origin
+    bare = engine.data_dir / "academy-progress.git"
+    assert (bare / "HEAD").is_file()
+    st = engine.git_mirror.status()
+    assert st["auto_remote"] is True
+    assert st["bare_exists"] is True
+    assert "academy-progress.git" in (st["remote"] or "")
+
     engine.set_user("alice")
     store = engine.progress()
     from academy.progress import ChallengeProgress
@@ -45,6 +53,10 @@ def test_users_and_per_user_progress_branches(engine):
     branches = {b["branch"] for b in engine.git_mirror.list_branches()}
     assert "progress/alice" in branches
 
+    # Auto-push landed the branch on the first-run bare repo
+    remote_branches = {b["branch"] for b in engine.git_mirror.list_remote_branches()}
+    assert "progress/alice" in remote_branches
+
     # Disk layout
     alice_file = engine.data_dir / "progress" / "alice" / "progress.json"
     assert alice_file.is_file()
@@ -57,6 +69,34 @@ def test_users_and_per_user_progress_branches(engine):
         raise AssertionError("expected unknown username to fail")
     except RuntimeError as exc:
         assert "Unknown username" in str(exc)
+
+
+def test_first_run_creates_progress_repo(tmp_path):
+    from academy.engine import AcademyEngine
+
+    data = tmp_path / "fresh-data"
+    eng = AcademyEngine(
+        curriculum_root=CURRICULUM,
+        data_dir=data,
+        workspace_root=tmp_path / "ws-fresh",
+    )
+    bare = data / "academy-progress.git"
+    assert bare.is_dir()
+    assert (bare / "HEAD").is_file()
+    assert (data / "progress-git" / ".git").exists()
+    assert (data / "progress-remote.txt").is_file()
+    remote = (data / "progress-remote.txt").read_text(encoding="utf-8").strip()
+    assert remote.endswith("academy-progress.git")
+    # main seeded on bare
+    import subprocess
+
+    refs = subprocess.run(
+        ["git", "-C", str(bare), "show-ref"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert "refs/heads/main" in refs.stdout
 
 
 def test_delete_challenge(tmp_path, engine):

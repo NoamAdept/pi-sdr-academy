@@ -37,38 +37,47 @@ Curriculum files live under curriculum/. Keep that folder in git on the
 instructor machine so you can version and ship updated packs.
 
 
-3) Progress via GitHub branches
--------------------------------
-Each operator gets a branch:
+3) Progress — auto branches on first run
+----------------------------------------
+On the **first run** of the application a bare git repository is created:
+
+  .academy-data/academy-progress.git
+
+Each operator gets their own branch that **auto-updates** on every solve / login:
 
   progress/<user_id>     contains only progress.json
 
-Offline, every clear commits into the local mirror:
+Live files + working mirror:
 
   .academy-data/progress/<user>/progress.json
   .academy-data/progress-git/.git
 
-When you can reach GitHub (or an on-prem mirror):
+No manual push is required on a single lab. Inspect with:
 
-  # one-time: empty repo on GitHub, then
+  academy progress status
+  # shows remote → academy-progress.git and progress/<user> branches
+
+Optional: point the same mirror at GitHub (or an on-prem remote) when the
+network allows — progress will auto-push there instead:
+
   academy progress remote https://github.com/ORG/academy-progress.git
-  academy progress commit
-  academy progress push
+  # or Admin → Progress sync → Save remote
 
-  # on another closed lab that should import progress
-  academy progress remote https://github.com/ORG/academy-progress.git
-  academy progress pull
+  academy progress push     # bulk push all users
+  academy progress pull     # import branches onto another lab
 
-Admin UI → Progress sync does the same.
+Admin UI → Progress sync shows the auto-created remote and branch list.
 
 
 Typical closed-network workflow
 -------------------------------
-1. Instructor laptop (has GitHub): maintain curriculum, build portable pack.
+1. Instructor laptop: maintain curriculum, build portable pack.
 2. USB the .tar.gz into the lab. Extract. ACADEMY_ADMIN=1 ./run.sh
-3. Create users. Students play offline. Progress commits locally.
-4. Periodically (USB or brief network window): academy progress push
-5. Review student branches on GitHub: progress/alice, progress/bob, …
+   → first run creates academy-progress.git automatically.
+3. Create users. Students Log in and play. Each clear updates
+   progress/<username> on the local progress repo.
+4. Optional (USB or brief network window): retarget remote to GitHub and push.
+5. Review student branches: progress/alice, progress/bob, …
 
 
 Ship an updated pack
