@@ -1,5 +1,5 @@
 intro: >
-  Offline hands-on lab. Fifty challenges. Five belts. Shell to radio.
+  Offline hands-on lab. Fifty-four challenges. Five belts. Shell to radio.
   No cloud. No accounts. Just you, a terminal, and the next puzzle.
 rules: >
   Learn first. Take a hint only when stuck. Belts unlock in order.
@@ -24,10 +24,11 @@ core:
   title: Systems Core
   belt: orange
   belt_label: Orange Belt
-  tagline: Debug and systems programming.
+  tagline: Debug, systems, processes, and threads.
   modules:
   - debugging-gdb
   - systems-programming
+  - process-threads
 - id: dsp-foundations
   title: DSP Foundations
   belt: green

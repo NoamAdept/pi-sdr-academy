@@ -1,0 +1,51 @@
+id: pt-cpp-threads
+module: process-threads
+title: Launch C++ std::thread Workers
+difficulty: medium
+estimated_time: 35-55 minutes
+prerequisites:
+- pt-cpp-process
+objectives:
+- std-thread
+- mutex
+- join
+mastery_evidence:
+- understand
+- observe
+- apply
+description: >
+  Complete workers.cpp so parallel_add(n_threads, per_thread) starts that many
+  std::thread workers, each adding under a std::mutex, then returns the total.
+  Link with -pthread.
+environment:
+  type: workspace
+  workspace_subdir: pt-cpp-threads
+  notes: Software-only, offline. Needs a C++11+ compiler with pthread.
+files:
+- README.txt
+- workers.cpp
+- run
+- check
+- check.py
+expected_tools:
+- c++
+- python3
+flags:
+  value: flag{cpp_threads_mutex_join}
+  validation: session
+hints:
+- level: 1
+  text: Include <thread> and <mutex>. Keep a shared long long total and a mutex.
+- level: 2
+  text: Each lambda locks the mutex and increments per_thread times (or adds once).
+- level: 3
+  text: emplace_back threads into a vector, then join every thread before return.
+solution: >
+  std::mutex + vector<std::thread>; each thread locks and adds; join all;
+  return total == n_threads * per_thread.
+explanation: >
+  std::thread runs concurrently in the same process. Shared counters need a
+  mutex (or atomics). Always join (or detach intentionally) before exit.
+extension:
+  title: Atomic
+  description: Replace the mutex with std::atomic<long long> fetch_add.

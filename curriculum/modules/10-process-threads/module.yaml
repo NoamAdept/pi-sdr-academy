@@ -1,0 +1,14 @@
+id: process-threads
+slug: process-threads
+title: Processes & Threads
+order: 6
+description: >
+  How processes and threads work in Python and C++ — spawn workers,
+  share memory safely, and wait for results offline.
+prerequisites:
+- systems-programming
+challenges:
+- pt-py-process
+- pt-py-threads
+- pt-cpp-process
+- pt-cpp-threads

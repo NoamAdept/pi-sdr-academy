@@ -435,6 +435,34 @@ def next_challenge_payload(engine: AcademyEngine) -> dict[str, Any] | None:
     }
 
 
+def _dojo_contents_preview(engine: AcademyEngine, module_slugs: list[str]) -> list[dict[str, Any]]:
+    """Module titles + challenge titles so belts can be browsed from the catalog."""
+    out: list[dict[str, Any]] = []
+    for slug in module_slugs:
+        try:
+            module = engine.get_module(slug)
+        except KeyError:
+            continue
+        challenges = [
+            {
+                "id": c.id,
+                "title": display_title(c.id, c.title),
+                "difficulty": c.difficulty,
+            }
+            for c in engine.module_challenges(slug)
+        ]
+        out.append(
+            {
+                "slug": module.slug,
+                "title": module.title,
+                "description": (module.description or "").strip(),
+                "challenges": challenges,
+                "challenge_count": len(challenges),
+            }
+        )
+    return out
+
+
 def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
     catalog = load_dojos(engine.curriculum_root)
     stats = dojo_stats(engine)
@@ -457,6 +485,7 @@ def catalog_payload(engine: AcademyEngine) -> dict[str, Any]:
                 "locked": d.locked,
                 "next_challenge_id": d.next_challenge_id,
                 "module_slugs": d.module_slugs,
+                "contents": _dojo_contents_preview(engine, d.module_slugs),
             }
             for d in stats
         ],

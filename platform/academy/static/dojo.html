@@ -489,6 +489,8 @@
       text-align: center;
       font-family: var(--mono); font-size: 0.58rem; font-weight: 500;
       color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
+      border: 0; background: transparent; padding: 0.15rem; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
     }
     .belt img {
       width: 40px; height: 32px; object-fit: contain;
@@ -568,8 +570,40 @@
       box-shadow: var(--shadow-recess); padding: 3px; flex-shrink: 0;
     }
     .dhero p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.88rem; }
+    .dhero .peek {
+      display: inline-block; margin-top: 0.45rem; padding: 0.2rem 0.55rem;
+      border-radius: 999px; font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--warn, #b45309); background: color-mix(in srgb, var(--warn, #E9C46A) 18%, transparent);
+    }
 
-    .clist { display: flex; flex-direction: column; gap: 0.5rem; }
+    .clist { display: flex; flex-direction: column; gap: 1.1rem; }
+    .mblock { display: flex; flex-direction: column; gap: 0.45rem; }
+    .mhead {
+      padding: 0.15rem 0.15rem 0.35rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+    }
+    .mhead h3 {
+      margin: 0; font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em;
+    }
+    .mhead p {
+      margin: 0.25rem 0 0; color: var(--muted); font-size: 0.86rem; max-width: 48ch;
+    }
+    .mhead .mcnt {
+      margin-top: 0.2rem; font-family: var(--mono); font-size: 0.68rem;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .path .card .preview {
+      margin: 0.35rem 0 0; padding: 0;
+      list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem;
+    }
+    .path .card .preview li {
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.02em;
+      color: var(--muted); background: color-mix(in srgb, var(--panel) 70%, transparent);
+      border-radius: 6px; padding: 0.15rem 0.4rem;
+    }
+    .belt { cursor: pointer; }
+    .belt:focus-visible { outline: 2px solid var(--teal, #2A9D8F); outline-offset: 3px; }
     .crow {
       border-radius: 14px;
       background: var(--bg);
@@ -941,7 +975,7 @@
             <div class="screen">
               <div>SYS <b>ONLINE</b></div>
               <div>BELTS 5</div>
-              <div>CHALS 50</div>
+              <div>CHALS 54</div>
               <div>MODE LAB</div>
             </div>
             <div class="ports"><i></i><i></i><i></i></div>
@@ -998,12 +1032,15 @@
 
       <section class="module xp">
         <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">50</span></span></div>
+        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">54</span></span></div>
         <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
         <div class="belts" id="belts"></div>
       </section>
 
       <div class="sec">Belts</div>
+      <p class="lede" style="margin:-0.35rem 0 0.75rem;max-width:46ch;font-size:0.92rem;color:var(--muted)">
+        Tap any belt to see its modules and challenges. Locked belts are browse-only until you clear the one before.
+      </p>
       <div class="path" id="belts-list"></div>
     </div>
 
@@ -1030,7 +1067,7 @@
           Clears on this machine — when you solved, and how far up the belts you’ve climbed.
         </p>
         <div class="prof-stats">
-          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/50</strong></div>
+          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/54</strong></div>
           <div class="prof-stat"><b>Streak</b><strong id="prof-streak">0 days</strong></div>
           <div class="prof-stat"><b>Ascent</b><strong id="prof-ascent">0%</strong></div>
         </div>
@@ -1108,7 +1145,7 @@
     let nextCh = null;
     let catalogIntro = '';
     let lastSolved = 0;
-    let lastTotal = 50;
+    let lastTotal = 54;
     let lastProfile = null;
 
     function esc(s) {
@@ -1153,7 +1190,7 @@
     }
     function setTopProgress(solved, total) {
       lastSolved = solved;
-      lastTotal = total || 50;
+      lastTotal = total || 54;
       const pct = lastTotal ? Math.round(100 * solved / lastTotal) : 0;
       const fill = document.getElementById('top-fill');
       if (fill) fill.style.width = pct + '%';
@@ -1449,12 +1486,16 @@
       cores.forEach(d => {
         const done = d.challenges > 0 && d.solved >= d.challenges;
         const on = nextCh && d.id === nextCh.dojo_id;
-        const el = document.createElement('div');
+        const el = document.createElement('button');
+        el.type = 'button';
         el.className = 'belt' + (done ? ' done' : '') + (on ? ' on' : '');
+        el.title = (d.locked ? 'Browse (locked) · ' : '') + (d.title || d.belt_label || '');
+        el.setAttribute('aria-label', `Open ${d.belt_label || d.title} contents`);
         el.innerHTML = `
           <img src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
           <div>${esc((d.belt_label || '').replace(/ Belt$/i, ''))}</div>
         `;
+        el.onclick = () => openDojo(d.id);
         belts.appendChild(el);
       });
 
@@ -1464,9 +1505,14 @@
         const done = d.challenges > 0 && d.solved >= d.challenges;
         const on = nextCh && d.id === nextCh.dojo_id;
         let chip = '';
-        if (d.locked) chip = '<span class="chip lock">Locked</span>';
+        if (d.locked) chip = '<span class="chip lock">Browse</span>';
         else if (done) chip = '<span class="chip done">Done</span>';
         else if (on) chip = '<span class="chip">Now</span>';
+        else chip = '<span class="chip">Open</span>';
+        const mods = (d.contents || []).map(m => esc(m.title)).filter(Boolean);
+        const preview = mods.length
+          ? `<ul class="preview">${mods.map(t => `<li>${t}</li>`).join('')}</ul>`
+          : '';
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'card' + (d.locked ? ' locked' : '');
@@ -1475,10 +1521,11 @@
           <div>
             <h3>${esc(d.title)}</h3>
             <div class="meta">${d.solved}/${d.challenges} · ${esc(d.tagline || d.belt_label || '')}</div>
+            ${preview}
           </div>
           ${chip}
         `;
-        btn.onclick = () => { if (!d.locked) openDojo(d.id); };
+        btn.onclick = () => openDojo(d.id);
         list.appendChild(btn);
       });
     }
@@ -1565,16 +1612,29 @@
         <img src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
         <div>
           <h2>${esc(d.title)}</h2>
-          <p>${esc(d.belt_label || '')} · ${d.solved}/${d.challenges}${d.locked ? ' · locked' : ''}</p>
+          <p>${esc(d.belt_label || '')} · ${d.solved}/${d.challenges}${d.locked ? ' · locked path' : ''}</p>
+          ${d.locked ? '<span class="peek">Browse only — clear the previous belt to Start</span>' : ''}
         </div>
       `;
       const root = document.getElementById('clist');
       root.innerHTML = '';
       const focus = (nextCh && nextCh.dojo_id === id) ? nextCh.id : d.next_challenge_id;
       (d.modules_detail || []).forEach(mod => {
+        const block = document.createElement('section');
+        block.className = 'mblock';
+        const head = document.createElement('div');
+        head.className = 'mhead';
+        const n = (mod.challenges || []).length;
+        head.innerHTML = `
+          <h3>${esc(mod.title || mod.slug || 'Module')}</h3>
+          ${mod.description ? `<p>${esc(mod.description)}</p>` : ''}
+          <div class="mcnt">${n} challenge${n === 1 ? '' : 's'}</div>
+        `;
+        block.appendChild(head);
         (mod.challenges || []).forEach(ch => {
-          root.appendChild(challengeRow(ch, d.locked, ch.id === focus && !ch.solved));
+          block.appendChild(challengeRow(ch, d.locked, ch.id === focus && !ch.solved && !d.locked));
         });
+        root.appendChild(block);
       });
       intro.classList.add('hidden');
       home.classList.add('hidden');
@@ -1760,18 +1820,22 @@
           <path d="${trail}" fill="none" stroke="#1a222a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
           <path d="${trail}" fill="none" stroke="#e8edf2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 4"/>
 
-          <!-- belt stations as trail cairns / markers -->
+          <!-- belt stations as trail cairns / markers (clickable) -->
           ${stations.map((s) => {
             const done = s.complete;
             const short = (s.belt_label || s.belt || '').replace(/ Belt$/i, '');
             const post = done ? '#22c55e' : '#e8edf2';
             const ring = done ? '#15803d' : '#2a3340';
             return `
-              <line x1="${s.x}" y1="${s.y}" x2="${s.x}" y2="${s.y - 16}" stroke="${ring}" stroke-width="2"/>
-              <rect x="${s.x - 7}" y="${s.y - 24}" width="14" height="10" rx="1.5" fill="${post}" stroke="${ring}" stroke-width="1"/>
-              <circle cx="${s.x}" cy="${s.y}" r="3.5" fill="${post}" stroke="${ring}" stroke-width="1.2"/>
-              <text class="mtn-label" x="${s.x}" y="${s.y - 30}" text-anchor="middle">${esc(short)}</text>
-              <text class="mtn-sub" x="${s.x}" y="${s.y + 14}" text-anchor="middle">${s.solved}/${s.challenges}</text>
+              <g class="mtn-station" data-dojo="${esc(s.id || '')}" style="cursor:pointer">
+                <title>${esc(s.title || short)} — tap to browse</title>
+                <line x1="${s.x}" y1="${s.y}" x2="${s.x}" y2="${s.y - 16}" stroke="${ring}" stroke-width="2"/>
+                <rect x="${s.x - 7}" y="${s.y - 24}" width="14" height="10" rx="1.5" fill="${post}" stroke="${ring}" stroke-width="1"/>
+                <circle cx="${s.x}" cy="${s.y}" r="3.5" fill="${post}" stroke="${ring}" stroke-width="1.2"/>
+                <text class="mtn-label" x="${s.x}" y="${s.y - 30}" text-anchor="middle">${esc(short)}</text>
+                <text class="mtn-sub" x="${s.x}" y="${s.y + 14}" text-anchor="middle">${s.solved}/${s.challenges}</text>
+                <circle cx="${s.x}" cy="${s.y - 8}" r="18" fill="transparent"/>
+              </g>
             `;
           }).join('')}
 
@@ -1782,9 +1846,15 @@
                   stroke="#ff4757" stroke-width="2" stroke-linecap="round" fill="none"/>
           </g>
 
-          <text class="mtn-sub" x="170" y="214" text-anchor="middle">Base camp → Blue Belt summit</text>
+          <text class="mtn-sub" x="170" y="214" text-anchor="middle">Base camp → Blue Belt summit · tap a station to browse</text>
         </svg>
       `;
+      el.querySelectorAll('.mtn-station[data-dojo]').forEach(node => {
+        node.addEventListener('click', () => {
+          const id = node.getAttribute('data-dojo');
+          if (id) openDojo(id);
+        });
+      });
     }
 
     async function paintProfile() {

@@ -22,7 +22,7 @@ def engine(tmp_path):
 
 def test_modules_loaded(engine):
     modules = engine.modules
-    assert len(modules) == 10
+    assert len(modules) == 11
     assert modules[0].slug == "orientation"
 
 
@@ -158,7 +158,7 @@ def test_hints_progressive(engine):
 
 def test_challenge_yaml_count():
     n = len(list(CURRICULUM.glob("modules/*/challenges/*/challenge.yaml")))
-    assert n == 50
+    assert n == 54
 
 
 def test_session_flag_randomized_and_flag_file_cleared(engine, tmp_path):
@@ -309,7 +309,7 @@ def test_profile_payload_calendar_and_mountain(engine):
 
     profile = profile_payload(engine)
     assert profile["solved"] == 2
-    assert profile["total"] == 50
+    assert profile["total"] == 54
     # Two white-belt solves out of 10, across 5 equal terraces → 4%
     assert profile["ascent_pct"] == 4.0
     assert len(profile["belts"]) == 5

@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+c++ -Wall -Wextra -O0 -pthread -std=c++17 -o workers workers.cpp
+./workers

@@ -1,0 +1,50 @@
+id: pt-py-threads
+module: process-threads
+title: Share Work Across Python Threads
+difficulty: medium
+estimated_time: 30-45 minutes
+prerequisites:
+- pt-py-process
+objectives:
+- threading
+- mutual-exclusion
+- shared-state
+mastery_evidence:
+- understand
+- observe
+- apply
+description: >
+  Complete counter.py so parallel_add(n_threads, per_thread) starts that many
+  threads, each adding per_thread to a shared total under a Lock, then returns
+  the final total. Without a lock the race will fail the checker.
+environment:
+  type: workspace
+  workspace_subdir: pt-py-threads
+  notes: Software-only, offline.
+files:
+- README.txt
+- counter.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{py_threads_need_locks}
+  validation: session
+hints:
+- level: 1
+  text: "Create a threading.Lock and a shared integer (or a one-element list)."
+- level: 2
+  text: "Each worker does `with lock: total += 1` inside a loop of per_thread."
+- level: 3
+  text: "Start all Thread(target=...), then join every thread before returning."
+solution: >
+  Use a Lock; spawn Thread objects that increment under the lock; join all;
+  return the shared total (n_threads * per_thread).
+explanation: >
+  Threads share memory. Concurrent read-modify-write on an int races unless
+  protected by a mutex (Lock). Processes do not share that memory by default.
+extension:
+  title: Barrier
+  description: "Use a Barrier so every thread starts the critical section together."

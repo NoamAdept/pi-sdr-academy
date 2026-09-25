@@ -1,6 +1,6 @@
 # Pi SDR Academy
 
-Offline lab: **five belts · fifty challenges · shell → IQ**.
+Offline lab: **five belts · fifty-four challenges · shell → IQ**.
 
 ## Closed network (USB / air-gap)
 
@@ -37,7 +37,7 @@ From a git checkout that already includes `vendor/`:
 
 ```text
 run.sh           launcher (python3 only)
-curriculum/      50 challenges
+curriculum/      54 challenges
 platform/        engine + UI
 vendor/          pure-Python YAML (no .so)
 scripts/         pack + curriculum check

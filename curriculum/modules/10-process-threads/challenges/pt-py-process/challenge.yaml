@@ -1,0 +1,55 @@
+id: pt-py-process
+module: process-threads
+title: Spawn a Python Child Process
+difficulty: easy
+estimated_time: 25-40 minutes
+prerequisites:
+- sys-process-controller
+objectives:
+- subprocess
+- process-lifecycle
+- inter-process-output
+mastery_evidence:
+- understand
+- observe
+- apply
+description: >
+  Complete worker.py so run_echo(msg) starts a child Python process that
+  prints the message, then return the child's stripped stdout. Use the
+  subprocess module — not a plain function call.
+environment:
+  type: workspace
+  workspace_subdir: pt-py-process
+  notes: Software-only, offline.
+files:
+- README.txt
+- worker.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{py_child_process_stdout}
+  validation: session
+hints:
+- level: 1
+  text: >
+    Prefer subprocess.run with capture_output=True and text=True, or
+    check_output.
+- level: 2
+  text: >
+    Launch sys.executable with -c and a print(...) expression so the child
+    is a real separate process.
+- level: 3
+  text: >
+    Return result.stdout.strip() (or decode if you captured bytes).
+solution: >
+  Use subprocess.run([sys.executable, "-c", f"print({msg!r})"],
+  capture_output=True, text=True, check=True) and return stdout.strip().
+explanation: >
+  A child process has its own address space. Subprocess lets you start it,
+  feed arguments, and collect stdout without sharing Python objects.
+extension:
+  title: Timeout
+  description: Add a timeout= and handle TimeoutExpired cleanly.

@@ -1,0 +1,50 @@
+id: pt-cpp-process
+module: process-threads
+title: Fork a C++ Child Process
+difficulty: medium
+estimated_time: 35-55 minutes
+prerequisites:
+- pt-py-threads
+objectives:
+- fork
+- waitpid
+- process-ids
+mastery_evidence:
+- understand
+- observe
+- apply
+description: >
+  Complete controller.cpp so the parent forks a child that prints child_ok
+  and exits 0; the parent waits and prints child_status=0. Compile with c++.
+environment:
+  type: workspace
+  workspace_subdir: pt-cpp-process
+  notes: Software-only, offline. Needs a C++ compiler (c++/g++).
+files:
+- README.txt
+- controller.cpp
+- run
+- check
+- check.py
+expected_tools:
+- c++
+- python3
+flags:
+  value: flag{cpp_fork_wait_status}
+  validation: session
+hints:
+- level: 1
+  text: Include unistd.h and sys/wait.h. Call fork() and branch on the pid.
+- level: 2
+  text: In the child, print child_ok and return 0 (or _exit(0)).
+- level: 3
+  text: In the parent, waitpid(pid, &status, 0) and print WEXITSTATUS(status).
+solution: >
+  pid_t pid = fork(); child prints and exits; parent waitpid and prints
+  child_status=<code>.
+explanation: >
+  fork duplicates the process. The child gets pid 0 from fork; the parent
+  gets the child's pid. waitpid reaps the exit status so zombies do not linger.
+extension:
+  title: execl
+  description: Have the child execl /bin/echo instead of printf.

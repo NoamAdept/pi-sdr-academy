@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+python3 - <<'PY'
+from worker import run_echo
+print(run_echo("process_ok"))
+PY
