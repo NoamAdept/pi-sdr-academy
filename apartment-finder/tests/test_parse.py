@@ -17,6 +17,7 @@ from apartment_finder.parse import (
     parse_komo_detail,
     parse_komo_list,
 )
+from apartment_finder.run import dedupe
 from apartment_finder.travel import assess_travel
 
 
@@ -115,6 +116,15 @@ class ParseTests(unittest.TestCase):
         self.assertTrue(city_filter_wanted("רמת גן - גבעתיים"))
         self.assertFalse(city_filter_wanted("רמת גן מרכז העיר ב'"))
         self.assertFalse(city_filter_wanted("חיפה וחוף הכרמל"))
+
+    def test_dedupe_merges_abbreviated_street(self):
+        komo = Listing("Komo", "https://komo.example/1", 2450, "רמת גן", "נחלת גנים", 'רש"י 23')
+        homeless = Listing("Homeless", "https://homeless.example/2", 2450, "רמת גן", "נחלת גנים", "רשי")
+        other = Listing("Komo", "https://komo.example/3", 2300, "רמת גן", "גפן", "ביאליק 86")
+        rows = dedupe([homeless, komo, other])
+        self.assertEqual(len(rows), 2)
+        kept = [row for row in rows if row.price_ils == 2450][0]
+        self.assertIn("23", kept.street)
 
     def test_dedupe_key_ignores_quotes(self):
         a = Listing("Komo", "https://example/a", 2500, "תל אביב יפו", "נווה אביבים", "אינשטיין 27")

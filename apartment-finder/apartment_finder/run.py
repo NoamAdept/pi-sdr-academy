@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,13 +27,40 @@ def _richer(candidate: Listing, current: Listing) -> bool:
     )
 
 
+def _norm_place(value: str) -> str:
+    value = value.replace("־", " ").replace("-", " ")
+    value = re.sub(r"[\"'׳״]", "", value)
+    return re.sub(r"\s+", " ", value).strip().lower()
+
+
+def _same_listing(left: Listing, right: Listing) -> bool:
+    if left.price_ils != right.price_ils:
+        return False
+    if left.url.split("?")[0].rstrip("/") == right.url.split("?")[0].rstrip("/"):
+        return True
+    left_hood, right_hood = _norm_place(left.neighborhood), _norm_place(right.neighborhood)
+    if not left_hood or not right_hood:
+        return False
+    if left_hood != right_hood and left_hood not in right_hood and right_hood not in left_hood:
+        return False
+    left_street, right_street = _norm_place(left.street), _norm_place(right.street)
+    if not left_street or not right_street:
+        return False
+    return left_street == right_street or left_street in right_street or right_street in left_street
+
+
 def dedupe(listings: list[Listing]) -> list[Listing]:
     chosen: dict[tuple, Listing] = {}
     for listing in listings:
-        key = dedupe_key(listing)
-        previous = chosen.get(key)
-        if previous is None or _richer(listing, previous):
+        match_key = next((key for key, previous in chosen.items() if _same_listing(listing, previous)), None)
+        if match_key is None:
+            key = dedupe_key(listing)
+            while key in chosen:
+                key = (*key, len(chosen))
             chosen[key] = listing
+            continue
+        if _richer(listing, chosen[match_key]):
+            chosen[match_key] = listing
     return list(chosen.values())
 
 
