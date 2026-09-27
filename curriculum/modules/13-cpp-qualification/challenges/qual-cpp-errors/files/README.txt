@@ -1,15 +1,18 @@
 Throw on Bad Gain
 =================
 
-C++ qualification → offline SDR-lab challenge.
-
 Goal
 ----
-apply_gain throws std::invalid_argument on negative gain; main prints ok=8.
+Throw on negative gain; print ok=8 then caught.
 
 Steps
 -----
-1. Press Start
-2. Edit main.cpp
-3. ./run then ./check
-4. Press Done
+1) Press Start and open main.cpp.
+2) Make the change described above.
+3) Prove: ./check
+4) Press Done when check passes.
+
+Theme
+-----
+Qualification topic reshaped as an offline SDR-lab challenge
+(Start → solve → Done). No Jupyter or GNU Radio install required.

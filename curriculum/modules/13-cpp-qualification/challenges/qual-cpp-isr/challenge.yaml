@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  volatile irq_flag set by pretend ISR; main prints irq=1.
+  irq_flag is volatile and set by pretend_isr. Call the ISR stub and print irq=1. volatile tells the compiler a hardware or interrupt path may change the flag outside normal control flow.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-isr
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    volatile already
+    Keep the volatile qualifier on irq_flag.
 - level: 2
   text: |
-    call pretend_isr
+    Call pretend_isr() before printing.
 - level: 3
   text: |
-    print irq=
+    Print irq= followed by the flag value.
 solution: |
   volatile flag
 explanation: |
-  volatile for ISR-shared flags.
+  ISR-shared flags are volatile so reads are not optimized into stale registers.
 extension:
   title: Go further
   description: |

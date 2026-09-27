@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Read first line of tune.txt and print tune=<line>.
+  Operator notes live in tune.txt. Read the first line with getline and print tune=<line> (for example tune=146.52). Strings and fstream are the everyday tools for lab configuration files on the Pi.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-data
@@ -33,17 +33,17 @@ flags:
 hints:
 - level: 1
   text: |
-    tune.txt provided
+    tune.txt is already in the workspace.
 - level: 2
   text: |
-    getline
+    std::getline(in, line) reads the first line.
 - level: 3
   text: |
-    tune=
+    Print exactly: tune= followed by the line contents.
 solution: |
   getline + print
 explanation: |
-  Files carry operator notes.
+  ifstream + getline load text configs the same way operators keep tune cards.
 extension:
   title: Go further
   description: |

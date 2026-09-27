@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Print target=beacon_rx to mimic a CMake target name constant.
+  Pretend your CMake target is named beacon_rx. Print target=beacon_rx from main. Build systems name radio binaries; this challenge only checks you can treat that name as a first-class constant in code.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-cmake
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    set string
+    Store the string beacon_rx in a std::string.
 - level: 2
   text: |
-    print target=
+    Print target= then the string.
 - level: 3
   text: |
-    keep name
+    Spelling must be exactly beacon_rx.
 solution: |
   print target
 explanation: |
-  Build systems name radio binaries.
+  CMake targets name the artifacts operators run — keep those names consistent.
 extension:
   title: Go further
   description: |

@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  SignalMeter.add and average (0.0 if empty).
+  Model a small bench instrument: SignalMeter stores power readings in dB. Implement add to record a reading and average to return the mean, or 0.0 when empty. Classes turn instruments into objects you can reuse across lab scripts.
 environment:
   type: workspace
   workspace_subdir: qual-py-oop
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    append
+    append each power_db into the internal list.
 - level: 2
   text: |
-    sum/len
+    average is sum(readings) / len(readings).
 - level: 3
   text: |
-    empty 0
+    If the list is empty, return 0.0 instead of dividing.
 solution: |
   mean of list
 explanation: |
-  Objects model instruments.
+  Object-oriented design models lab gear as objects with state (readings) and behavior (add, average).
 extension:
   title: Go further
   description: |

@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  peaks_above returns indices where sample > thresh.
+  From a list of amplitude samples, return the indices where the sample is strictly above a threshold. Comprehensions with enumerate are the Pythonic way to filter a stream without a verbose for-loop.
 environment:
   type: workspace
   workspace_subdir: qual-py-collections
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    enumerate
+    enumerate(samples) gives index and value together.
 - level: 2
   text: |
-    comprehension
+    Keep indices where sample > thresh.
 - level: 3
   text: |
-    indices
+    [i for i, s in enumerate(samples) if s > thresh]
 solution: |
   [i for i,s in enumerate(samples) if s>thresh]
 explanation: |
-  Comprehensions filter streams.
+  Comprehensions filter and transform collections in one expression — ideal for peak picking on short captures.
 extension:
   title: Go further
   description: |

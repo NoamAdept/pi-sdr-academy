@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  load_version imports labkit and returns version.
+  A tiny labkit package already sits beside your loader. Complete load_version so it imports labkit and returns its version string. Packages and __init__.py turn a folder into an importable toolkit for the Pi lab.
 environment:
   type: workspace
   workspace_subdir: qual-py-packaging
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    import labkit
+    import labkit (the folder is already present).
 - level: 2
   text: |
-    version
+    Read labkit.version after importing.
 - level: 3
   text: |
-    keep pkg
+    return labkit.version
 solution: |
   return labkit.version
 explanation: |
-  Packages structure toolkits.
+  Package layouts let you share helpers across challenges and scripts without dumping everything in one file.
 extension:
   title: Go further
   description: |

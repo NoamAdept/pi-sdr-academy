@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  apply_vector_gain(samples, gain) scales a float vector (block work()).
+  Vector blocks process buffers, not scalars. Complete apply_vector_gain so every sample in the list is multiplied by gain into a new list of equal length — the same shape as a GNU Radio work() on float vectors.
 environment:
   type: workspace
   workspace_subdir: qual-gr-vectors
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    comprehension
+    Multiply each sample by gain.
 - level: 2
   text: |
-    s*gain
+    Return a new list; keep length identical.
 - level: 3
   text: |
-    same length
+    [s * gain for s in samples]
 solution: |
   [s*gain for s in samples]
 explanation: |
-  Vector blocks process buffers, not scalars.
+  Vector work() calls operate on arrays of samples per call for throughput.
 extension:
   title: Go further
   description: |

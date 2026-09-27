@@ -1,12 +1,17 @@
 C++ Qualification Map
 =====================
 
-Write the track name cpp-qualification into answer.txt (from the syllabus overview).
+Goal
+----
+Write cpp-qualification into answer.txt after reading OVERVIEW.txt.
 
 Steps
 -----
-1. Press Start
-2. cat OVERVIEW.txt
-3. echo cpp-qualification > answer.txt
-4. ./check
-5. Press Done
+1) Press Start and open OVERVIEW.txt.
+2) Write the track id into answer.txt (one line).
+3) Prove: ./check
+4) Press Done when check passes.
+
+Theme
+-----
+Pi SDR Academy qualification path — offline, no Jupyter required.

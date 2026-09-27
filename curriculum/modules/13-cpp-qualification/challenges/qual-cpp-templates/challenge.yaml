@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Template max_sample prints max=9 for ints.
+  Finish the max_sample template so it returns the larger of two values and main prints max=9. Templates generic-ize DSP helpers across int, float, and other sample types without copy-paste.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-templates
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    ternary
+    Compare a and b; return the larger.
 - level: 2
   text: |
-    template <typename T>
+    A ternary works: (a > b) ? a : b
 - level: 3
   text: |
-    return larger
+    Keep the template <typename T> signature.
 solution: |
   return a>b?a:b
 explanation: |
-  Templates generic-ize DSP helpers.
+  One template serves many numeric types — generic programming for radio math.
 extension:
   title: Go further
   description: |

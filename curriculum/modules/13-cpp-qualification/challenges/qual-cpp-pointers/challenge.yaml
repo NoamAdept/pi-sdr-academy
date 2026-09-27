@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Write through a pointer to set the live sample to 42 and print value=42 from main.
+  sample starts at 0 and p points at it. Write 42 through the pointer (*p) so main prints value=42. Pointers address live sample memory — powerful and easy to misuse, which is why this qualification drills them early.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-pointers
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    *p = 42
+    p already holds &sample.
 - level: 2
   text: |
-    pointer
+    Assign through the pointer: *p = 42;
 - level: 3
   text: |
-    address-of
+    Printing sample afterward should show 42.
 solution: |
   *p=42
 explanation: |
-  Pointers address live samples.
+  A pointer holds an address; dereferencing it reads or writes the live object.
 extension:
   title: Go further
   description: |

@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  RadioMath::sub returns a-b; program prints sum and diff.
+  RadioMath already provides add inside a namespace. Finish sub so it returns a - b, and keep the program printing sum= and diff= via RadioMath::. Namespaces keep large radio codebases from colliding on short names.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-namespaces
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    return a-b
+    Inside RadioMath::sub, return a - b.
 - level: 2
   text: |
-    keep namespace
+    Do not remove the RadioMath namespace wrapper.
 - level: 3
   text: |
-    RadioMath::
+    main already prints with RadioMath::add and RadioMath::sub.
 solution: |
   sub returns a-b
 explanation: |
-  Namespaces scale radio codebases.
+  Scope resolution (RadioMath::) reaches names inside a namespace without polluting the global scope.
 extension:
   title: Go further
   description: |

@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Sum gains with range-for and print sum=6.
+  Sum a vector of gains with a range-based for loop and print sum=6. Modern C++ prefers range-for over index loops when you only need each element.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-modern
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    for (int g : gains)
+    for (int g : gains) walks every element.
 - level: 2
   text: |
-    sum+=g
+    Add each g into sum.
 - level: 3
   text: |
-    keep print
+    Keep the final print of sum=.
 solution: |
   range-for sum
 explanation: |
-  Modern C++ prefers range-for.
+  Range-for is clearer and less error-prone than manual indexing for simple scans.
 extension:
   title: Go further
   description: |

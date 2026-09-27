@@ -1,15 +1,18 @@
 Safe Flag Parse
 ===============
 
-Qualification topic → offline SDR-lab challenge.
-
 Goal
 ----
-parse_flag returns flag{...} or raises ValueError.
+Return a valid flag{...} string or raise ValueError.
 
 Steps
 -----
-1. Press Start
-2. Edit flags.py
-3. ./check
-4. Press Done
+1) Press Start and open flags.py.
+2) Make the change described above.
+3) Prove: ./check
+4) Press Done when check passes.
+
+Theme
+-----
+Qualification topic reshaped as an offline SDR-lab challenge
+(Start → solve → Done). No Jupyter or GNU Radio install required.

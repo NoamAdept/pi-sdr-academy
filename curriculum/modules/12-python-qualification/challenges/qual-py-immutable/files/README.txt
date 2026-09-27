@@ -1,15 +1,18 @@
 Frozen IQ Pairs
 ===============
 
-Qualification topic → offline SDR-lab challenge.
-
 Goal
 ----
-iq_pair returns immutable (i,q) tuple.
+Return an immutable (i, q) tuple from iq_pair.
 
 Steps
 -----
-1. Press Start
-2. Edit iq.py
-3. ./check
-4. Press Done
+1) Press Start and open iq.py.
+2) Make the change described above.
+3) Prove: ./check
+4) Press Done when check passes.
+
+Theme
+-----
+Qualification topic reshaped as an offline SDR-lab challenge
+(Start → solve → Done). No Jupyter or GNU Radio install required.

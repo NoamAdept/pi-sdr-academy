@@ -1,15 +1,18 @@
 Block Catalog Card
 ==================
 
-Qualification topic → offline SDR-lab challenge.
-
 Goal
 ----
-block_name() returns 'null_source' — first tile in a software radio rack.
+Return 'null_source' as the first block catalog card.
 
 Steps
 -----
-1. Press Start
-2. Edit blocks.py
-3. ./check
-4. Press Done
+1) Press Start and open blocks.py.
+2) Make the change described above.
+3) Prove: ./check
+4) Press Done when check passes.
+
+Theme
+-----
+Qualification topic reshaped as an offline SDR-lab challenge
+(Start → solve → Done). No Jupyter or GNU Radio install required.

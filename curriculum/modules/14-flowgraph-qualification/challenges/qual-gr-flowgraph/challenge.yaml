@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  connect(src,dst) records an edge; edges() returns list of (src,dst).
+  A flowgraph is a directed set of connections. Implement connect(src, dst) to record an edge and edges() to return the list of (src, dst) tuples in order. This is the same connect idea as top_block->connect in GNU Radio C++.
 environment:
   type: workspace
   workspace_subdir: qual-gr-flowgraph
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    append tuple
+    Store each connection as a (src, dst) tuple.
 - level: 2
   text: |
-    return list
+    append to an internal list in connect.
 - level: 3
   text: |
-    order preserved
+    edges() returns that list (order preserved).
 solution: |
   store edges list
 explanation: |
-  Flowgraphs are directed edges between blocks.
+  Connecting blocks builds the graph; running it later pushes samples along edges.
 extension:
   title: Go further
   description: |

@@ -9,7 +9,7 @@ objectives:
 mastery_evidence:
 - understand
 description: |
-  Write the track name flowgraph-qualification into answer.txt (from the GNU Radio syllabus overview).
+  Read OVERVIEW.txt for the flowgraph qualification path and write `flowgraph-qualification` into answer.txt. These challenges teach GNU Radio ideas — blocks, edges, vectors, tone chains — offline without installing GNU Radio.
 environment:
   type: workspace
   workspace_subdir: qual-gr-overview
@@ -27,17 +27,17 @@ flags:
 hints:
 - level: 1
   text: |
-    Read OVERVIEW.txt
+    OVERVIEW.txt names the track id.
 - level: 2
   text: |
-    Put the track id on one line in answer.txt
+    One line in answer.txt.
 - level: 3
   text: |
     Exact spelling: flowgraph-qualification
 solution: |
   Write flowgraph-qualification into answer.txt
 explanation: |
-  Overviews map the qualification path before the hands-on modules.
+  Overview unlocks the offline flowgraph path that mirrors the GNU Radio syllabus.
 extension:
   title: Skim next
   description: |

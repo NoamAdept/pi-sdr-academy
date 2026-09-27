@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  parse_flag returns flag{...} or raises ValueError.
+  Flags in this academy look like flag{...}. Complete parse_flag to strip whitespace, accept a valid flag, and raise ValueError for anything else. Exceptions beat silent None returns when operator input is wrong.
 environment:
   type: workspace
   workspace_subdir: qual-py-exceptions
@@ -30,20 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    strip
+    Strip whitespace first.
 - level: 2
   text: |
-    flag{...
+    Valid text starts with flag{ and ends with }.
 - level: 3
   text: |
-    }
-- level: 4
-  text: |
-    ValueError
+    raise ValueError when the shape is wrong.
 solution: |
   validate or raise
 explanation: |
-  Exceptions beat silent None.
+  Raising ValueError makes bad input obvious at the call site instead of passing a bogus flag downstream.
 extension:
   title: Go further
   description: |

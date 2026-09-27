@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  read_capture uses with-open and returns stripped text.
+  Capture files must always close. Implement read_capture with a with-open context manager and return the file text stripped of surrounding whitespace. Context managers are Python's RAII for files and other resources.
 environment:
   type: workspace
   workspace_subdir: qual-py-context
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    with open
+    Use `with open(path) as f:` so the file always closes.
 - level: 2
   text: |
-    strip
+    Read the whole file, then strip().
 - level: 3
   text: |
-    context
+    The word `with` must appear in capture.py for the check to pass.
 solution: |
   with open as f: return f.read().strip()
 explanation: |
-  with is RAII for files.
+  with-open guarantees cleanup even when an error interrupts the read — the same idea as RAII in C++.
 extension:
   title: Go further
   description: |

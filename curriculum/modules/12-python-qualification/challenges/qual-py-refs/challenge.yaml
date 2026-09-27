@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  share_buffer aliases; mutate_last sets last element in place.
+  Python names reference objects. Complete share_buffer so it returns the same list object (an alias), and mutate_last so it changes the last element in place. Understanding aliases prevents surprise mutations in shared sample buffers.
 environment:
   type: workspace
   workspace_subdir: qual-py-refs
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    return buf
+    share_buffer should return buf itself, not a copy.
 - level: 2
   text: |
-    buf[-1]=
+    mutate_last assigns buf[-1] = value.
 - level: 3
   text: |
-    no copy
+    Do not slice or list() — that would copy.
 solution: |
   alias + assign
 explanation: |
-  Names reference objects.
+  Multiple names can point at one list. In-place edits show up everywhere that alias is used — useful for buffers, dangerous if unexpected.
 extension:
   title: Go further
   description: |

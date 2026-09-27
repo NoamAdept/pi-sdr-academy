@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Launch a thread that sets ready=1; join; print ready=1.
+  A worker thread sets ready=1. Join that thread before reading ready, then print ready=1. Joining is the handshake that makes shared state safe to observe after a background IQ worker finishes.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-concurrency
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    t.join()
+    Call t.join() before printing.
 - level: 2
   text: |
-    capture ready
+    The lambda already sets ready = 1.
 - level: 3
   text: |
-    include thread
+    Do not read ready until after join.
 solution: |
   join before print
 explanation: |
-  Join before observing shared state.
+  join waits for the thread; reading shared state earlier is a race.
 extension:
   title: Go further
   description: |

@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  process_tone(samples) applies gain 2 then abs — a tiny tone chain.
+  Chain two stages like a tiny GNU Radio project: multiply each sample by 2, then take abs, returning the new list. Real flowgraphs wire gain then magnitude blocks the same way — we keep it offline and testable with ./check.
 environment:
   type: workspace
   workspace_subdir: qual-gr-project
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    *2
+    First multiply by 2, then abs.
 - level: 2
   text: |
-    abs
+    A single list comprehension can do both.
 - level: 3
   text: |
-    list comp
+    [abs(s * 2) for s in samples]
 solution: |
   [abs(s*2) for s in samples]
 explanation: |
-  Projects chain blocks: gain then magnitude.
+  Projects chain blocks end-to-end; this challenge is that chain in one function.
 extension:
   title: Go further
   description: |

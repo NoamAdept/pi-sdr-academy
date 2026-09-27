@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Build a Frame dataclass and to_json() so lab logs serialize cleanly with asdict + json.
+  Frame already uses @dataclass with freq_mhz and note. Complete to_json so it serializes a Frame through asdict and json.dumps. Dataclasses plus JSON are how lab logs move between scripts without hand-written dicts.
 environment:
   type: workspace
   workspace_subdir: qual-py-dataclass
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    asdict
+    asdict(frame) builds a plain dict from the dataclass.
 - level: 2
   text: |
-    json.dumps
+    json.dumps turns that dict into a string.
 - level: 3
   text: |
-    fields
+    return json.dumps(asdict(frame))
 solution: |
   json.dumps(asdict(frame))
 explanation: |
-  Dataclasses serialize cleanly.
+  Dataclasses hold structured lab records; asdict + json makes them portable.
 extension:
   title: Go further
   description: |

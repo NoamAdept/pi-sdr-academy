@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  counted(fn) wrapper exposes .calls starting at 0.
+  Write a counted decorator that wraps a function, exposes .calls starting at 0, and increments on every call while returning the original result. Decorators are the clean way to add timing or counters around DSP helpers.
 environment:
   type: workspace
   workspace_subdir: qual-py-decorators
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    wrapper
+    Define an inner wrapper that calls fn(*args, **kwargs).
 - level: 2
   text: |
-    calls=0
+    Keep a calls counter on the wrapper, starting at 0.
 - level: 3
   text: |
-    increment
+    Increment calls before or after invoking fn; return fn's result.
 solution: |
   decorator increments calls
 explanation: |
-  Decorators wrap cross-cuts.
+  Decorators wrap cross-cutting behavior (counts, timing) without editing every call site.
 extension:
   title: Go further
   description: |

@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  coerce_samples converts mixed values to list[float].
+  Bench notes arrive as mixed ints, floats, and digit strings. Complete coerce_samples so every value becomes a float in a new list, preserving order. Dynamic typing means you coerce at DSP edges instead of declaring types up front.
 environment:
   type: workspace
   workspace_subdir: qual-py-types
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    float(x)
+    Call float(x) on each value.
 - level: 2
   text: |
-    comprehension
+    A list comprehension keeps order and builds a new list.
 - level: 3
   text: |
-    order
+    return [float(v) for v in values]
 solution: |
   [float(v) for v in values]
 explanation: |
-  Coerce at DSP edges.
+  Python is dynamically typed. Coercing at the boundary of a signal path keeps later DSP steps from mixing str and float by accident.
 extension:
   title: Go further
   description: |

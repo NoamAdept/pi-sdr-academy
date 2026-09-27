@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  apply_gain throws std::invalid_argument on negative gain; main prints ok=8.
+  apply_gain throws std::invalid_argument on negative gain. Keep the throw, print ok=8 for a good call, then catch the bad call and print caught. Exceptions make unsafe operator input visible instead of returning magic codes.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-errors
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    already almost done
+    The throw on gain < 0 is already written — keep it.
 - level: 2
   text: |
-    keep throw
+    Good path should print ok= followed by the product.
 - level: 3
   text: |
-    catch
+    catch (const std::invalid_argument&) should print caught.
 solution: |
   throw invalid_argument
 explanation: |
-  Exceptions signal bad operator input.
+  Throwing on bad gain stops silent corruption of the signal path.
 extension:
   title: Go further
   description: |

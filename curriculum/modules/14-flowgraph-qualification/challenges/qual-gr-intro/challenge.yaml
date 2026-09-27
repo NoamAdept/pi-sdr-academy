@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  block_name() returns 'null_source' — first tile in a software radio rack.
+  GNU Radio apps are graphs of named blocks. Complete block_name so it returns the string null_source — a classic source tile with outputs and no inputs. We practice the catalog idea in plain Python so no GNU Radio install is required.
 environment:
   type: workspace
   workspace_subdir: qual-gr-intro
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    return 'null_source'
+    Return a string, not a class instance.
 - level: 2
   text: |
-    exact spelling
+    Exact spelling: null_source
 - level: 3
   text: |
-    string
+    return 'null_source'
 solution: |
   return 'null_source'
 explanation: |
-  GNU Radio apps are graphs of named blocks — we practice the idea offline.
+  Sources, sinks, and blocks are the vocabulary of a software radio rack.
 extension:
   title: Go further
   description: |

@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Use std::max_element on a vector of samples and print the peak value as peak=9.
+  Use std::max_element on a vector of samples and print peak=<value>. The STL ships containers and algorithms so you do not hand-roll every search on a spectrum snapshot.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-stl
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    max_element
+    max_element returns an iterator to the largest element.
 - level: 2
   text: |
-    dereference it
+    Dereference the iterator with *it to get the value.
 - level: 3
   text: |
-    include algorithm
+    Keep #include <algorithm>.
 solution: |
   max_element
 explanation: |
-  STL algorithms beat hand loops.
+  STL algorithms express intent (maximum) without writing the comparison loop.
 extension:
   title: Go further
   description: |

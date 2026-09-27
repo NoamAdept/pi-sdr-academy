@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  apply_gain multiplies each sample by gain.
+  Complete apply_gain so each sample is multiplied by gain into a new list. Type hints on the signature document the contract for static checkers even though Python still runs dynamically.
 environment:
   type: workspace
   workspace_subdir: qual-py-typing
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    comprehension
+    Build a new list; do not mutate the input in place.
 - level: 2
   text: |
-    s*gain
+    Multiply each sample by gain.
 - level: 3
   text: |
-    new list
+    return [s * gain for s in samples]
 solution: |
   [s*gain for s in samples]
 explanation: |
-  Hints document contracts.
+  Type hints document DSP contracts for teammates and tools like mypy without changing runtime behavior.
 extension:
   title: Go further
   description: |

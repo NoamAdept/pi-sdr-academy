@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  pack_header packs two big-endian uint16 values.
+  Beacon headers on the wire are bytes. Complete pack_header so it packs two unsigned 16-bit integers as big-endian using struct — seq then code — into exactly four bytes. Endianness matters for SDR and network formats.
 environment:
   type: workspace
   workspace_subdir: qual-py-bits
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    >HH
+    Use struct.pack with a format string.
 - level: 2
   text: |
-    struct.pack
+    Big-endian unsigned shorts use >HH.
 - level: 3
   text: |
-    BE
+    struct.pack('>HH', seq, code)
 solution: |
   struct.pack('>HH',seq,code)
 explanation: |
-  Wire formats are bytes.
+  struct packs Python ints into exact on-wire byte layouts for beacons and protocols.
 extension:
   title: Go further
   description: |

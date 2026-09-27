@@ -9,7 +9,7 @@ objectives:
 mastery_evidence:
 - understand
 description: |
-  Write the track name cpp-qualification into answer.txt (from the syllabus overview).
+  Read OVERVIEW.txt for the C++ qualification map and write the track id `cpp-qualification` into answer.txt on one line. Overview first — then namespaces through ISR-style flags in the challenges that follow.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-overview
@@ -27,17 +27,17 @@ flags:
 hints:
 - level: 1
   text: |
-    Read OVERVIEW.txt
+    Read OVERVIEW.txt; it names the track.
 - level: 2
   text: |
-    Put the track id on one line in answer.txt
+    One line in answer.txt with the track id.
 - level: 3
   text: |
     Exact spelling: cpp-qualification
 solution: |
   Write cpp-qualification into answer.txt
 explanation: |
-  Overviews map the qualification path before the hands-on modules.
+  The overview challenge mirrors the syllabus notebook and unlocks the path id.
 extension:
   title: Skim next
   description: |

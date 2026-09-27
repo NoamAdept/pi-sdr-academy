@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  wavelength_m(mhz) uses math and returns c/f for free-space wavelength.
+  The radio rack needs a shared math helper. Complete wavelength_m(mhz) in radio_math.py so it returns free-space wavelength in meters using c=299792458 and frequency in Hz (mhz * 1e6). Keep the math import — modules package reusable lab code.
 environment:
   type: workspace
   workspace_subdir: qual-py-modules
@@ -31,17 +31,17 @@ flags:
 hints:
 - level: 1
   text: |
-    c=299792458
+    Free-space wavelength is c / f with c = 299792458 m/s.
 - level: 2
   text: |
-    mhz*1e6
+    Convert MHz to Hz with mhz * 1e6 before dividing.
 - level: 3
   text: |
-    return c/f
+    return 299792458 / (mhz * 1e6)
 solution: |
   return 299792458/(mhz*1e6)
 explanation: |
-  Modules package reusable radio math.
+  Modules and imports keep radio math in one place so every script can reuse the same wavelength helper without copy-paste.
 extension:
   title: Go further
   description: |

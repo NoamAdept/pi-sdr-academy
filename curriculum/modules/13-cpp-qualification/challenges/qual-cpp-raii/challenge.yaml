@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Use unique_ptr<int> holding 7 and print owned=7.
+  Own an int with std::unique_ptr (value 7) and print owned=7. RAII and smart pointers free resources when the owner leaves scope — the C++ answer to manual new/delete bugs in long-running radio processes.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-raii
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    make_unique
+    std::make_unique<int>(7) builds an owning pointer.
 - level: 2
   text: |
-    unique_ptr
+    Dereference with *p to read the value.
 - level: 3
   text: |
-    dereference
+    unique_ptr must appear in main.cpp.
 solution: |
   unique_ptr owns int(7)
 explanation: |
-  RAII frees on scope exit.
+  When unique_ptr goes out of scope it deletes the object — no leak, no double-free.
 extension:
   title: Go further
   description: |

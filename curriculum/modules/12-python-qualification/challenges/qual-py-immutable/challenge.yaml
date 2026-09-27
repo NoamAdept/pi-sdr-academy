@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Return an immutable (i, q) tuple from iq_pair so sample pairs cannot be mutated mid-pipeline.
+  IQ sample pairs should not be mutated after capture. Complete iq_pair so it returns an immutable (i, q) tuple — not a list. In Python, immutability is a property of the object type, similar in spirit to C++ const data.
 environment:
   type: workspace
   workspace_subdir: qual-py-immutable
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    tuple
+    Return a tuple, not a list.
 - level: 2
   text: |
-    not list
+    Pack both components: (i, q).
 - level: 3
   text: |
-    (i,q)
+    return (i, q)
 solution: |
   return (i,q)
 explanation: |
-  Immutability protects samples.
+  Tuples protect captured samples from accidental in-place edits that lists allow.
 extension:
   title: Go further
   description: |

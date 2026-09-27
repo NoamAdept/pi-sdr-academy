@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  class Tone with freq() accessor printing freq=440.
+  Tone stores a frequency in Hz behind a private field. Finish freq() so it returns hz_ and main prints freq=440. Classes encapsulate synthesizer state the way real tone blocks hide their internals.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-oop
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    return hz_
+    freq() should return the private hz_ member.
 - level: 2
   text: |
-    const method
+    Keep the method const — it only reads state.
 - level: 3
   text: |
-    ctor sets hz_
+    return hz_;
 solution: |
   return hz_
 explanation: |
-  Classes encapsulate signal state.
+  Encapsulation keeps signal state private and exposes a small public API.
 extension:
   title: Go further
   description: |

@@ -11,7 +11,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  format_tune returns 'tune LABEL @ MHz' with 3 decimals.
+  Operator logs need clear tune lines. Complete format_tune so it returns exactly `tune LABEL @ MHz` with the frequency to three decimal places (for example tune NFM @ 146.520 MHz). Modern f-strings keep lab logs readable.
 environment:
   type: workspace
   workspace_subdir: qual-py-modern
@@ -30,17 +30,17 @@ flags:
 hints:
 - level: 1
   text: |
-    f-string
+    Use an f-string for the whole line.
 - level: 2
   text: |
-    :.3f
+    Format MHz with :.3f
 - level: 3
   text: |
-    exact text
+    Exact text: f'tune {label} @ {mhz:.3f} MHz'
 solution: |
   f'tune {label} @ {mhz:.3f} MHz'
 explanation: |
-  F-strings clarify logs.
+  F-strings and precise formatting make radio logs easy to scan during a session.
 extension:
   title: Go further
   description: |

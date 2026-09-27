@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  scale_const uses const ref input and prints scaled=6.
+  scale_const takes a const int& sample and a gain. Return sample * gain without assigning through the const reference, and print scaled=6. const documents read-only paths through a DSP stage.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-const
@@ -32,17 +32,17 @@ flags:
 hints:
 - level: 1
   text: |
-    return sample*gain
+    Return sample * gain.
 - level: 2
   text: |
-    const ref
+    Do not write to sample — it is const.
 - level: 3
   text: |
-    no mutate
+    Keep the const int& parameter type.
 solution: |
   return sample*gain
 explanation: |
-  const documents read-only paths.
+  const references pass large values cheaply while promising not to mutate them.
 extension:
   title: Go further
   description: |

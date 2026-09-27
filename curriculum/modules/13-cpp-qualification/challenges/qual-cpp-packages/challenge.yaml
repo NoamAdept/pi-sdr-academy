@@ -12,7 +12,7 @@ mastery_evidence:
 - understand
 - apply
 description: |
-  Include local labkit.hpp and print ver=1.
+  A local labkit.hpp sits beside main.cpp. Include it with quotes and print ver= from labkit_version(). Vendored headers are how small C++ packages ship helpers without a full system install.
 environment:
   type: workspace
   workspace_subdir: qual-cpp-packages
@@ -33,17 +33,17 @@ flags:
 hints:
 - level: 1
   text: |
-    include labkit.hpp
+    #include "labkit.hpp"
 - level: 2
   text: |
-    call labkit_version
+    Call labkit_version().
 - level: 3
   text: |
-    quotes include
+    Print ver= followed by the returned int.
 solution: |
   include local header
 explanation: |
-  Packages ship headers beside sources.
+  Quoted includes pull headers from the project tree — the start of real packaging.
 extension:
   title: Go further
   description: |
