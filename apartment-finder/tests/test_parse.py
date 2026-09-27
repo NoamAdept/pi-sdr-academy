@@ -179,6 +179,9 @@ class ParseTests(unittest.TestCase):
         keep, label, _minutes = assess_bike(26, 8.4, 20, "OSM bike router")
         self.assertFalse(keep)
         self.assertIn("26", label)
+        keep, label, _minutes = assess_bike(20.4, 8.2, 20, "OSM bike router")
+        self.assertTrue(keep)
+        self.assertIn("bike 20 min", label)
 
     def test_roommate_audience(self):
         self.assertEqual(roommate_audience("חדר לגברים בלבד בדירת שותפים"), "men")
@@ -187,6 +190,9 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(roommate_audience("חדר שקט בשכונה"), "unstated")
         self.assertEqual(roommate_audience("דירה שקטה ברחוב", "דירה"), "open")
         self.assertEqual(roommate_audience("תל בנימין, חדר פנוי"), "unstated")
+        self.assertEqual(roommate_audience("רמת גן, יד לבנים"), "unstated")
+        self.assertEqual(roommate_audience("מתאים רווק/ה-בחור/ה"), "open")
+        self.assertEqual(roommate_audience("מתאימה מאד לסטודנטיות. מחפשות שותפה"), "women-only")
 
 
 if __name__ == "__main__":

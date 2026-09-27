@@ -114,9 +114,10 @@ def assess_bike(
     """Keep a listing when the bicycle ride is within the cap."""
     if bike_min is None:
         return False, "bike route not measured", None
+    shown = int(bike_min + 0.5)
     distance = f", {bike_km:.1f} km" if bike_km is not None else ""
-    label = f"bike {round(bike_min)} min ({source}){distance}"
-    return bike_min <= max_minutes, label, bike_min
+    label = f"bike {shown} min ({source}){distance}"
+    return shown <= max_minutes, label, bike_min
 
 
 TRAVEL_RULE = (

@@ -64,13 +64,16 @@ def looks_like_short_stay(text: str) -> bool:
 
 _MEN_AUDIENCE = re.compile(
     r"לגברים|לגבר(?!ים)|גברים|בנים בלבד|רק בנים|דירת בנים|דירת גברים|"
-    r"שותפים גברים|חדר לבנים|(?<![א-ת])לבנים(?![א-ת])|בחורים|(?<![א-ת])בחור(?!ה)"
+    r"שותפים גברים|חדר לבנים|בחורים|(?<![א-ת])בחור(?!ה|/)"
 )
 _WOMEN_AUDIENCE = re.compile(
     r"לבנות|לנשים|בנות בלבד|רק בנות|נשים בלבד|דירת בנות|שותפות|בחורות|"
     r"לסטודנטיות|(?<![א-ת])בחורה(?![א-ת])"
 )
-_OPEN_AUDIENCE = re.compile(r"מעורב|בנים ובנות|בנות ובנים|בחורים ובחורות")
+_OPEN_AUDIENCE = re.compile(
+    r"מעורב|בנים ובנות|בנות ובנים|לבנים ולבנות|לבנות ולבנים|"
+    r"בחורים ובחורות|בחור/ה|רווק/ה"
+)
 
 
 def roommate_audience(text: str, kind: str = "") -> str:
@@ -94,8 +97,21 @@ def roommate_audience(text: str, kind: str = "") -> str:
     return "unstated"
 
 
+def audience_evidence(text: str) -> str:
+    blob = collapse(text)
+    for pattern in (_WOMEN_AUDIENCE, _MEN_AUDIENCE, _OPEN_AUDIENCE):
+        match = pattern.search(blob)
+        if match:
+            start = max(0, match.start() - 40)
+            end = min(len(blob), match.end() + 40)
+            return collapse(blob[start:end])[:180]
+    return ""
+
+
 def note_audience(listing: Listing, text: str) -> None:
     listing.audience = roommate_audience(f"{text}\n{listing.kind}", listing.kind)
+    if listing.audience != "unstated":
+        listing.audience_note = audience_evidence(text)
 
 
 def classify(text: str, source: str) -> str:

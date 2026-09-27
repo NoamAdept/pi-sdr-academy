@@ -30,10 +30,16 @@ def _block(listing: Listing, index: int | None = None) -> str:
         f"- Place: {listing.place or 'not stated'}",
         f"- Travel: {listing.travel_text or 'not measured'}",
         f"- Who it's for: {_AUDIENCE.get(listing.audience, listing.audience or 'gender not stated')}",
-        f"- Source: {listing.source}",
-        f"- URL: {listing.url}",
-        f"- Listed: {listing.date_text or 'date not shown on the listing'}",
     ]
+    if listing.audience_note:
+        lines.append(f"- Gender wording: {listing.audience_note}")
+    lines.extend(
+        [
+            f"- Source: {listing.source}",
+            f"- URL: {listing.url}",
+            f"- Listed: {listing.date_text or 'date not shown on the listing'}",
+        ]
+    )
     if listing.extras:
         lines.append(f"- Extras stated on the listing: {listing.extras}")
     if listing.exclude_reason:
