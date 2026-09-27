@@ -233,6 +233,35 @@ def test_startup_creates_user_progress_branch(tmp_path):
     assert profile["git_progress"]["on_remote"] is True
 
 
+def test_process_hunt_setup_survives_awkward_data_paths(tmp_path):
+    """Regression: -DCHECK_SCRIPT=\"$path\" broke when ACADEMY_DATA had spaces."""
+    from academy.engine import AcademyEngine
+    from academy.progress import ChallengeProgress
+
+    # Mimic paths like ".../lab 3/.academy-data" that previously split clang argv.
+    data = tmp_path / "lab 3" / ".academy-data"
+    ws = tmp_path / "lab 3" / "challenge"
+    eng = AcademyEngine(
+        curriculum_root=CURRICULUM,
+        data_dir=data,
+        workspace_root=ws,
+    )
+    store = eng.progress()
+    for cid in ("orient-hello-shell", "orient-find-flag", "orient-permissions"):
+        store.challenges[cid] = ChallengeProgress(solved=True)
+    eng.progress_repo.save(store)
+
+    dest = eng.start_challenge("orient-process-hunt")
+    assert (dest / "run").is_file()
+    assert (dest / "check").is_file()
+    assert (dest / "run").stat().st_mode & 0o111
+    assert (dest / "check").stat().st_mode & 0o111
+    header = data / "runtime" / "orient-process-hunt" / "check_script.h"
+    assert header.is_file()
+    assert "CHECK_SCRIPT" in header.read_text(encoding="utf-8")
+    assert (data / "runtime" / "orient-process-hunt" / "check.py").is_file()
+
+
 def test_system_investigation_flag_not_in_scripts(engine):
     """System Investigation live flag must not sit in cat-able scripts."""
     import socket

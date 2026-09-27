@@ -1,16 +1,19 @@
 /*
  * Tiny wrapper — runs the hidden checker. Source removed after build.
- * Compile with: cc -DCHECK_SCRIPT=\"/path/to/check.py\" -o check check_stub.c
+ * setup.sh compiles with: cc -include /path/to/check_script.h -o check check_stub.c
+ * where check_script.h defines CHECK_SCRIPT as the absolute path to check.py.
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #ifndef CHECK_SCRIPT
-#error "CHECK_SCRIPT must be defined at compile time"
+#error "CHECK_SCRIPT must be defined at compile time (via -include check_script.h)"
 #endif
 
 int main(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
     const char *ws = getenv("ACADEMY_WORKSPACE");
     if (!ws || !ws[0]) {
         ws = ".";
