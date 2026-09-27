@@ -15,6 +15,7 @@ from apartment_finder.parse import (
     parse_homeless_board,
     parse_ils,
     parse_komo_detail,
+    audience_evidence,
     parse_komo_list,
     roommate_audience,
 )
@@ -193,6 +194,9 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(roommate_audience("רמת גן, יד לבנים"), "unstated")
         self.assertEqual(roommate_audience("מתאים רווק/ה-בחור/ה"), "open")
         self.assertEqual(roommate_audience("מתאימה מאד לסטודנטיות. מחפשות שותפה"), "women-only")
+        note = audience_evidence("טל-שותפה שרה052-53065-500 (מתאים) רווק/ה-בחור/ה וכו'")
+        self.assertIn("בחור/ה", note)
+        self.assertNotIn("052", note)
 
 
 if __name__ == "__main__":

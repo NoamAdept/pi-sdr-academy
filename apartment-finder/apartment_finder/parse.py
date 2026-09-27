@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from apartment_finder.models import Listing
 
 _PHONE = re.compile(
-    r"(?:\+?972[-\s]?|0)(?:5\d|[23489])[-\s]?\d{3}[-\s]?\d{4}"
+    r"(?:\+?972[-\s]?|0)(?:5\d|[23489])[-\s]?\d{3,5}[-\s]?\d{3,4}"
 )
 
 
@@ -104,7 +104,7 @@ def audience_evidence(text: str) -> str:
         if match:
             start = max(0, match.start() - 40)
             end = min(len(blob), match.end() + 40)
-            return collapse(blob[start:end])[:180]
+            return strip_phones(collapse(blob[start:end]))[:180]
     return ""
 
 
