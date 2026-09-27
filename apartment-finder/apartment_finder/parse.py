@@ -300,6 +300,77 @@ def parse_ad_detail(html_text: str) -> dict[str, str]:
     }
 
 
+_HOMELESS_CITIES = (
+    "תל אביב יפו",
+    "תל אביב",
+    "רמת גן",
+    "גבעתיים",
+    "הרצליה",
+    "רמת השרון",
+    "בני ברק",
+    "גבעת שמואל",
+)
+
+
+def parse_homeless_board(html_text: str, source: str, default_city: str = "") -> list[Listing]:
+    """Roommate rows from a Homeless search page. Titles carry the listed price."""
+    listings: list[Listing] = []
+    seen: set[str] = set()
+    pattern = re.compile(
+        r'title="([^"]+)"[^>]{0,220}href="/(mate|rent)/viewad,(\d+)\.aspx"',
+        re.I,
+    )
+    for match in pattern.finditer(html_text):
+        title = unescape(match.group(1))
+        board = match.group(2).lower()
+        ad_id = match.group(3)
+        if ad_id in seen:
+            continue
+        price_match = re.search(r"([\d,]{4,7})\s*ש", title)
+        if not price_match:
+            continue
+        price = int(price_match.group(1).replace(",", ""))
+        if price <= 0:
+            continue
+        rooms_match = re.search(r"([\d.]+)\s*חדרים", title)
+        street = ""
+        neighborhood = ""
+        city = default_city
+        located = re.search(r"חדרים\s+ב(.+?),\s*([^,]+),\s*[\d,]+", title)
+        if located:
+            blob = collapse(located.group(1))
+            street = collapse(located.group(2))
+            for name in _HOMELESS_CITIES:
+                if name in blob:
+                    city = "תל אביב יפו" if name == "תל אביב" else name
+                    neighborhood = collapse(blob.split(name)[0])
+                    neighborhood = re.sub(r"^ב", "", neighborhood).strip(" .")
+                    break
+        window = html_text[max(0, match.start() - 5000) : match.end()]
+        folders = [int(value) for value in re.findall(r"/(?:mate|rent)/(\d{6})/", window)]
+        date_text = ""
+        if folders:
+            newest = max(folders)
+            year, month = divmod(newest, 100)
+            if 1 <= month <= 12 and 2015 <= year <= 2035:
+                date_text = f"01/{month:02d}/{year} (Homeless image folder {year}-{month:02d})"
+        seen.add(ad_id)
+        listings.append(
+            Listing(
+                source=source,
+                url=f"https://www.homeless.co.il/{board}/viewad,{ad_id}.aspx",
+                price_ils=price,
+                city=city,
+                neighborhood=neighborhood,
+                street=street,
+                rooms=rooms_match.group(1) if rooms_match else "",
+                kind="חדר בדירת שותפים" if board == "mate" else classify(title, source),
+                date_text=date_text,
+            )
+        )
+    return listings
+
+
 def price_buckets(html_text: str, min_rent: int, max_rent: int) -> list[str]:
     """Checkbox price bands on boards that do not use a min/max slider."""
     found: list[str] = []

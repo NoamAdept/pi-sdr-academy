@@ -12,6 +12,7 @@ from apartment_finder.parse import (
     freshness,
     looks_like_short_stay,
     parse_ad_list,
+    parse_homeless_board,
     parse_ils,
     parse_komo_detail,
     parse_komo_list,
@@ -53,7 +54,22 @@ AD_CARD = """
 """
 
 
+HOMELESS_CARD = """
+<img src="https://uploads.homeless.co.il/mate/202608/300/nvFile.jpg">
+<a title="דירה לשותפים 1 חדרים בהצפון הישן תל אביב יפו, יהושע בן נון, 2500 שח תל-אביב צפון" href="/mate/viewad,240787.aspx"></a>
+"""
+
+
 class ParseTests(unittest.TestCase):
+    def test_homeless_card(self):
+        rows = parse_homeless_board(HOMELESS_CARD, "Homeless שותפים", "תל אביב יפו")
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row.price_ils, 2500)
+        self.assertEqual(row.street, "יהושע בן נון")
+        self.assertEqual(row.neighborhood, "הצפון הישן")
+        self.assertIn("2026-08", row.date_text)
+        self.assertIn("240787", row.url)
     def test_parse_ils(self):
         self.assertEqual(parse_ils("2,575 ₪"), 2575)
         self.assertIsNone(parse_ils("אין מחיר"))

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import time
 import urllib.parse
 
@@ -17,6 +18,7 @@ from apartment_finder.parse import (
     looks_like_short_stay,
     parse_ad_detail,
     parse_ad_list,
+    parse_homeless_board,
     parse_komo_detail,
     parse_komo_list,
     price_buckets,
@@ -38,10 +40,19 @@ AD_CATEGORIES = (
     ("ad.co.il סטודנטים", "https://www.ad.co.il/nadlanstudent"),
 )
 
+HOMELESS_CITIES = (
+    "תל אביב",
+    "רמת גן",
+    "גבעתיים",
+    "הרצליה",
+    "רמת השרון",
+    "בני ברק",
+    "גבעת שמואל",
+)
+
 PROBES = (
     ("Yad2", "https://www.yad2.co.il/realestate/rent"),
     ("Madlan", "https://www.madlan.co.il/"),
-    ("Homeless", "https://www.homeless.co.il/"),
     ("WinWin", "https://www.winwin.co.il/"),
     ("OnMap", "https://www.onmap.co.il/"),
 )
@@ -67,6 +78,7 @@ class Collector:
     def run(self) -> None:
         self._komo()
         self._ad()
+        self._homeless()
         self._probes()
 
     def _komo(self) -> None:
@@ -220,6 +232,53 @@ class Collector:
             listing.extras = extras_from(detail["description"])
         blob = detail["blob"]
         listing.kind = classify(blob + " " + listing.neighborhood, listing.source)
+
+    def _homeless(self) -> None:
+        found = 0
+        errors: list[str] = []
+        for city in HOMELESS_CITIES:
+            url = "https://www.homeless.co.il/mate/city=" + urllib.parse.quote(city)
+            try:
+                body, _final = fetch(url)
+            except FetchError as exc:
+                errors.append(f"{city}: {exc}")
+                continue
+            default_city = "תל אביב יפו" if city == "תל אביב" else city
+            rows = [
+                row
+                for row in parse_homeless_board(body, "Homeless שותפים", default_city)
+                if self._in_budget(row.price_ils)
+            ]
+            for row in rows:
+                self._enrich_homeless(row)
+                if looks_like_short_stay(row.extras):
+                    continue
+                self.listings.append(row)
+                found += 1
+                _pause(self.pause)
+            _pause(self.pause)
+        detail = (
+            f"{found} roommate listings in {self.min_rent}–{self.max_rent} ₪ "
+            "before the travel filter (דירות לשותפים). The general rent board was not paged; "
+            "its price query does not stick."
+        )
+        if errors:
+            detail += "; partial errors: " + "; ".join(errors[:4])
+        failed = bool(errors) and found == 0 and len(errors) >= len(HOMELESS_CITIES)
+        self.statuses.append(SourceStatus("Homeless", not failed, detail if not failed else "; ".join(errors[:6])))
+
+    def _enrich_homeless(self, listing: Listing) -> None:
+        try:
+            body, _final = fetch(listing.url)
+        except FetchError:
+            return
+        detail = parse_ad_detail(body)
+        if detail["extras"]:
+            listing.extras = detail["extras"]
+        entry = re.search(r"כניסה:\s*([0-9./]+)", detail.get("blob", ""))
+        if entry and entry.group(1) not in listing.extras:
+            note = f"כניסה {entry.group(1)}"
+            listing.extras = (listing.extras + " | " + note).strip(" |")
 
     def _probes(self) -> None:
         for name, url in PROBES:
