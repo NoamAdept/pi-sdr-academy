@@ -1,0 +1,17 @@
+Tiny cheat sheet (keep this open)
+=================================
+
+pwd          Where am I? (folder path)
+ls           List files in this folder
+ls -la       List including hidden files (names starting with .)
+cd NAME      Enter folder NAME
+cd ..        Go up one folder
+cat FILE     Print the text inside FILE
+clear        Clear the terminal screen
+
+Tips
+----
+- Commands are case-sensitive: LS is not ls.
+- Press Tab to auto-complete a file name.
+- Up-arrow recalls the last command.
+- If you get "No such file", run pwd and ls to reorient.

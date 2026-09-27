@@ -1,0 +1,52 @@
+id: orient-hello-shell
+module: orientation
+title: Hello, Terminal
+difficulty: easy
+estimated_time: 10-20 minutes
+prerequisites: []
+objectives:
+- open_a_terminal
+- run_pwd_ls_cat
+- read_a_text_file
+mastery_evidence:
+- observe
+- apply
+description: >
+  Never used Linux? Start here. Press Start, open a terminal, type three
+  tiny commands (pwd, ls, cat), read the welcome files, and paste the flag.
+environment:
+  type: workspace
+  workspace_subdir: orient-hello-shell
+  notes: Absolute beginner. Offline. No prior experience required.
+files:
+- README.txt
+- hello.txt
+- flag.txt
+- CHEAT_SHEET.txt
+expected_tools:
+- pwd
+- ls
+- cat
+flags:
+  value: flag{hello_terminal_friend}
+  validation: session
+  plant_files:
+  - flag.txt
+hints:
+- level: 1
+  text: >
+    After Start, open Terminal. Type exactly: cd challenge
+    Then press Enter.
+- level: 2
+  text: "Type ls and press Enter. You should see README.txt, hello.txt, and flag.txt."
+- level: 3
+  text: "Type: cat flag.txt — copy the flag{...} line into the dojo."
+solution: >
+  cd into the challenge folder, run cat flag.txt, paste the printed flag
+  into the dojo.
+explanation: >
+  A terminal is a text window where you type short commands. pwd shows where
+  you are, ls lists files, cat shows a file's text. That is enough for day one.
+extension:
+  title: Peek at the cheat sheet
+  description: Open CHEAT_SHEET.txt with cat and keep it handy for later labs.

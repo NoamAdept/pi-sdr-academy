@@ -964,22 +964,51 @@
         <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="hero-row">
           <div>
-            <p class="lbl">What this is</p>
+            <p class="lbl">New here? Start here</p>
             <h1>Learn radio by <em>doing</em></h1>
             <p class="lede">
-              An offline lab: fifty short challenges from the terminal to IQ signals.
-              No accounts. No cloud. One clear loop.
+              No Linux experience needed. Short puzzles teach the terminal gently,
+              then grow into radio. Your progress is saved on your own git branch —
+              created automatically when this lab first starts.
             </p>
           </div>
           <div class="device" aria-hidden="true">
             <div class="screen">
               <div>SYS <b>ONLINE</b></div>
               <div>BELTS 5</div>
-              <div>CHALS 54</div>
+              <div>CHALS 58</div>
               <div>MODE LAB</div>
             </div>
             <div class="ports"><i></i><i></i><i></i></div>
           </div>
+        </div>
+      </section>
+
+      <section class="module">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">If you have never used Linux</p>
+        <h2>Three words you need</h2>
+        <div class="guide" style="margin-top:0.9rem">
+          <div class="step">
+            <div class="n">1</div>
+            <strong>Terminal</strong>
+            <p>A text window. You type short commands; the computer answers with text.</p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <strong>Folder</strong>
+            <p>After <b>Start</b>, puzzle files appear in the <b>challenge</b> folder.</p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <strong>README</strong>
+            <p>Open <b>README.txt</b> first every time. It uses plain English.</p>
+          </div>
+        </div>
+        <div class="facts" style="margin-top:1rem">
+          <div class="fact"><b>First puzzle</b>Hello, Terminal — pwd, ls, cat only.</div>
+          <div class="fact"><b>Stuck?</b>Press Hint. No shame.</div>
+          <div class="fact"><b>Progress</b>Auto-saved on git branch progress/you.</div>
         </div>
       </section>
 
@@ -996,7 +1025,7 @@
           <div class="step">
             <div class="n">2</div>
             <strong>Solve</strong>
-            <p>Open that folder. Read <b>README.txt</b>. Work in your terminal.</p>
+            <p>Open a Terminal. Type <b>cd challenge</b>, then follow README.txt.</p>
           </div>
           <div class="step">
             <div class="n">3</div>
@@ -1006,8 +1035,8 @@
         </div>
         <div class="facts" style="margin-top:1rem">
           <div class="fact"><b>Belts</b>White → Blue. Unlock in order.</div>
-          <div class="fact"><b>Hints</b>Optional. Try yourself first.</div>
-          <div class="fact"><b>Needs</b>python3 only. No pip.</div>
+          <div class="fact"><b>Git</b>White Belt teaches uploading progress.</div>
+          <div class="fact"><b>Needs</b>python3 (+ git for progress). No pip.</div>
         </div>
         <div class="cta-row">
           <button type="button" class="go" id="btn-enter">Enter the lab</button>
@@ -1024,15 +1053,15 @@
 
       <div class="loop" aria-label="How to play">
         <div class="step"><div class="n">1</div><strong>Start</strong><p>Files land in the challenge folder.</p></div>
-        <div class="step"><div class="n">2</div><strong>Solve</strong><p>Open it. Read README.txt.</p></div>
-        <div class="step"><div class="n">3</div><strong>Done</strong><p>Press Done when finished.</p></div>
+        <div class="step"><div class="n">2</div><strong>Solve</strong><p>Terminal: cd challenge · read README.txt</p></div>
+        <div class="step"><div class="n">3</div><strong>Done</strong><p>Press Done — progress auto-saves to git.</p></div>
       </div>
 
       <section class="module now" id="now" aria-live="polite"></section>
 
       <section class="module xp">
         <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">54</span></span></div>
+        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">58</span></span></div>
         <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
         <div class="belts" id="belts"></div>
       </section>
@@ -1064,13 +1093,28 @@
         <p class="lbl">Operator profile</p>
         <h2 id="prof-name">Your path</h2>
         <p class="lede" id="prof-lede" style="max-width:42ch">
-          Clears on this machine — when you solved, and how far up the belts you’ve climbed.
+          Clears on this machine — and on your personal git branch, created when the lab first started.
         </p>
         <div class="prof-stats">
-          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/54</strong></div>
+          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/58</strong></div>
           <div class="prof-stat"><b>Streak</b><strong id="prof-streak">0 days</strong></div>
           <div class="prof-stat"><b>Ascent</b><strong id="prof-ascent">0%</strong></div>
         </div>
+      </section>
+
+      <section class="module" id="prof-git-card">
+        <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="lbl">Git progress</p>
+        <h2>Your branch</h2>
+        <p class="lede" id="prof-git-explain" style="max-width:48ch;font-size:0.95rem">
+          Every clear updates a git branch named for you. The progress repository is created on first startup.
+        </p>
+        <div class="prof-stats" style="margin-top:0.75rem">
+          <div class="prof-stat"><b>Branch</b><strong id="prof-git-branch" style="font-size:0.95rem">progress/…</strong></div>
+          <div class="prof-stat"><b>On repo</b><strong id="prof-git-remote-state">…</strong></div>
+          <div class="prof-stat"><b>Commit</b><strong id="prof-git-commit" style="font-size:0.85rem">—</strong></div>
+        </div>
+        <p class="lede" id="prof-git-remote" style="margin-top:0.75rem;max-width:52ch;font-size:0.85rem;font-family:var(--mono);color:var(--muted)"></p>
       </section>
 
       <section class="module">
@@ -1145,7 +1189,7 @@
     let nextCh = null;
     let catalogIntro = '';
     let lastSolved = 0;
-    let lastTotal = 54;
+    let lastTotal = 58;
     let lastProfile = null;
 
     function esc(s) {
@@ -1190,7 +1234,7 @@
     }
     function setTopProgress(solved, total) {
       lastSolved = solved;
-      lastTotal = total || 54;
+      lastTotal = total || 58;
       const pct = lastTotal ? Math.round(100 * solved / lastTotal) : 0;
       const fill = document.getElementById('top-fill');
       if (fill) fill.style.width = pct + '%';
@@ -1869,6 +1913,15 @@
       document.getElementById('prof-streak').textContent =
         (data.streak || 0) === 1 ? '1 day' : `${data.streak || 0} days`;
       document.getElementById('prof-ascent').textContent = `${data.ascent_pct || 0}%`;
+      const gp = data.git_progress || {};
+      document.getElementById('prof-git-branch').textContent = gp.branch || `progress/${uid || 'local'}`;
+      document.getElementById('prof-git-remote-state').textContent = gp.on_remote ? 'yes' : 'pending';
+      document.getElementById('prof-git-commit').textContent = gp.commit || '—';
+      document.getElementById('prof-git-explain').textContent = gp.explain
+        || 'Every clear updates your personal git branch on the startup progress repository.';
+      document.getElementById('prof-git-remote').textContent = gp.remote
+        ? `repo: ${gp.remote}${gp.auto_remote ? ' (auto, first run)' : ''}`
+        : '';
       paintContrib(data.days || {});
       paintMountain(data.belts || [], data.ascent_pct || 0);
 

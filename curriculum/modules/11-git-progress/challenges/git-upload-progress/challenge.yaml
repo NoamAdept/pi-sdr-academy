@@ -1,0 +1,50 @@
+id: git-upload-progress
+module: git-progress
+title: Upload Progress With Git
+difficulty: medium
+estimated_time: 25-40 minutes
+prerequisites:
+- git-read-your-progress
+objectives:
+- git-remote
+- git-push
+- progress-backup
+mastery_evidence:
+- understand
+- apply
+description: >
+  Practice uploading your progress branch. Run ./practice_upload to push
+  progress/<you> into a practice bare repo inside this workspace (same steps
+  you would use for GitHub later). Then ./check.
+environment:
+  type: workspace
+  workspace_subdir: git-upload-progress
+  notes: Offline practice push; documents the real GitHub upload path.
+files:
+- README.txt
+- practice_upload
+- check
+- check.py
+expected_tools:
+- python3
+- git
+flags:
+  value: flag{progress_upload_practice}
+  validation: session
+hints:
+- level: 1
+  text: "Run ./practice_upload — it creates practice-remote.git and pushes."
+- level: 2
+  text: "When it prints UPLOAD_OK, run ./check."
+- level: 3
+  text: >
+    Real GitHub later: create an empty repo, then
+    academy progress remote <url> && academy progress push
+solution: >
+  ./practice_upload then ./check. For production, retarget origin to GitHub.
+explanation: >
+  Push copies your branch to another repository. The lab already auto-pushes
+  to the startup academy-progress.git; GitHub is the same idea with a URL.
+extension:
+  title: Real remote
+  description: With an instructor, set ACADEMY_PROGRESS_REMOTE to a GitHub URL.

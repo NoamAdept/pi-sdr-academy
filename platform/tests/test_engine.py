@@ -22,7 +22,7 @@ def engine(tmp_path):
 
 def test_modules_loaded(engine):
     modules = engine.modules
-    assert len(modules) == 11
+    assert len(modules) == 12
     assert modules[0].slug == "orientation"
 
 
@@ -108,8 +108,23 @@ def test_silent_port_flag_not_in_json(engine):
 def test_orientation_challenges(engine):
     chs = engine.module_challenges("orientation")
     ids = {c.id for c in chs}
+    assert "orient-hello-shell" in ids
     assert "orient-find-flag" in ids
-    assert len(chs) == 6
+    assert len(chs) == 7
+    assert chs[0].id == "orient-hello-shell"
+
+
+def test_start_and_submit_hello_shell(engine):
+    dest = engine.start_challenge("orient-hello-shell")
+    assert dest == engine.workspace_root
+    assert (dest / "README.txt").exists()
+    assert (dest / "flag.txt").exists()
+    assert (dest / "CHEAT_SHEET.txt").exists()
+    assert (dest / ".challenge").read_text().strip() == "orient-hello-shell"
+    flag = (dest / "flag.txt").read_text(encoding="utf-8").strip()
+    assert flag.startswith("flag{")
+    assert engine.submit("orient-hello-shell", flag) is True
+    assert engine.submit("orient-hello-shell", "flag{nope}") is False
 
 
 def test_start_and_submit_find_flag(engine):
@@ -131,20 +146,29 @@ def test_start_and_submit_find_flag(engine):
 def test_next_available_and_current(engine):
     nxt = engine.next_available_challenge()
     assert nxt is not None
-    assert nxt.id == "orient-find-flag"
+    assert nxt.id == "orient-hello-shell"
     dest = engine.start_challenge(nxt.id)
     assert dest == engine.workspace_root
-    assert engine.current_challenge().id == "orient-find-flag"
+    assert engine.current_challenge().id == "orient-hello-shell"
     assert engine.progress().current_workspace == str(dest)
-    flag = (dest / "labyrinth/east/tunnel/.cache/secret.flag").read_text().strip()
-    assert engine.submit("orient-find-flag", flag)
+    flag = (dest / "flag.txt").read_text().strip()
+    assert engine.submit("orient-hello-shell", flag)
     nxt2 = engine.next_available_challenge()
     assert nxt2 is not None
-    assert nxt2.id == "orient-permissions"
+    assert nxt2.id == "orient-find-flag"
     dest2 = engine.start_challenge(nxt2.id)
     assert dest2 == dest  # same directory every time
-    assert (dest2 / ".challenge").read_text().strip() == "orient-permissions"
-    assert not (dest2 / "labyrinth").exists()  # previous challenge cleared
+    assert (dest2 / ".challenge").read_text().strip() == "orient-find-flag"
+    assert not (dest2 / "flag.txt").exists() or (dest2 / "labyrinth").exists()
+    flag2 = (dest2 / "labyrinth/east/tunnel/.cache/secret.flag").read_text().strip()
+    assert engine.submit("orient-find-flag", flag2)
+    nxt3 = engine.next_available_challenge()
+    assert nxt3 is not None
+    assert nxt3.id == "orient-permissions"
+    dest3 = engine.start_challenge(nxt3.id)
+    assert dest3 == dest
+    assert (dest3 / ".challenge").read_text().strip() == "orient-permissions"
+    assert not (dest3 / "labyrinth").exists()  # previous challenge cleared
 
 
 def test_hints_progressive(engine):
@@ -158,7 +182,7 @@ def test_hints_progressive(engine):
 
 def test_challenge_yaml_count():
     n = len(list(CURRICULUM.glob("modules/*/challenges/*/challenge.yaml")))
-    assert n == 54
+    assert n == 58
 
 
 def test_session_flag_randomized_and_flag_file_cleared(engine, tmp_path):
@@ -187,6 +211,26 @@ def test_session_flag_randomized_and_flag_file_cleared(engine, tmp_path):
     assert eng.submit("orient-find-flag", planted)
     # curriculum template alone must not work once session minted
     assert not eng.submit("orient-find-flag", "flag{pwd_ls_find_cat_navigator}")
+
+
+def test_startup_creates_user_progress_branch(tmp_path):
+    from academy.engine import AcademyEngine
+
+    data = tmp_path / "data"
+    eng = AcademyEngine(
+        curriculum_root=CURRICULUM,
+        data_dir=data,
+        workspace_root=tmp_path / "ws",
+    )
+    bare = data / "academy-progress.git"
+    assert (bare / "HEAD").is_file()
+    branches = {b["branch"] for b in eng.git_mirror.list_branches()}
+    assert "progress/local" in branches
+    remote = {b["branch"] for b in eng.git_mirror.list_remote_branches()}
+    assert "progress/local" in remote
+    profile = __import__("academy.dojos", fromlist=["profile_payload"]).profile_payload(eng)
+    assert profile["git_progress"]["branch"] == "progress/local"
+    assert profile["git_progress"]["on_remote"] is True
 
 
 def test_system_investigation_flag_not_in_scripts(engine):
@@ -309,9 +353,9 @@ def test_profile_payload_calendar_and_mountain(engine):
 
     profile = profile_payload(engine)
     assert profile["solved"] == 2
-    assert profile["total"] == 54
-    # Two white-belt solves out of 10, across 5 equal terraces → 4%
-    assert profile["ascent_pct"] == 4.0
+    assert profile["total"] == 58
+    # Two white-belt solves out of 14, across 5 equal terraces → ~2.9%
+    assert profile["ascent_pct"] == 2.9
     assert len(profile["belts"]) == 5
     assert profile["belts"][0]["belt"] == "white"
     assert profile["belts"][0]["solved"] == 2
@@ -329,4 +373,4 @@ def test_profile_payload_calendar_and_mountain(engine):
     engine.progress_repo.save(store)
     profile2 = profile_payload(engine)
     assert profile2["solved"] == 3
-    assert profile2["ascent_pct"] == 6.0  # 2/10 white + 1/10 yellow → 3/50 of mountain
+    assert profile2["ascent_pct"] == 4.9  # 2/14 white + 1/10 yellow

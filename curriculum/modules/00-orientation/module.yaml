@@ -1,13 +1,13 @@
 id: orientation
 slug: orientation
-title: Raspberry Pi / Debian Orientation
+title: First Steps on the Terminal
 order: 0
-description: 'Learn the terminal, filesystem, permissions, processes, and basic system
-  investigation on Debian.
-
-  '
+description: >
+  Absolute beginners welcome. Learn what a terminal is, how folders work,
+  and how to find a simple secret — step by step, with plain English.
 prerequisites: []
 challenges:
+- orient-hello-shell
 - orient-find-flag
 - orient-permissions
 - orient-process-hunt

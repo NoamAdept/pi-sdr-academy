@@ -42,9 +42,18 @@ class AcademyEngine:
         self.git_mirror.load_remote_config()
         # One-time migration from the old single progress.json
         self.git_mirror.migrate_legacy(self.data_dir / "progress.json", user_id="local")
+        # Every registered operator gets a progress/<id> branch on startup.
+        self.git_mirror.ensure_all_user_branches(
+            [u.id for u in self.users.list_users()]
+        )
 
         self._user_id = (user_id or os.environ.get("ACADEMY_USER") or "local").strip() or "local"
         self.progress_repo = self._repo_for(self._user_id)
+        # Active user branch must exist even before the first solve.
+        try:
+            self.git_mirror.ensure_user_branch(self._user_id)
+        except Exception:  # noqa: BLE001
+            pass
         self._modules: dict[str, Module] = {}
         self._challenges: dict[str, Challenge] = {}
         self.reload()
@@ -85,6 +94,12 @@ class AcademyEngine:
         if store.student_id != user.id:
             store.student_id = user.id
             self.progress_repo.save(store)
+        else:
+            # Still ensure the progress/<user> branch exists on the startup repo.
+            try:
+                self.git_mirror.ensure_user_branch(user.id)
+            except Exception:  # noqa: BLE001
+                pass
         return user.id
 
     def progress(self) -> ProgressStore:

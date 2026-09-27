@@ -410,9 +410,7 @@ def serve_api(
                     )
                 except ValueError as exc:
                     return self._json(400, {"ok": False, "error": str(exc)})
-                # Ensure a progress branch file exists
-                engine.git_mirror.repo_for(user.id).load()
-                engine.git_mirror.commit_user(user.id, message=f"register user {user.id}")
+                engine.git_mirror.ensure_user_branch(user.id, message=f"register user {user.id}")
                 return self._json(200, {"ok": True, "user": user.to_dict()})
 
             if parsed.path == "/api/admin/progress/remote":

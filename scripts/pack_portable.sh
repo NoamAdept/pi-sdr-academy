@@ -41,7 +41,7 @@ cat > "$OUT/START_HERE.txt" <<'EOF'
 CLOSED NETWORK — START HERE
 ===========================
 
-Needs on the target machine: python3 (+ git if you sync progress to GitHub).
+No Linux experience needed. Needs: python3 (+ git for progress branches).
 Does NOT need: pip, internet, venv, sudo, Docker.
 
 1) tar -xzf pi-sdr-academy.tar.gz
@@ -49,13 +49,20 @@ Does NOT need: pip, internet, venv, sudo, Docker.
 3) ./run.sh
 4) Open the URL it prints (usually http://127.0.0.1:8080/)
 
+First time?
+  Read the intro (“If you have never used Linux”).
+  Enter the lab → start “Hello, Terminal”.
+  Terminal tip: cd challenge   then   cat README.txt
+
 Student loop: Start → solve in ./challenge → Done
+  Progress auto-saves to git branch progress/<your-name>
+  (the progress repository is created on first startup).
 
 Instructor / management:
   ACADEMY_ADMIN=1 ./run.sh
-  Open /admin  — users, add/remove challenges, progress sync
-  First run creates academy-progress.git; each user’s progress/<id>
-  branch auto-updates on every solve. Read MANAGE.txt for details.
+  Open /admin  — users, challenges, progress sync
+  White Belt includes a Git Progress module that teaches upload.
+  Read MANAGE.txt for details.
 EOF
 
 cp "$OUT/START_HERE.txt" "$OUT/README.txt"

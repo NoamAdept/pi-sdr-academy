@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""Show progress.json from this user's progress/<id> branch."""
+from __future__ import annotations
+
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+
+def fail(msg: str) -> None:
+    print(msg, file=sys.stderr)
+    raise SystemExit(1)
+
+
+uid = (os.environ.get("ACADEMY_USER") or "local").strip().lower()
+uid = re.sub(r"[^a-z0-9_-]+", "-", uid).strip("-_") or "local"
+branch = f"progress/{uid}"
+
+data = Path(os.environ.get("ACADEMY_DATA", "")).expanduser()
+if not data.is_dir():
+    # Fall back to common lab layout: ../../.academy-data from challenge/
+    here = Path.cwd().resolve()
+    candidates = [
+        here.parents[1] / ".academy-data",
+        here.parents[2] / ".academy-data",
+        Path.home() / ".academy",
+    ]
+    data = next((p for p in candidates if p.is_dir()), candidates[0])
+
+bare = data / "academy-progress.git"
+working = data / "progress-git"
+repo = bare if (bare / "HEAD").exists() else working
+if not repo.exists():
+    fail(f"No progress repo at {bare}. Start the lab once so it can create one.")
+
+show = subprocess.run(
+    ["git", "-C", str(repo), "show", f"{branch}:progress.json"],
+    capture_output=True,
+    text=True,
+)
+if show.returncode != 0:
+    # Try working mirror refs
+    show = subprocess.run(
+        ["git", "-C", str(working), "show", f"{branch}:progress.json"],
+        capture_output=True,
+        text=True,
+    )
+if show.returncode != 0:
+    # Last resort: live file
+    live = data / "progress" / uid / "progress.json"
+    if live.is_file():
+        text = live.read_text(encoding="utf-8")
+        print(text)
+        raise SystemExit(0)
+    fail(show.stderr.strip() or f"Could not read {branch}:progress.json")
+
+print(show.stdout, end="" if show.stdout.endswith("\n") else "\n")

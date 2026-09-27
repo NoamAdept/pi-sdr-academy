@@ -1,0 +1,9 @@
+Welcome!
+
+If you can read this, you already used the terminal correctly.
+
+Next: type
+
+  cat flag.txt
+
+That file holds your first flag{...}. Copy it into the dojo.

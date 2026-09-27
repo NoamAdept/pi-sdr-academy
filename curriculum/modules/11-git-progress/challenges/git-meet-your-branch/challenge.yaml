@@ -1,0 +1,48 @@
+id: git-meet-your-branch
+module: git-progress
+title: Meet Your Progress Branch
+difficulty: easy
+estimated_time: 15-25 minutes
+prerequisites:
+- cli-pipeline
+objectives:
+- understand-git-branch
+- identify-personal-progress-branch
+mastery_evidence:
+- understand
+- observe
+description: >
+  Every operator gets a git branch named progress/<username>. The lab creates
+  the progress repository on first startup and updates your branch when you
+  clear challenges. Run ./whoami_branch, write that branch name into
+  answer.txt, then ./check.
+environment:
+  type: workspace
+  workspace_subdir: git-meet-your-branch
+  notes: Uses the lab's auto-created progress git repo. Offline-friendly.
+files:
+- README.txt
+- whoami_branch
+- check
+- check.py
+expected_tools:
+- python3
+- ./whoami_branch
+flags:
+  value: flag{my_progress_branch}
+  validation: session
+hints:
+- level: 1
+  text: "Run ./whoami_branch — it prints progress/<your-username>."
+- level: 2
+  text: "Copy that exact line into answer.txt (one line, no spaces)."
+- level: 3
+  text: "Then run ./check. Your username comes from ACADEMY_USER / login."
+solution: >
+  ./whoami_branch > answer.txt  (or write progress/<id> by hand), then ./check.
+explanation: >
+  Git stores history on branches. This lab gives each person their own
+  progress/<id> branch so clears never overwrite a classmate's work.
+extension:
+  title: List every branch
+  description: Ask your instructor to show academy progress status.

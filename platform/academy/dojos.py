@@ -599,4 +599,35 @@ def profile_payload(engine: AcademyEngine) -> dict[str, Any]:
         "recent": recent[:12],
         "current_belt": current_belt,
         "ascent_pct": round(100 * min(1.0, ascent), 1),
+        "git_progress": _git_progress_card(engine),
+    }
+
+
+def _git_progress_card(engine: AcademyEngine) -> dict[str, Any]:
+    """Beginner-facing summary of the operator's progress git branch."""
+    uid = engine.current_user_id
+    try:
+        engine.git_mirror.ensure_user_branch(uid)
+    except Exception:  # noqa: BLE001
+        pass
+    st = engine.git_mirror.status()
+    branch = f"progress/{uid}"
+    tip = next((b for b in (st.get("branches") or []) if b.get("branch") == branch), None)
+    remote_tip = next(
+        (b for b in (st.get("remote_branches") or []) if b.get("branch") == branch),
+        None,
+    )
+    return {
+        "user_id": uid,
+        "branch": branch,
+        "remote": st.get("remote"),
+        "auto_remote": bool(st.get("auto_remote")),
+        "bare_repo": st.get("bare_repo"),
+        "commit": (tip or {}).get("commit"),
+        "on_remote": remote_tip is not None,
+        "explain": (
+            "Every clear is saved on your own git branch. "
+            f"Yours is “{branch}”. The lab created a progress repository "
+            "the first time it started, and updates your branch automatically."
+        ),
     }

@@ -73,11 +73,14 @@ Typical closed-network workflow
 -------------------------------
 1. Instructor laptop: maintain curriculum, build portable pack.
 2. USB the .tar.gz into the lab. Extract. ACADEMY_ADMIN=1 ./run.sh
-   → first run creates academy-progress.git automatically.
+  → first run creates academy-progress.git automatically.
+  → every registered user gets progress/<id> on startup / login.
 3. Create users. Students Log in and play. Each clear updates
    progress/<username> on the local progress repo.
-4. Optional (USB or brief network window): retarget remote to GitHub and push.
-5. Review student branches: progress/alice, progress/bob, …
+4. White Belt → Git Progress teaches students how to inspect and
+   practice-upload their branch (and how to aim it at GitHub later).
+5. Optional (USB or brief network window): retarget remote to GitHub and push.
+6. Review student branches: progress/alice, progress/bob, …
 
 
 Ship an updated pack

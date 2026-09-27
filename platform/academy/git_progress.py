@@ -253,6 +253,29 @@ class GitProgressMirror:
             return {"ok": False, "error": f"no local branch {branch}"}
         return self._push_ref(branch)
 
+    def ensure_user_branch(self, user_id: str, message: str | None = None) -> dict:
+        """Create/update progress/<user> on first login and push to the startup repo."""
+        path = self.user_progress_path(user_id)
+        if not path.is_file():
+            ProgressRepository(path).save(ProgressStore(student_id=user_id))
+        return self.commit_user(
+            user_id,
+            message=message or f"ensure branch progress/{user_id}",
+            auto_push=True,
+        )
+
+    def ensure_all_user_branches(self, user_ids: list[str]) -> list[dict]:
+        results = []
+        for uid in user_ids:
+            uid = (uid or "").strip()
+            if not uid:
+                continue
+            try:
+                results.append(self.ensure_user_branch(uid))
+            except Exception as exc:  # noqa: BLE001
+                results.append({"ok": False, "user_id": uid, "error": str(exc)})
+        return results
+
     def commit_user(self, user_id: str, message: str | None = None, *, auto_push: bool = True) -> dict:
         path = self.user_progress_path(user_id)
         if not path.is_file():

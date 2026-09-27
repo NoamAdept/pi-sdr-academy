@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Practice-push this user's progress branch into ./practice-remote.git."""
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+
+def fail(msg: str) -> None:
+    print(msg, file=sys.stderr)
+    raise SystemExit(1)
+
+
+def git(repo: Path, *args: str, input_text: str | None = None, raw: bytes | None = None):
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "Pi SDR Academy",
+        "GIT_AUTHOR_EMAIL": "academy@localhost",
+        "GIT_COMMITTER_NAME": "Pi SDR Academy",
+        "GIT_COMMITTER_EMAIL": "academy@localhost",
+    }
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        input=raw if raw is not None else input_text,
+        capture_output=True,
+        text=raw is None,
+        check=False,
+        env=env,
+    )
+
+
+uid = (os.environ.get("ACADEMY_USER") or "local").strip().lower()
+uid = re.sub(r"[^a-z0-9_-]+", "-", uid).strip("-_") or "local"
+branch = f"progress/{uid}"
+
+data = Path(os.environ.get("ACADEMY_DATA", "")).expanduser()
+if not data.is_dir():
+    here = Path.cwd().resolve()
+    for p in (here.parents[1] / ".academy-data", here.parents[2] / ".academy-data"):
+        if p.is_dir():
+            data = p
+            break
+
+working = data / "progress-git"
+live = data / "progress" / uid / "progress.json"
+if not (working / ".git").exists():
+    fail("Lab progress mirror missing. Start ./run.sh once, then retry.")
+
+if live.is_file():
+    content = live.read_bytes()
+else:
+    content = ('{"student_id":"%s","challenges":{}}\n' % uid).encode()
+
+blob = git(working, "hash-object", "-w", "--stdin", raw=content)
+if blob.returncode != 0:
+    fail(blob.stderr.decode() if isinstance(blob.stderr, bytes) else blob.stderr)
+blob_oid = (blob.stdout.decode() if isinstance(blob.stdout, bytes) else blob.stdout).strip()
+
+listing = f"100644 blob {blob_oid}\tprogress.json\n"
+tree = git(working, "mktree", input_text=listing)
+if tree.returncode != 0:
+    fail(tree.stderr)
+tree_oid = tree.stdout.strip()
+
+tip = git(working, "rev-parse", "-q", "--verify", f"refs/heads/{branch}")
+parent = tip.stdout.strip() if tip.returncode == 0 else ""
+ct_args = ["commit-tree", tree_oid]
+if parent:
+    ct_args.extend(["-p", parent])
+commit = git(working, *ct_args, input_text="practice upload\n")
+if commit.returncode != 0:
+    fail(commit.stderr)
+commit_oid = commit.stdout.strip()
+git(working, "update-ref", f"refs/heads/{branch}", commit_oid)
+
+practice = Path("practice-remote.git").resolve()
+if practice.exists():
+    shutil.rmtree(practice)
+subprocess.run(["git", "init", "--bare", "-b", "main", str(practice)], capture_output=True)
+if not (practice / "HEAD").exists():
+    subprocess.run(["git", "init", "--bare", str(practice)], capture_output=True, check=True)
+
+push = git(working, "push", str(practice), f"refs/heads/{branch}:refs/heads/{branch}")
+combined = (push.stdout or "") + (push.stderr or "")
+if push.returncode != 0 and "Everything up-to-date" not in combined:
+    fail(push.stderr or push.stdout or "push failed")
+
+verify = git(practice, "show", f"{branch}:progress.json")
+if verify.returncode != 0:
+    fail(verify.stderr or "branch missing on practice remote")
+
+Path("UPLOAD_OK").write_text(f"{branch}\n{practice}\n", encoding="utf-8")
+print("UPLOAD_OK")
+print(f"Pushed {branch} → {practice}")
+print("Later, for GitHub: academy progress remote <url> && academy progress push")

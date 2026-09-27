@@ -1,0 +1,47 @@
+id: git-read-your-progress
+module: git-progress
+title: Read Progress From Your Branch
+difficulty: easy
+estimated_time: 20-35 minutes
+prerequisites:
+- git-meet-your-branch
+objectives:
+- git-show
+- inspect-progress-json
+mastery_evidence:
+- observe
+- apply
+description: >
+  Use ./peek_progress to print progress.json from your progress/<user> branch
+  on the startup repository. Write how many challenges you have cleared into
+  cleared.txt, then ./check.
+environment:
+  type: workspace
+  workspace_subdir: git-read-your-progress
+  notes: Reads the auto-created academy-progress.git (or configured remote).
+files:
+- README.txt
+- peek_progress
+- check
+- check.py
+expected_tools:
+- python3
+- git
+flags:
+  value: flag{read_progress_json}
+  validation: session
+hints:
+- level: 1
+  text: "Run ./peek_progress — it talks to the lab progress repo for you."
+- level: 2
+  text: "Count objects under \"challenges\" where solved is true."
+- level: 3
+  text: "Write that number alone into cleared.txt, then ./check."
+solution: >
+  ./peek_progress, count solved challenges, write the integer to cleared.txt.
+explanation: >
+  git show branch:path prints a file from a branch without checking it out.
+  Your progress lives as progress.json on progress/<user>.
+extension:
+  title: Pretty print
+  description: Pipe peek_progress through python3 -m json.tool

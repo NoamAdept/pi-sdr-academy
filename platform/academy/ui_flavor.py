@@ -6,6 +6,7 @@ import hashlib
 
 TITLES: dict[str, str] = {
     "orient-find-flag": "Needle in the Labyrinth",
+    "orient-hello-shell": "Hello, Terminal",
     "orient-permissions": "The Locked Drawer",
     "orient-process-hunt": "Ghost in the Process List",
     "orient-environment": "Whispered Variables",
@@ -63,6 +64,9 @@ TITLES: dict[str, str] = {
     "pt-py-threads": "Many Hands, One Counter",
     "pt-cpp-process": "Fork in the Wire",
     "pt-cpp-threads": "std::thread Assembly Line",
+    "git-meet-your-branch": "Name Your Notebook",
+    "git-read-your-progress": "Open the Progress Page",
+    "git-upload-progress": "Send Progress Upstairs",
     "arch-registers": "Name the Registers",
     "arch-endianness": "Which Byte Walks First?",
     "arch-stack": "Up or Down the Stack",

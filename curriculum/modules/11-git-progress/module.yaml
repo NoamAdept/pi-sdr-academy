@@ -1,0 +1,13 @@
+id: git-progress
+slug: git-progress
+title: Git Progress
+order: 1
+description: >
+  Learn what a git branch is, meet your personal progress branch
+  (created when the lab starts), and practice uploading progress.
+prerequisites:
+- linux-cli
+challenges:
+- git-meet-your-branch
+- git-read-your-progress
+- git-upload-progress
