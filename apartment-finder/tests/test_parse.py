@@ -125,6 +125,13 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
         kept = [row for row in rows if row.price_ils == 2450][0]
         self.assertIn("23", kept.street)
+        separate = [
+            Listing("Komo", "https://komo.example/79", 2600, "רמת גן", "תל בנימין", "ביאליק 79"),
+            Listing("Komo", "https://komo.example/24", 2600, "רמת גן", "גפן", "הדר 24"),
+            Listing("Komo", "https://komo.example/2", 2300, "רמת גן", "חרוזים", "אסף 2"),
+            Listing("Homeless", "https://homeless.example/x", 2300, "רמת גן", "חרוזים", "2"),
+        ]
+        self.assertEqual(len(dedupe(separate)), 4)
 
     def test_dedupe_key_ignores_quotes(self):
         a = Listing("Komo", "https://example/a", 2500, "תל אביב יפו", "נווה אביבים", "אינשטיין 27")

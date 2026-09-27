@@ -33,20 +33,32 @@ def _norm_place(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip().lower()
 
 
+def _hood_key(value: str) -> str:
+    return re.sub(r"^ה", "", _norm_place(value))
+
+
+def _street_abbreviation(left: str, right: str) -> bool:
+    """True when one street is the other plus a house number, as in רש״י vs רש״י 23."""
+    left, right = _norm_place(left), _norm_place(right)
+    if not left or not right:
+        return False
+    if left == right:
+        return True
+    short, long = (left, right) if len(left) <= len(right) else (right, left)
+    if not long.startswith(short):
+        return False
+    rest = long[len(short) :].strip()
+    return bool(re.fullmatch(r"\d+[א-ת]?", rest))
+
+
 def _same_listing(left: Listing, right: Listing) -> bool:
     if left.price_ils != right.price_ils:
         return False
     if left.url.split("?")[0].rstrip("/") == right.url.split("?")[0].rstrip("/"):
         return True
-    left_hood, right_hood = _norm_place(left.neighborhood), _norm_place(right.neighborhood)
-    if not left_hood or not right_hood:
+    if not _hood_key(left.neighborhood) or _hood_key(left.neighborhood) != _hood_key(right.neighborhood):
         return False
-    if left_hood != right_hood and left_hood not in right_hood and right_hood not in left_hood:
-        return False
-    left_street, right_street = _norm_place(left.street), _norm_place(right.street)
-    if not left_street or not right_street:
-        return False
-    return left_street == right_street or left_street in right_street or right_street in left_street
+    return _street_abbreviation(left.street, right.street)
 
 
 def dedupe(listings: list[Listing]) -> list[Listing]:
