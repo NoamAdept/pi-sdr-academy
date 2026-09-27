@@ -16,9 +16,10 @@ from apartment_finder.parse import (
     parse_ils,
     parse_komo_detail,
     parse_komo_list,
+    roommate_audience,
 )
 from apartment_finder.run import dedupe
-from apartment_finder.travel import assess_travel
+from apartment_finder.travel import assess_bike, assess_travel
 
 
 KOMO_CARD = """
@@ -170,6 +171,22 @@ class ParseTests(unittest.TestCase):
         self.assertFalse(keep)
         keep, _label, _minutes = assess_travel(50, 28, 4.2, 30)
         self.assertFalse(keep)
+
+    def test_bike_rule(self):
+        keep, label, _minutes = assess_bike(18, 4.9, 20, "OSM bike router")
+        self.assertTrue(keep)
+        self.assertIn("bike 18 min", label)
+        keep, label, _minutes = assess_bike(26, 8.4, 20, "OSM bike router")
+        self.assertFalse(keep)
+        self.assertIn("26", label)
+
+    def test_roommate_audience(self):
+        self.assertEqual(roommate_audience("חדר לגברים בלבד בדירת שותפים"), "men")
+        self.assertEqual(roommate_audience("מתאים לבנים ולבנות"), "open")
+        self.assertEqual(roommate_audience("חדר לבנות בלבד"), "women-only")
+        self.assertEqual(roommate_audience("חדר שקט בשכונה"), "unstated")
+        self.assertEqual(roommate_audience("דירה שקטה ברחוב", "דירה"), "open")
+        self.assertEqual(roommate_audience("תל בנימין, חדר פנוי"), "unstated")
 
 
 if __name__ == "__main__":

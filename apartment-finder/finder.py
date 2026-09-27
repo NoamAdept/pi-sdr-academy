@@ -3,6 +3,8 @@
 
 Example:
   python3 finder.py --output /path/to/apartment-candidates.md
+
+Defaults: 2300–2600 ₪, TAU Ramat Aviv, 20 minutes by bike, drop women-only ads.
 """
 
 from __future__ import annotations

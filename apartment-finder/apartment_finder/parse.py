@@ -62,6 +62,42 @@ def looks_like_short_stay(text: str) -> bool:
     return any(token in blob for token in ("ללילה", "לשבת", "לסופ\"ש", "ליום"))
 
 
+_MEN_AUDIENCE = re.compile(
+    r"לגברים|לגבר(?!ים)|גברים|בנים בלבד|רק בנים|דירת בנים|דירת גברים|"
+    r"שותפים גברים|חדר לבנים|(?<![א-ת])לבנים(?![א-ת])|בחורים|(?<![א-ת])בחור(?!ה)"
+)
+_WOMEN_AUDIENCE = re.compile(
+    r"לבנות|לנשים|בנות בלבד|רק בנות|נשים בלבד|דירת בנות|שותפות|בחורות|"
+    r"לסטודנטיות|(?<![א-ת])בחורה(?![א-ת])"
+)
+_OPEN_AUDIENCE = re.compile(r"מעורב|בנים ובנות|בנות ובנים|בחורים ובחורות")
+
+
+def roommate_audience(text: str, kind: str = "") -> str:
+    """men, open, women-only, or unstated.
+
+    A whole apartment with no gender line is open: there is no roommate limit.
+    A room that never says who it is for stays unstated.
+    """
+    blob = collapse(text)
+    men = bool(_MEN_AUDIENCE.search(blob))
+    women = bool(_WOMEN_AUDIENCE.search(blob))
+    mixed = bool(_OPEN_AUDIENCE.search(blob))
+    if mixed or (men and women):
+        return "open"
+    if women:
+        return "women-only"
+    if men:
+        return "men"
+    if kind in ("דירה", "יחידת דיור / סטודיו"):
+        return "open"
+    return "unstated"
+
+
+def note_audience(listing: Listing, text: str) -> None:
+    listing.audience = roommate_audience(f"{text}\n{listing.kind}", listing.kind)
+
+
 def classify(text: str, source: str) -> str:
     blob = unescape(text)
     if "שותפ" in blob or "חדר" in blob or "partner" in source:

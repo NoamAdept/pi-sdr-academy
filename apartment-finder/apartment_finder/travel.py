@@ -1,8 +1,8 @@
 """Travel estimates to campus.
 
-Public transit routing is not available from this environment. Walking uses
-OSRM's foot profile. When the walk is longer than the cap, a free-flow drive
-from OSRM is used only as a proxy, and the report names that mode.
+The default measure is a bicycle ride from the OpenStreetMap bike router.
+Walking uses the OSM.de foot router. router.project-osrm.org's foot and bike
+profiles return driving speeds, so they are not used for those modes.
 """
 
 from __future__ import annotations
@@ -21,7 +21,13 @@ NOMINATIM = "https://nominatim.openstreetmap.org/search"
 # router.project-osrm.org's "foot" profile returns driving speeds, so walking
 # times come from the OSM.de foot router instead.
 FOOT_ROUTER = "https://routing.openstreetmap.de/routed-foot/route/v1"
+BIKE_ROUTER = "https://routing.openstreetmap.de/routed-bike/route/v1"
 DRIVE_ROUTER = "https://router.project-osrm.org/route/v1"
+_ROUTERS = {
+    "foot": (FOOT_ROUTER, "foot"),
+    "bike": (BIKE_ROUTER, "bike"),
+    "driving": (DRIVE_ROUTER, "driving"),
+}
 NOMINATIM_UA = "tau-apartment-finder/1.0 (student housing search; educational)"
 
 
@@ -99,6 +105,20 @@ def assess_travel(
     return False, detail, sort_value
 
 
+def assess_bike(
+    bike_min: float | None,
+    bike_km: float | None,
+    max_minutes: int,
+    source: str = "OSM bike router",
+) -> tuple[bool, str, float | None]:
+    """Keep a listing when the bicycle ride is within the cap."""
+    if bike_min is None:
+        return False, "bike route not measured", None
+    distance = f", {bike_km:.1f} km" if bike_km is not None else ""
+    label = f"bike {round(bike_min)} min ({source}){distance}"
+    return bike_min <= max_minutes, label, bike_min
+
+
 TRAVEL_RULE = (
     "No public transit journey planner was available. Walking time is from the "
     "OpenStreetMap foot router (about 4.8 km/h). A listing is kept when that walk "
@@ -106,6 +126,14 @@ TRAVEL_RULE = (
     "driving is ≤15 min, which is still a plausible bus trip from the TAU area. "
     "Free-flow driving alone is not used: that router treats an 11 km trip as "
     "about 15 minutes. The mode is named on each row."
+)
+
+BIKE_RULE = (
+    "Travel is a bicycle ride from the OpenStreetMap bike router, about 14–18 km/h "
+    "on streets. A listing is kept when that ride is within the cap. Twenty minutes "
+    "reaches Afeka, Tzahala, Bavli, and central Ramat Gan. Herzliya and Bnei Brak are "
+    "searched as well; a ride to Herzliya center is about 36 minutes and to Bnei Brak "
+    "center about 26 minutes, so only the near edge of those cities can fall inside the cap."
 )
 
 
@@ -165,14 +193,14 @@ class TravelClient:
     def route_leg(
         self, profile: str, origin: tuple[float, float], dest: tuple[float, float]
     ) -> tuple[float, float] | None:
-        """Return (minutes, kilometers) for a foot or driving route."""
+        """Return (minutes, kilometers) for a bike, foot, or driving route."""
         key = (profile, round(origin[0], 5), round(origin[1], 5), round(dest[0], 5), round(dest[1], 5))
         if key in self._route_cache:
             return self._route_cache[key]
-        base = FOOT_ROUTER if profile == "foot" else DRIVE_ROUTER
+        base, profile_name = _ROUTERS[profile]
         # OSRM expects lon,lat.
         path = f"{origin[1]},{origin[0]};{dest[1]},{dest[0]}"
-        url = f"{base}/{profile}/{path}?overview=false"
+        url = f"{base}/{profile_name}/{path}?overview=false"
         try:
             body, _final = fetch(url, timeout=20, user_agent=BROWSER_UA)
             payload = json.loads(body)

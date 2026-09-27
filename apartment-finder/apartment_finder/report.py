@@ -11,6 +11,14 @@ def _ils(amount: int) -> str:
     return f"{amount:,} ₪"
 
 
+_AUDIENCE = {
+    "men": "for men",
+    "open": "open to men",
+    "unstated": "gender not stated",
+    "women-only": "listed for women only",
+}
+
+
 def _block(listing: Listing, index: int | None = None) -> str:
     title = listing.place or listing.url
     heading = f"### {index}. {title}" if index else f"### {title}"
@@ -21,6 +29,7 @@ def _block(listing: Listing, index: int | None = None) -> str:
         f"- Type: {listing.type_label}",
         f"- Place: {listing.place or 'not stated'}",
         f"- Travel: {listing.travel_text or 'not measured'}",
+        f"- Who it's for: {_AUDIENCE.get(listing.audience, listing.audience or 'gender not stated')}",
         f"- Source: {listing.source}",
         f"- URL: {listing.url}",
         f"- Listed: {listing.date_text or 'date not shown on the listing'}",
@@ -46,7 +55,15 @@ def _section(title: str, rows: list[Listing], numbered: bool, limit: int | None 
     return f"## {title}\n\n{body}{extra}\n"
 
 
-def render(result: SearchResult, when: datetime, min_rent: int, max_rent: int, max_minutes: int) -> str:
+def render(
+    result: SearchResult,
+    when: datetime,
+    min_rent: int,
+    max_rent: int,
+    max_minutes: int,
+    mode: str = "bike",
+    gender: str = "men",
+) -> str:
     tried = ", ".join(status.name for status in result.sources) or "none"
     failed = [status for status in result.sources if not status.ok]
     worked = [status for status in result.sources if status.ok]
@@ -58,6 +75,7 @@ def render(result: SearchResult, when: datetime, min_rent: int, max_rent: int, m
     )
     candidates = [row for row in result.listings if row.included]
     outside = [row for row in result.listings if row.exclude_reason == "outside the travel window"]
+    women_only = [row for row in result.listings if row.exclude_reason == "listed for women only"]
     stale = [row for row in result.listings if row.exclude_reason.startswith("listing date")]
     unplaced = [row for row in result.listings if row.exclude_reason.startswith("could not geocode")]
     candidates.sort(key=lambda row: (row.travel_minutes if row.travel_minutes is not None else 10**6, row.price_ils))
@@ -76,8 +94,14 @@ def render(result: SearchResult, when: datetime, min_rent: int, max_rent: int, m
             f"- Monthly listed rent: {min_rent}–{max_rent} ₪ (rooms in shared apartments and whole apartments/studios).",
             f"- Campus: {campus}",
             f"- Campus note: {result.campus_note or 'n/a'}",
-            f"- Max travel: {max_minutes} minutes",
+            f"- Max travel: {max_minutes} minutes by {mode}",
             f"- Travel rule: {result.travel_rule}",
+            (
+                "- Gender: ads that say they are for women only are left out. "
+                "Ads for men, mixed ads, whole apartments, and ads that never state a gender stay in."
+                if gender == "men"
+                else "- Gender: no gender filter."
+            ),
             f"- Sources tried: {tried}",
             f"- Candidates: {len(candidates)}",
             "",
@@ -100,6 +124,8 @@ def render(result: SearchResult, when: datetime, min_rent: int, max_rent: int, m
         + _section("Candidates", candidates, numbered=True)
         + "\n"
         + _section("Price matches outside the travel window", outside, numbered=False, limit=20)
+        + "\n"
+        + _section("Inside the ride, but listed for women only", women_only, numbered=False, limit=15)
         + "\n"
         + _section("On the board, but the listing date is older than 180 days", stale, numbered=False, limit=15)
         + "\n"

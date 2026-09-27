@@ -15,6 +15,7 @@ from apartment_finder.parse import (
     city_filter_wanted,
     classify,
     extras_from,
+    note_audience,
     looks_like_short_stay,
     parse_ad_detail,
     parse_ad_list,
@@ -147,6 +148,7 @@ class Collector:
             if part
         )
         listing.kind = classify(blob, listing.source)
+        note_audience(listing, blob)
         if detail["sqm"]:
             note = f"{detail['sqm']} מ״ר"
             if note not in listing.extras:
@@ -232,6 +234,7 @@ class Collector:
             listing.extras = extras_from(detail["description"])
         blob = detail["blob"]
         listing.kind = classify(blob + " " + listing.neighborhood, listing.source)
+        note_audience(listing, blob)
 
     def _homeless(self) -> None:
         found = 0
@@ -279,6 +282,7 @@ class Collector:
         if entry and entry.group(1) not in listing.extras:
             note = f"כניסה {entry.group(1)}"
             listing.extras = (listing.extras + " | " + note).strip(" |")
+        note_audience(listing, detail.get("blob", ""))
 
     def _probes(self) -> None:
         for name, url in PROBES:

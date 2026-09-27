@@ -11,6 +11,7 @@ class Listing:
     street: str
     rooms: str = ""
     kind: str = ""
+    audience: str = ""
     date_text: str = ""
     extras: str = ""
     current: bool = True
