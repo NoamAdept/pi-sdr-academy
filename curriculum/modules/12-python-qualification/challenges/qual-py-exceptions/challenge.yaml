@@ -1,0 +1,50 @@
+id: qual-py-exceptions
+module: python-qualification
+title: Safe Flag Parse
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-context
+objectives:
+- exceptions
+mastery_evidence:
+- understand
+- apply
+description: |
+  parse_flag returns flag{...} or raises ValueError.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-exceptions
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- flags.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_exceptions}
+  validation: session
+hints:
+- level: 1
+  text: |
+    strip
+- level: 2
+  text: |
+    flag{...
+- level: 3
+  text: |
+    }
+- level: 4
+  text: |
+    ValueError
+solution: |
+  validate or raise
+explanation: |
+  Exceptions beat silent None.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

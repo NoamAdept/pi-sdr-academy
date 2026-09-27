@@ -1,0 +1,49 @@
+id: qual-cpp-concurrency
+module: cpp-qualification
+title: Thread the Increment
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-templates
+objectives:
+- threads
+- concurrency
+mastery_evidence:
+- understand
+- apply
+description: |
+  Launch a thread that sets ready=1; join; print ready=1.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-concurrency
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_concurrency}
+  validation: session
+hints:
+- level: 1
+  text: |
+    t.join()
+- level: 2
+  text: |
+    capture ready
+- level: 3
+  text: |
+    include thread
+solution: |
+  join before print
+explanation: |
+  Join before observing shared state.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

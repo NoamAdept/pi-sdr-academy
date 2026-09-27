@@ -1,0 +1,49 @@
+id: qual-cpp-oop
+module: cpp-qualification
+title: Tone Synthesizer Class
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-data
+objectives:
+- oop
+- classes
+mastery_evidence:
+- understand
+- apply
+description: |
+  class Tone with freq() accessor printing freq=440.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-oop
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_oop}
+  validation: session
+hints:
+- level: 1
+  text: |
+    return hz_
+- level: 2
+  text: |
+    const method
+- level: 3
+  text: |
+    ctor sets hz_
+solution: |
+  return hz_
+explanation: |
+  Classes encapsulate signal state.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

@@ -976,7 +976,7 @@
             <div class="screen">
               <div>SYS <b>ONLINE</b></div>
               <div>BELTS 5</div>
-              <div>CHALS 58</div>
+              <div>CHALS 94</div>
               <div>MODE LAB</div>
             </div>
             <div class="ports"><i></i><i></i><i></i></div>
@@ -1061,7 +1061,7 @@
 
       <section class="module xp">
         <div class="vents" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">58</span></span></div>
+        <div class="xp-top"><span>Progress</span><span><em id="xp-count">0</em> / <span id="xp-total">94</span></span></div>
         <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
         <div class="belts" id="belts"></div>
       </section>
@@ -1071,6 +1071,12 @@
         Tap any belt to see its modules and challenges. Locked belts are browse-only until you clear the one before.
       </p>
       <div class="path" id="belts-list"></div>
+
+      <div class="sec">Qualification paths</div>
+      <p class="lede" style="margin:-0.35rem 0 0.75rem;max-width:48ch;font-size:0.92rem;color:var(--muted)">
+        Side tracks from the professional qualification syllabus — Python, C++, and flowgraphs — rewritten as offline lab puzzles.
+      </p>
+      <div class="path" id="side-list"></div>
     </div>
 
     <!-- DOJO DETAIL -->
@@ -1096,7 +1102,7 @@
           Clears on this machine — and on your personal git branch, created when the lab first started.
         </p>
         <div class="prof-stats">
-          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/58</strong></div>
+          <div class="prof-stat"><b>Cleared</b><strong id="prof-cleared">0/94</strong></div>
           <div class="prof-stat"><b>Streak</b><strong id="prof-streak">0 days</strong></div>
           <div class="prof-stat"><b>Ascent</b><strong id="prof-ascent">0%</strong></div>
         </div>
@@ -1189,7 +1195,7 @@
     let nextCh = null;
     let catalogIntro = '';
     let lastSolved = 0;
-    let lastTotal = 58;
+    let lastTotal = 94;
     let lastProfile = null;
 
     function esc(s) {
@@ -1234,7 +1240,7 @@
     }
     function setTopProgress(solved, total) {
       lastSolved = solved;
-      lastTotal = total || 58;
+      lastTotal = total || 94;
       const pct = lastTotal ? Math.round(100 * solved / lastTotal) : 0;
       const fill = document.getElementById('top-fill');
       if (fill) fill.style.width = pct + '%';
@@ -1572,6 +1578,36 @@
         btn.onclick = () => openDojo(d.id);
         list.appendChild(btn);
       });
+
+      const sides = (dojos || []).filter(d => d.kind === 'side');
+      const sideList = document.getElementById('side-list');
+      if (sideList) {
+        sideList.innerHTML = '';
+        sides.forEach(d => {
+          const done = d.challenges > 0 && d.solved >= d.challenges;
+          const mods = (d.contents || []).map(m => esc(m.title)).filter(Boolean);
+          const preview = mods.length
+            ? `<ul class="preview">${mods.map(t => `<li>${t}</li>`).join('')}</ul>`
+            : '';
+          const chip = done
+            ? '<span class="chip done">Done</span>'
+            : '<span class="chip">Open</span>';
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'card';
+          btn.innerHTML = `
+            <img class="b" src="/icons/${BELT[d.belt] || 'belt-white'}.png" alt=""/>
+            <div>
+              <h3>${esc(d.title)}</h3>
+              <div class="meta">${d.solved}/${d.challenges} · ${esc(d.tagline || d.belt_label || '')}</div>
+              ${preview}
+            </div>
+            ${chip}
+          `;
+          btn.onclick = () => openDojo(d.id);
+          sideList.appendChild(btn);
+        });
+      }
     }
 
     function challengeRow(ch, locked, autoOpen) {

@@ -1,0 +1,47 @@
+id: qual-py-modern
+module: python-qualification
+title: Modern Lab Annotations
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-refs
+objectives:
+- f-strings
+mastery_evidence:
+- understand
+- apply
+description: |
+  format_tune returns 'tune LABEL @ MHz' with 3 decimals.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-modern
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- tune.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_modern}
+  validation: session
+hints:
+- level: 1
+  text: |
+    f-string
+- level: 2
+  text: |
+    :.3f
+- level: 3
+  text: |
+    exact text
+solution: |
+  f'tune {label} @ {mhz:.3f} MHz'
+explanation: |
+  F-strings clarify logs.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

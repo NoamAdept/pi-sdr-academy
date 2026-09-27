@@ -1,0 +1,48 @@
+id: qual-py-oop
+module: python-qualification
+title: Classy Signal Meter
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-types
+objectives:
+- oop
+- classes
+mastery_evidence:
+- understand
+- apply
+description: |
+  SignalMeter.add and average (0.0 if empty).
+environment:
+  type: workspace
+  workspace_subdir: qual-py-oop
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- meter.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_oop}
+  validation: session
+hints:
+- level: 1
+  text: |
+    append
+- level: 2
+  text: |
+    sum/len
+- level: 3
+  text: |
+    empty 0
+solution: |
+  mean of list
+explanation: |
+  Objects model instruments.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

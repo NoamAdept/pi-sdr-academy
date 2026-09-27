@@ -1,0 +1,48 @@
+id: qual-py-packaging
+module: python-qualification
+title: Tiny Package Layout
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-exceptions
+objectives:
+- packages
+mastery_evidence:
+- understand
+- apply
+description: |
+  load_version imports labkit and returns version.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-packaging
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- labkit_loader.py
+- run
+- check
+- check.py
+- labkit/__init__.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_packaging}
+  validation: session
+hints:
+- level: 1
+  text: |
+    import labkit
+- level: 2
+  text: |
+    version
+- level: 3
+  text: |
+    keep pkg
+solution: |
+  return labkit.version
+explanation: |
+  Packages structure toolkits.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

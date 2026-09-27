@@ -1,0 +1,44 @@
+id: qual-py-overview
+module: python-qualification
+title: Python Qualification Map
+difficulty: easy
+estimated_time: 10-15 minutes
+prerequisites: []
+objectives:
+- orientation
+mastery_evidence:
+- understand
+description: |
+  Write the track name python-qualification into answer.txt (from the syllabus overview).
+environment:
+  type: workspace
+  workspace_subdir: qual-py-overview
+  notes: Offline overview challenge from the qualification syllabus.
+files:
+- README.txt
+- OVERVIEW.txt
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_overview}
+  validation: session
+hints:
+- level: 1
+  text: |
+    Read OVERVIEW.txt
+- level: 2
+  text: |
+    Put the track id on one line in answer.txt
+- level: 3
+  text: |
+    Exact spelling: python-qualification
+solution: |
+  Write python-qualification into answer.txt
+explanation: |
+  Overviews map the qualification path before the hands-on modules.
+extension:
+  title: Skim next
+  description: |
+    Browse the next challenge in this module.

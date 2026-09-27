@@ -1,0 +1,49 @@
+id: qual-cpp-modern
+module: cpp-qualification
+title: Auto and Range-For
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-pointers
+objectives:
+- modern-cpp
+- auto
+mastery_evidence:
+- understand
+- apply
+description: |
+  Sum gains with range-for and print sum=6.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-modern
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_modern}
+  validation: session
+hints:
+- level: 1
+  text: |
+    for (int g : gains)
+- level: 2
+  text: |
+    sum+=g
+- level: 3
+  text: |
+    keep print
+solution: |
+  range-for sum
+explanation: |
+  Modern C++ prefers range-for.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

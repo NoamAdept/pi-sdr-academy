@@ -1,0 +1,47 @@
+id: qual-py-typing
+module: python-qualification
+title: Typed Gain Stage
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-decorators
+objectives:
+- type-hints
+mastery_evidence:
+- understand
+- apply
+description: |
+  apply_gain multiplies each sample by gain.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-typing
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- gain.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_typing}
+  validation: session
+hints:
+- level: 1
+  text: |
+    comprehension
+- level: 2
+  text: |
+    s*gain
+- level: 3
+  text: |
+    new list
+solution: |
+  [s*gain for s in samples]
+explanation: |
+  Hints document contracts.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

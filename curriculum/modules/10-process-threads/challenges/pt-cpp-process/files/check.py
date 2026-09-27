@@ -19,7 +19,7 @@ if "wait" not in src:
 
 try:
     subprocess.run(
-        ["c++", "-Wall", "-Wextra", "-O0", "-o", "controller", "controller.cpp"],
+        ["g++", "-Wall", "-Wextra", "-O0", "-o", "controller", "controller.cpp"],
         check=True,
         capture_output=True,
         text=True,

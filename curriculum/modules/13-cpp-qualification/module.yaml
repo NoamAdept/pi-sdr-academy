@@ -1,0 +1,26 @@
+id: cpp-qualification
+slug: cpp-qualification
+title: C++ Qualification
+order: 13
+description: >
+  Professional C++ qualification topics as offline SDR-lab challenges
+  (namespaces through ISR-style volatile flags).
+prerequisites:
+- c
+challenges:
+- qual-cpp-overview
+- qual-cpp-namespaces
+- qual-cpp-data
+- qual-cpp-oop
+- qual-cpp-const
+- qual-cpp-pointers
+- qual-cpp-modern
+- qual-cpp-stl
+- qual-cpp-raii
+- qual-cpp-errors
+- qual-cpp-cmake
+- qual-cpp-packages
+- qual-cpp-bits
+- qual-cpp-templates
+- qual-cpp-concurrency
+- qual-cpp-isr

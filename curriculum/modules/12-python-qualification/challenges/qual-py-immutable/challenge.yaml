@@ -1,0 +1,47 @@
+id: qual-py-immutable
+module: python-qualification
+title: Frozen IQ Pairs
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-oop
+objectives:
+- immutability
+mastery_evidence:
+- understand
+- apply
+description: |
+  Return an immutable (i, q) tuple from iq_pair so sample pairs cannot be mutated mid-pipeline.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-immutable
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- iq.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_immutable}
+  validation: session
+hints:
+- level: 1
+  text: |
+    tuple
+- level: 2
+  text: |
+    not list
+- level: 3
+  text: |
+    (i,q)
+solution: |
+  return (i,q)
+explanation: |
+  Immutability protects samples.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

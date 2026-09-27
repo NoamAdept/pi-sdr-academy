@@ -1,0 +1,50 @@
+id: qual-cpp-data
+module: cpp-qualification
+title: Tune File In C++
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-namespaces
+objectives:
+- strings
+- fstream
+mastery_evidence:
+- understand
+- apply
+description: |
+  Read first line of tune.txt and print tune=<line>.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-data
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+- tune.txt
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_data}
+  validation: session
+hints:
+- level: 1
+  text: |
+    tune.txt provided
+- level: 2
+  text: |
+    getline
+- level: 3
+  text: |
+    tune=
+solution: |
+  getline + print
+explanation: |
+  Files carry operator notes.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

@@ -1,0 +1,47 @@
+id: qual-gr-project
+module: flowgraph-qualification
+title: Tone Processor Chain
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-gr-vectors
+objectives:
+- signal-chain
+mastery_evidence:
+- understand
+- apply
+description: |
+  process_tone(samples) applies gain 2 then abs — a tiny tone chain.
+environment:
+  type: workspace
+  workspace_subdir: qual-gr-project
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- tone_chain.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_gr_project}
+  validation: session
+hints:
+- level: 1
+  text: |
+    *2
+- level: 2
+  text: |
+    abs
+- level: 3
+  text: |
+    list comp
+solution: |
+  [abs(s*2) for s in samples]
+explanation: |
+  Projects chain blocks: gain then magnitude.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

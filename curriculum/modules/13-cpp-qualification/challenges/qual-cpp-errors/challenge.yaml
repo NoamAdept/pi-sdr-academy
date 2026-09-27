@@ -1,0 +1,48 @@
+id: qual-cpp-errors
+module: cpp-qualification
+title: Throw on Bad Gain
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-raii
+objectives:
+- exceptions
+mastery_evidence:
+- understand
+- apply
+description: |
+  apply_gain throws std::invalid_argument on negative gain; main prints ok=8.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-errors
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_errors}
+  validation: session
+hints:
+- level: 1
+  text: |
+    already almost done
+- level: 2
+  text: |
+    keep throw
+- level: 3
+  text: |
+    catch
+solution: |
+  throw invalid_argument
+explanation: |
+  Exceptions signal bad operator input.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

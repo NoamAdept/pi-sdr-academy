@@ -1,0 +1,49 @@
+id: qual-cpp-const
+module: cpp-qualification
+title: Const Gain Path
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-oop
+objectives:
+- const
+- qualifiers
+mastery_evidence:
+- understand
+- apply
+description: |
+  scale_const uses const ref input and prints scaled=6.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-const
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_const}
+  validation: session
+hints:
+- level: 1
+  text: |
+    return sample*gain
+- level: 2
+  text: |
+    const ref
+- level: 3
+  text: |
+    no mutate
+solution: |
+  return sample*gain
+explanation: |
+  const documents read-only paths.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

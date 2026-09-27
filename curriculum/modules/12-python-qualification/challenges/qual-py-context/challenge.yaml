@@ -1,0 +1,47 @@
+id: qual-py-context
+module: python-qualification
+title: Context-Managed Capture
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-collections
+objectives:
+- context-managers
+mastery_evidence:
+- understand
+- apply
+description: |
+  read_capture uses with-open and returns stripped text.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-context
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- capture.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_context}
+  validation: session
+hints:
+- level: 1
+  text: |
+    with open
+- level: 2
+  text: |
+    strip
+- level: 3
+  text: |
+    context
+solution: |
+  with open as f: return f.read().strip()
+explanation: |
+  with is RAII for files.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

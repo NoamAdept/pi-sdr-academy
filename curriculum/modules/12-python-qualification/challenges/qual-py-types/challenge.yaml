@@ -1,0 +1,47 @@
+id: qual-py-types
+module: python-qualification
+title: Dynamic Types on the Bench
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-modules
+objectives:
+- dynamic-typing
+mastery_evidence:
+- understand
+- apply
+description: |
+  coerce_samples converts mixed values to list[float].
+environment:
+  type: workspace
+  workspace_subdir: qual-py-types
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- samples.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_types}
+  validation: session
+hints:
+- level: 1
+  text: |
+    float(x)
+- level: 2
+  text: |
+    comprehension
+- level: 3
+  text: |
+    order
+solution: |
+  [float(v) for v in values]
+explanation: |
+  Coerce at DSP edges.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

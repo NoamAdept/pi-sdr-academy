@@ -1,0 +1,3 @@
+#!/bin/sh
+set -eu
+g++ -std=c++17 -Wall -Wextra -O0 -pthread -o prog main.cpp && ./prog

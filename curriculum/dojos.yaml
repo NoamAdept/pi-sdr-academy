@@ -1,10 +1,10 @@
 intro: >
   Welcome — no Linux experience needed. This offline lab teaches the terminal
-  gently, then grows into radio. Fifty-eight short challenges. Five belts.
-  Your progress is saved automatically on your own git branch.
+  gently, then grows into radio. Ninety-four short challenges across core belts
+  plus qualification side paths. Your progress is saved on your own git branch.
 rules: >
   Start with White Belt. Read README.txt in each challenge. Take a hint when
-  stuck. Belts unlock in order. Progress auto-saves to git — you will learn how.
+  stuck. Core belts unlock in order. Qualification side paths can be browsed anytime.
 core:
 - id: intro-lab
   title: Intro to the Lab
@@ -48,4 +48,25 @@ core:
   modules:
   - iq-sdr
   - bpsk
-side_quests: []
+side_quests:
+- id: python-qualification
+  title: Python Qualification
+  belt: yellow
+  belt_label: Yellow Belt
+  tagline: Modules through typing — offline SDR-lab remix of the Python syllabus.
+  modules:
+  - python-qualification
+- id: cpp-qualification
+  title: C++ Qualification
+  belt: orange
+  belt_label: Orange Belt
+  tagline: Namespaces through ISR flags — offline remix of the C++ syllabus.
+  modules:
+  - cpp-qualification
+- id: flowgraph-qualification
+  title: Flowgraph Qualification
+  belt: green
+  belt_label: Green Belt
+  tagline: Blocks, edges, vectors, tone chain — GNU Radio ideas without GNU Radio.
+  modules:
+  - flowgraph-qualification

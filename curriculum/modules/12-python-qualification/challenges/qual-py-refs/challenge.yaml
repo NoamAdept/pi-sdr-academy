@@ -1,0 +1,47 @@
+id: qual-py-refs
+module: python-qualification
+title: Alias in the Sample Buffer
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-immutable
+objectives:
+- references
+mastery_evidence:
+- understand
+- apply
+description: |
+  share_buffer aliases; mutate_last sets last element in place.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-refs
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- buffer.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_refs}
+  validation: session
+hints:
+- level: 1
+  text: |
+    return buf
+- level: 2
+  text: |
+    buf[-1]=
+- level: 3
+  text: |
+    no copy
+solution: |
+  alias + assign
+explanation: |
+  Names reference objects.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

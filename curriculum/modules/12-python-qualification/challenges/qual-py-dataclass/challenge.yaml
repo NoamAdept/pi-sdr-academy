@@ -1,0 +1,48 @@
+id: qual-py-dataclass
+module: python-qualification
+title: Dataclass Frame Log
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-bits
+objectives:
+- dataclasses
+- json
+mastery_evidence:
+- understand
+- apply
+description: |
+  Build a Frame dataclass and to_json() so lab logs serialize cleanly with asdict + json.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-dataclass
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- frame.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_dataclass}
+  validation: session
+hints:
+- level: 1
+  text: |
+    asdict
+- level: 2
+  text: |
+    json.dumps
+- level: 3
+  text: |
+    fields
+solution: |
+  json.dumps(asdict(frame))
+explanation: |
+  Dataclasses serialize cleanly.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

@@ -1,0 +1,47 @@
+id: qual-gr-flowgraph
+module: flowgraph-qualification
+title: Connect the Flowgraph
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-gr-intro
+objectives:
+- connections
+mastery_evidence:
+- understand
+- apply
+description: |
+  connect(src,dst) records an edge; edges() returns list of (src,dst).
+environment:
+  type: workspace
+  workspace_subdir: qual-gr-flowgraph
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- graph.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_gr_flowgraph}
+  validation: session
+hints:
+- level: 1
+  text: |
+    append tuple
+- level: 2
+  text: |
+    return list
+- level: 3
+  text: |
+    order preserved
+solution: |
+  store edges list
+explanation: |
+  Flowgraphs are directed edges between blocks.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

@@ -1,0 +1,49 @@
+id: qual-cpp-raii
+module: cpp-qualification
+title: RAII File Guard
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-stl
+objectives:
+- raii
+- smart-pointers
+mastery_evidence:
+- understand
+- apply
+description: |
+  Use unique_ptr<int> holding 7 and print owned=7.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-raii
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_raii}
+  validation: session
+hints:
+- level: 1
+  text: |
+    make_unique
+- level: 2
+  text: |
+    unique_ptr
+- level: 3
+  text: |
+    dereference
+solution: |
+  unique_ptr owns int(7)
+explanation: |
+  RAII frees on scope exit.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

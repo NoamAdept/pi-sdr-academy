@@ -1,4 +1,4 @@
 #!/bin/sh
 set -eu
-c++ -Wall -Wextra -O0 -o controller controller.cpp
+g++ -Wall -Wextra -O0 -o controller controller.cpp
 ./controller

@@ -1,0 +1,6 @@
+Qualification overview (adapted for Pi SDR Academy)
+-------------------------------------------------
+Track id: cpp-qualification
+
+This side path mirrors the professional qualification notebooks,
+rewritten as offline challenges with the same Start → solve → Done loop.

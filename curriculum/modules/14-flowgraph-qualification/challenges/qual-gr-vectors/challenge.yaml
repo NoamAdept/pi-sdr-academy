@@ -1,0 +1,48 @@
+id: qual-gr-vectors
+module: flowgraph-qualification
+title: Vector Block Gain
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-gr-flowgraph
+objectives:
+- vector-blocks
+- dsp
+mastery_evidence:
+- understand
+- apply
+description: |
+  apply_vector_gain(samples, gain) scales a float vector (block work()).
+environment:
+  type: workspace
+  workspace_subdir: qual-gr-vectors
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- vector_block.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_gr_vectors}
+  validation: session
+hints:
+- level: 1
+  text: |
+    comprehension
+- level: 2
+  text: |
+    s*gain
+- level: 3
+  text: |
+    same length
+solution: |
+  [s*gain for s in samples]
+explanation: |
+  Vector blocks process buffers, not scalars.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

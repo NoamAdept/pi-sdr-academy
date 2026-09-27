@@ -1,0 +1,49 @@
+id: qual-cpp-cmake
+module: cpp-qualification
+title: CMake-Style Target Name
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-errors
+objectives:
+- cmake
+- build-systems
+mastery_evidence:
+- understand
+- apply
+description: |
+  Print target=beacon_rx to mimic a CMake target name constant.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-cmake
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_cmake}
+  validation: session
+hints:
+- level: 1
+  text: |
+    set string
+- level: 2
+  text: |
+    print target=
+- level: 3
+  text: |
+    keep name
+solution: |
+  print target
+explanation: |
+  Build systems name radio binaries.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

@@ -24,7 +24,7 @@ if "parallel_add" not in src:
 try:
     subprocess.run(
         [
-            "c++",
+            "g++",
             "-Wall",
             "-Wextra",
             "-O0",

@@ -1,0 +1,48 @@
+id: qual-cpp-namespaces
+module: cpp-qualification
+title: Namespace the Calculator
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-overview
+objectives:
+- namespaces
+mastery_evidence:
+- understand
+- apply
+description: |
+  RadioMath::sub returns a-b; program prints sum and diff.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-namespaces
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_namespaces}
+  validation: session
+hints:
+- level: 1
+  text: |
+    return a-b
+- level: 2
+  text: |
+    keep namespace
+- level: 3
+  text: |
+    RadioMath::
+solution: |
+  sub returns a-b
+explanation: |
+  Namespaces scale radio codebases.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

@@ -1,0 +1,25 @@
+id: python-qualification
+slug: python-qualification
+title: Python Qualification
+order: 12
+description: >
+  Professional Python qualification topics as offline SDR-lab challenges
+  (modules through typing).
+prerequisites:
+- python
+challenges:
+- qual-py-overview
+- qual-py-modules
+- qual-py-types
+- qual-py-oop
+- qual-py-immutable
+- qual-py-refs
+- qual-py-modern
+- qual-py-collections
+- qual-py-context
+- qual-py-exceptions
+- qual-py-packaging
+- qual-py-bits
+- qual-py-dataclass
+- qual-py-decorators
+- qual-py-typing

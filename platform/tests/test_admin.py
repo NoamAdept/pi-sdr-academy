@@ -118,7 +118,7 @@ def test_curriculum_overview(engine, monkeypatch):
 
     monkeypatch.setenv("ACADEMY_ADMIN", "1")
     overview = curriculum_overview(engine)
-    assert overview["module_count"] == 12
-    assert overview["challenge_count"] == 58
+    assert overview["module_count"] == 15
+    assert overview["challenge_count"] == 94
     assert overview["admin_enabled"] is True
     assert overview["dojos"]

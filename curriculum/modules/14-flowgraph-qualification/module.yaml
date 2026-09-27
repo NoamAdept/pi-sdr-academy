@@ -1,0 +1,15 @@
+id: flowgraph-qualification
+slug: flowgraph-qualification
+title: Flowgraph Qualification
+order: 14
+description: >
+  GNU Radio qualification ideas — blocks, connections, vector work, tone
+  chain — practiced offline without installing GNU Radio.
+prerequisites:
+- dsp-fundamentals
+challenges:
+- qual-gr-overview
+- qual-gr-intro
+- qual-gr-flowgraph
+- qual-gr-vectors
+- qual-gr-project

@@ -1,0 +1,48 @@
+id: qual-cpp-templates
+module: cpp-qualification
+title: Template Max Sample
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-bits
+objectives:
+- templates
+mastery_evidence:
+- understand
+- apply
+description: |
+  Template max_sample prints max=9 for ints.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-templates
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_templates}
+  validation: session
+hints:
+- level: 1
+  text: |
+    ternary
+- level: 2
+  text: |
+    template <typename T>
+- level: 3
+  text: |
+    return larger
+solution: |
+  return a>b?a:b
+explanation: |
+  Templates generic-ize DSP helpers.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

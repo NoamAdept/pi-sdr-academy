@@ -1,0 +1,50 @@
+id: qual-cpp-packages
+module: cpp-qualification
+title: Vendored Header Include
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-cmake
+objectives:
+- packages
+- headers
+mastery_evidence:
+- understand
+- apply
+description: |
+  Include local labkit.hpp and print ver=1.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-packages
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+- labkit.hpp
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_packages}
+  validation: session
+hints:
+- level: 1
+  text: |
+    include labkit.hpp
+- level: 2
+  text: |
+    call labkit_version
+- level: 3
+  text: |
+    quotes include
+solution: |
+  include local header
+explanation: |
+  Packages ship headers beside sources.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

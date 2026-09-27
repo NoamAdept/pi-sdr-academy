@@ -1,0 +1,49 @@
+id: qual-cpp-stl
+module: cpp-qualification
+title: STL Peak Scan
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-modern
+objectives:
+- stl
+- algorithms
+mastery_evidence:
+- understand
+- apply
+description: |
+  Use std::max_element on a vector of samples and print the peak value as peak=9.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-stl
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_stl}
+  validation: session
+hints:
+- level: 1
+  text: |
+    max_element
+- level: 2
+  text: |
+    dereference it
+- level: 3
+  text: |
+    include algorithm
+solution: |
+  max_element
+explanation: |
+  STL algorithms beat hand loops.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

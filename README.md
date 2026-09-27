@@ -1,7 +1,7 @@
 # Pi SDR Academy
 
-Offline lab: **five belts · fifty-eight challenges · shell → IQ**.
-Beginner-friendly White Belt. Progress auto-saves to your git branch.
+Offline lab: **five belts · ninety-four challenges · shell → IQ**.
+Beginner-friendly White Belt, qualification side paths, progress on git branches.
 
 ## Closed network (USB / air-gap)
 
@@ -38,7 +38,7 @@ From a git checkout that already includes `vendor/`:
 
 ```text
 run.sh           launcher (python3 only)
-curriculum/      58 challenges
+curriculum/      94 challenges
 platform/        engine + UI
 vendor/          pure-Python YAML (no .so)
 scripts/         pack + curriculum check

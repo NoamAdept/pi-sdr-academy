@@ -1,0 +1,49 @@
+id: qual-cpp-pointers
+module: cpp-qualification
+title: Pointer to the Sample
+difficulty: medium
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-cpp-const
+objectives:
+- pointers
+- references
+mastery_evidence:
+- understand
+- apply
+description: |
+  Write through a pointer to set the live sample to 42 and print value=42 from main.
+environment:
+  type: workspace
+  workspace_subdir: qual-cpp-pointers
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- main.cpp
+- run
+- check
+- check.py
+expected_tools:
+- g++
+- python3
+flags:
+  value: flag{qual_cpp_pointers}
+  validation: session
+hints:
+- level: 1
+  text: |
+    *p = 42
+- level: 2
+  text: |
+    pointer
+- level: 3
+  text: |
+    address-of
+solution: |
+  *p=42
+explanation: |
+  Pointers address live samples.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.

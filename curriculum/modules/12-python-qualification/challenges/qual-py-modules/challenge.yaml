@@ -1,0 +1,48 @@
+id: qual-py-modules
+module: python-qualification
+title: Modules for the Radio Rack
+difficulty: easy
+estimated_time: 20-40 minutes
+prerequisites:
+- qual-py-overview
+objectives:
+- modules
+- imports
+mastery_evidence:
+- understand
+- apply
+description: |
+  wavelength_m(mhz) uses math and returns c/f for free-space wavelength.
+environment:
+  type: workspace
+  workspace_subdir: qual-py-modules
+  notes: Offline qualification challenge (Pi SDR Academy theme). No Jupyter required.
+files:
+- README.txt
+- radio_math.py
+- run
+- check
+- check.py
+expected_tools:
+- python3
+flags:
+  value: flag{qual_py_modules}
+  validation: session
+hints:
+- level: 1
+  text: |
+    c=299792458
+- level: 2
+  text: |
+    mhz*1e6
+- level: 3
+  text: |
+    return c/f
+solution: |
+  return 299792458/(mhz*1e6)
+explanation: |
+  Modules package reusable radio math.
+extension:
+  title: Go further
+  description: |
+    Change one input; keep ./check green without hard-coding.
