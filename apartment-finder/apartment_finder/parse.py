@@ -129,7 +129,7 @@ def dedupe_key(listing: Listing) -> tuple:
     hood = norm(listing.neighborhood)
     if street:
         return ("addr", listing.price_ils, street, hood)
-    return ("url", listing.url.split("?")[0].rstrip("/"), listing.price_ils)
+    return ("url", listing.url, listing.price_ils)
 
 
 def split_komo_title(title: str) -> tuple[str, str, str]:

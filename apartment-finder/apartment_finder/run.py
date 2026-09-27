@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,6 +25,24 @@ def _richer(candidate: Listing, current: Listing) -> bool:
         bool(current.date_text),
         bool(current.extras),
         len(current.street),
+    )
+
+
+_TRACKING_PARAMS = frozenset(
+    {"utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "gclid"}
+)
+
+
+def _url_key(url: str) -> str:
+    """Identity of a listing URL. Komo keeps the ad id in the query string."""
+    parts = urllib.parse.urlsplit(url.strip())
+    query = [
+        (key, value)
+        for key, value in urllib.parse.parse_qsl(parts.query, keep_blank_values=False)
+        if key.lower() not in _TRACKING_PARAMS
+    ]
+    return urllib.parse.urlunsplit(
+        (parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), urllib.parse.urlencode(query), "")
     )
 
 
@@ -54,7 +73,7 @@ def _street_abbreviation(left: str, right: str) -> bool:
 def _same_listing(left: Listing, right: Listing) -> bool:
     if left.price_ils != right.price_ils:
         return False
-    if left.url.split("?")[0].rstrip("/") == right.url.split("?")[0].rstrip("/"):
+    if _url_key(left.url) == _url_key(right.url):
         return True
     if not _hood_key(left.neighborhood) or _hood_key(left.neighborhood) != _hood_key(right.neighborhood):
         return False

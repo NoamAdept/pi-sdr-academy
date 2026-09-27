@@ -132,6 +132,25 @@ class ParseTests(unittest.TestCase):
             Listing("Homeless", "https://homeless.example/x", 2300, "רמת גן", "חרוזים", "2"),
         ]
         self.assertEqual(len(dedupe(separate)), 4)
+        same_board = [
+            Listing(
+                "Komo",
+                "https://www.komo.co.il/code/nadlan/details/?modaaNum=4931305",
+                2600,
+                "רמת גן",
+                "תל בנימין",
+                "ביאליק 79",
+            ),
+            Listing(
+                "Komo",
+                "https://www.komo.co.il/code/nadlan/details/?modaaNum=4923107",
+                2600,
+                "תל אביב יפו",
+                "לב תל אביב",
+                "אלנבי 134",
+            ),
+        ]
+        self.assertEqual(len(dedupe(same_board)), 2)
 
     def test_dedupe_key_ignores_quotes(self):
         a = Listing("Komo", "https://example/a", 2500, "תל אביב יפו", "נווה אביבים", "אינשטיין 27")
