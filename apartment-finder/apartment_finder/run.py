@@ -98,12 +98,22 @@ def apply_travel(
         listing.latitude = lat
         listing.longitude = lon
         km = haversine_km(campus[0], campus[1], lat, lon)
-        walk = client.route_minutes("foot", campus, (lat, lon))
+        walk_leg = client.route_leg("foot", campus, (lat, lon))
+        walk_source = "OSM foot router"
+        if walk_leg is None:
+            walk = km * 1.35 / 4.8 * 60
+            walk_source = "straight-line estimate at 4.8 km/h"
+        else:
+            walk, walked_km = walk_leg
+            if walk > 0 and (walked_km / (walk / 60.0)) > 8:
+                walk = walked_km / 4.8 * 60
+                walk_source = "road distance at 4.8 km/h (router duration was not a walking speed)"
         drive = None
-        keep, text, minutes = assess_travel(walk, None, km, max_minutes)
+        keep, text, minutes = assess_travel(walk, None, km, max_minutes, walk_source)
         if not keep:
-            drive = client.route_minutes("driving", campus, (lat, lon))
-            keep, text, minutes = assess_travel(walk, drive, km, max_minutes)
+            drive_leg = client.route_leg("driving", campus, (lat, lon))
+            drive = drive_leg[0] if drive_leg else None
+            keep, text, minutes = assess_travel(walk, drive, km, max_minutes, walk_source)
         if precision:
             text = f"{precision} {text}"
         listing.travel_text = text

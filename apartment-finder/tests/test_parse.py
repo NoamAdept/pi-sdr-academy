@@ -109,14 +109,15 @@ class ParseTests(unittest.TestCase):
         keep, label, _minutes = assess_travel(18, None, 1.2, 30)
         self.assertTrue(keep)
         self.assertIn("walking", label)
-        keep, label, _minutes = assess_travel(40, 14, 6, 30)
-        self.assertTrue(keep)
-        self.assertIn("driving", label)
-        keep, _label, _minutes = assess_travel(50, 28, 9, 30)
-        self.assertFalse(keep)
-        keep, label, _minutes = assess_travel(None, 32, 4.2, 30)
+        keep, label, _minutes = assess_travel(57, 8, 3.0, 30)
         self.assertTrue(keep)
         self.assertIn("straight-line", label)
+        keep, _label, _minutes = assess_travel(126, 14.5, 7.9, 30)
+        self.assertFalse(keep)
+        keep, _label, _minutes = assess_travel(40, None, 3.0, 30)
+        self.assertFalse(keep)
+        keep, _label, _minutes = assess_travel(50, 28, 4.2, 30)
+        self.assertFalse(keep)
 
 
 if __name__ == "__main__":

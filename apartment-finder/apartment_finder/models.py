@@ -32,7 +32,7 @@ class Listing:
         if self.kind:
             bits.append(self.kind)
         if self.rooms:
-            bits.append(f"{self.rooms} rooms in the unit")
+            bits.append(f"{self.rooms} חד'")
         return ", ".join(bits) if bits else "not stated"
 
 

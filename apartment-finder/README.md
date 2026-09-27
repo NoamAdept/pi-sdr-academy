@@ -31,7 +31,7 @@ The latest candidate list from the run that shipped with this tool is that markd
 - ad.co.il roommate, rental, and student boards, using each page's own city and price filters.
 - A single public request each to Yad2, Madlan, Homeless, WinWin, and OnMap. Those often answer with a block page, a redirect, or a client-rendered shell. Nothing is invented to fill the gap.
 
-Travel uses OpenStreetMap Nominatim for the address and OSRM for walking, then driving if the walk is over the cap. There is no live transit itinerary; the report names the mode. See the travel rule printed at the top of the output.
+Travel uses OpenStreetMap Nominatim for the address and the OpenStreetMap foot router for walking. If the walk is over the cap, a listing is kept only when it is within 4.5 km and the free-flow drive is at most 15 minutes. There is no live transit itinerary; the report names the mode. See the travel rule printed at the top of the output.
 
 ## Tests
 

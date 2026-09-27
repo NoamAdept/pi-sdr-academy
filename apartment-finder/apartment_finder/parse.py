@@ -300,6 +300,25 @@ def parse_ad_detail(html_text: str) -> dict[str, str]:
     }
 
 
+def price_buckets(html_text: str, min_rent: int, max_rent: int) -> list[str]:
+    """Checkbox price bands on boards that do not use a min/max slider."""
+    found: list[str] = []
+    for opt in re.findall(r'data-spid="pricerange"\s+data-optid="([^"]+)"', html_text):
+        try:
+            if opt.startswith("-"):
+                low, high = 0, int(opt[1:])
+            elif opt.endswith("-"):
+                low, high = int(opt[:-1]), 10**9
+            else:
+                low_text, high_text = opt.split("-", 1)
+                low, high = int(low_text), int(high_text)
+        except ValueError:
+            continue
+        if high >= min_rent and low <= max_rent and opt not in found:
+            found.append(opt)
+    return found
+
+
 def ad_price_param(html_text: str) -> str | None:
     for match in re.finditer(
         r'nav-link-text">([^<]+)</span>[\s\S]{0,500}?id="filter-(rp\d+)"',
@@ -320,7 +339,7 @@ def ad_result_count(html_text: str) -> int | None:
 def ad_city_filters(html_text: str) -> list[tuple[str, str, str]]:
     found: list[tuple[str, str, str]] = []
     for match in re.finditer(
-        r'data-spid="(sp\d+)"\s+data-optid="(\d+)"[\s\S]{0,350}?<label[^>]*>([^<]+)</label>',
+        r'data-spid="(sp\d+|university)"\s+data-optid="([^"]+)"[\s\S]{0,350}?<label[^>]*>([^<]+)</label>',
         html_text,
     ):
         found.append((match.group(1), match.group(2), collapse(match.group(3))))

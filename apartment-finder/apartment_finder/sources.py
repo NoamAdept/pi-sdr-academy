@@ -19,6 +19,7 @@ from apartment_finder.parse import (
     parse_ad_list,
     parse_komo_detail,
     parse_komo_list,
+    price_buckets,
 )
 
 KOMO_CITIES = (
@@ -157,7 +158,12 @@ class Collector:
     def _ad_category(self, name: str, base: str) -> int:
         body, _final = fetch(base + "?view=list")
         price_param = ad_price_param(body)
-        if not price_param:
+        if price_param:
+            price_sets = [{price_param: f"{self.min_rent},{self.max_rent}"}]
+        else:
+            buckets = price_buckets(body, self.min_rent, self.max_rent)
+            price_sets = [{"pricerange": bucket} for bucket in buckets]
+        if not price_sets:
             raise FetchError("price filter not found on the search page", base)
         filters = [
             (spid, optid, label)
@@ -169,38 +175,35 @@ class Collector:
         seen: set[str] = set()
         added = 0
         for spid, optid, _label in filters:
-            for page in range(1, self.max_pages + 1):
-                params = {
-                    "view": "list",
-                    spid: optid,
-                    price_param: f"{self.min_rent},{self.max_rent}",
-                }
-                if page > 1:
-                    params["pageindex"] = str(page)
-                url = base + "?" + urllib.parse.urlencode(params)
-                page_body, _final = fetch(url)
-                rows = [
-                    row
-                    for row in parse_ad_list(page_body, name)
-                    if self._in_budget(row.price_ils) and row.url not in seen
-                ]
-                if not rows:
-                    break
-                for row in rows:
-                    seen.add(row.url)
-                    self._enrich_ad(row)
-                    if looks_like_short_stay(" ".join((row.extras, row.kind))):
-                        continue
-                    self.listings.append(row)
-                    added += 1
+            for price_query in price_sets:
+                for page in range(1, self.max_pages + 1):
+                    params = {"view": "list", spid: optid, **price_query}
+                    if page > 1:
+                        params["pageindex"] = str(page)
+                    url = base + "?" + urllib.parse.urlencode(params)
+                    page_body, _final = fetch(url)
+                    rows = [
+                        row
+                        for row in parse_ad_list(page_body, name)
+                        if self._in_budget(row.price_ils) and row.url not in seen
+                    ]
+                    if not rows:
+                        break
+                    for row in rows:
+                        seen.add(row.url)
+                        self._enrich_ad(row)
+                        if looks_like_short_stay(" ".join((row.extras, row.kind))):
+                            continue
+                        self.listings.append(row)
+                        added += 1
+                        _pause(self.pause)
+                    total = ad_result_count(page_body)
+                    if total is not None and page * 20 >= total:
+                        break
+                    if len(rows) < 10:
+                        break
                     _pause(self.pause)
-                total = ad_result_count(page_body)
-                if total is not None and page * 20 >= total:
-                    break
-                if len(rows) < 10:
-                    break
                 _pause(self.pause)
-            _pause(self.pause)
         return added
 
     def _enrich_ad(self, listing: Listing) -> None:
@@ -231,15 +234,7 @@ class Collector:
                     SourceStatus(name, False, f"redirected to {final} and does not serve a rental search")
                 )
                 continue
-            if name == "OnMap" and "₪" not in body and "price" not in body.lower():
-                self.statuses.append(
-                    SourceStatus(
-                        name,
-                        False,
-                        "page loaded but listings are not in the HTML (client-rendered); nothing extracted",
-                    )
-                )
-                continue
-            self.statuses.append(
-                SourceStatus(name, False, "reachable, but this run has no parser for it and did not invent rows")
-            )
+            detail = "no listing parser; nothing extracted"
+            if name == "OnMap":
+                detail = "page is a client-rendered shell; no listing rows in the HTML"
+            self.statuses.append(SourceStatus(name, False, detail))

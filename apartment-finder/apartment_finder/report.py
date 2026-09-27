@@ -92,6 +92,7 @@ def render(result: SearchResult, when: datetime, min_rent: int, max_rent: int, m
             "Vaad and arnona are copied only when the listing states them. A missing extra is not a reason to drop the row.",
             "These are advertisements, not confirmed vacancies. Contact the advertiser before making plans.",
             "",
+            "",
         ]
     )
     return (

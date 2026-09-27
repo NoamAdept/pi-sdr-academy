@@ -18,7 +18,10 @@ from apartment_finder.http_client import BROWSER_UA, FetchError, fetch
 # Main TAU campus, Ramat Aviv (Chaim Levanon / Brodetsky area).
 TAU_ANCHOR = (32.1133, 34.8044)
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
-OSRM = "https://router.project-osrm.org/route/v1"
+# router.project-osrm.org's "foot" profile returns driving speeds, so walking
+# times come from the OSM.de foot router instead.
+FOOT_ROUTER = "https://routing.openstreetmap.de/routed-foot/route/v1"
+DRIVE_ROUTER = "https://router.project-osrm.org/route/v1"
 NOMINATIM_UA = "tau-apartment-finder/1.0 (student housing search; educational)"
 
 
@@ -51,44 +54,38 @@ def assess_travel(
     drive_min: float | None,
     straight_km: float | None,
     max_minutes: int,
+    walk_source: str = "OSM foot router",
 ) -> tuple[bool, str, float | None]:
     """Decide whether a place is plausibly within the transit cap.
 
     Returns (keep, label, sort_minutes).
     """
     if walk_min is not None and walk_min <= max_minutes:
-        return True, f"walking {round(walk_min)} min (OSRM foot)", walk_min
-    # A short free-flow drive plus boarding/wait slack stands in for transit
-    # when no transit router answers. Slack is 12 minutes.
-    if drive_min is not None and drive_min + 12 <= max_minutes:
-        shown = drive_min + 12
-        return (
-            True,
-            (
-                f"driving {round(drive_min)} min (OSRM), transit not routed; "
-                f"kept because drive + 12 min slack is {round(shown)} min "
-                f"(cap {max_minutes})"
-            ),
-            shown,
-        )
+        return True, f"walking {round(walk_min)} min ({walk_source})", walk_min
+    # Free-flow driving on this router is about 45 km/h with no traffic, so a
+    # long drive can look short while a bus takes much longer. Keep a driving
+    # result only when the place is also within 4.5 km, where a direct bus
+    # from the TAU area is still plausibly inside the cap.
     if (
         straight_km is not None
-        and straight_km <= 5
-        and (drive_min is None or drive_min <= max_minutes + 5)
+        and straight_km <= 4.5
+        and drive_min is not None
+        and drive_min <= 15
     ):
-        drive_bit = f", driving {round(drive_min)} min (OSRM)" if drive_min is not None else ""
-        sort_value = drive_min if drive_min is not None else straight_km / 5 * max_minutes
+        drive_bit = f", driving {round(drive_min)} min (OSRM, free-flow)" if drive_min is not None else ""
+        walk_bit = f", walking {round(walk_min)} min ({walk_source})" if walk_min is not None else ""
+        sort_value = drive_min if drive_min is not None else straight_km / 4.5 * max_minutes
         return (
             True,
             (
-                f"straight-line {straight_km:.1f} km{drive_bit}; transit not routed; "
-                f"kept as plausibly ≤{max_minutes} min transit"
+                f"straight-line {straight_km:.1f} km{drive_bit}{walk_bit}; "
+                f"transit not routed; kept as plausibly ≤{max_minutes} min transit"
             ),
             sort_value,
         )
     bits = []
     if walk_min is not None:
-        bits.append(f"walking {round(walk_min)} min (OSRM foot)")
+        bits.append(f"walking {round(walk_min)} min ({walk_source})")
     if drive_min is not None:
         bits.append(f"driving {round(drive_min)} min (OSRM)")
     if straight_km is not None:
@@ -103,11 +100,12 @@ def assess_travel(
 
 
 TRAVEL_RULE = (
-    "Public transit routers were not queried (no open journey planner responded). "
-    "Primary measure is OSRM walking time. If the walk exceeds the cap, the listing "
-    "is kept when OSRM free-flow driving plus 12 minutes of wait/access is still "
-    "within the cap, or when straight-line distance is ≤5 km and driving is not "
-    "already far over the cap. The mode is named on each row."
+    "No public transit journey planner was available. Walking time is from the "
+    "OpenStreetMap foot router (about 4.8 km/h). A listing is kept when that walk "
+    "is within the cap, or when straight-line distance is ≤4.5 km and free-flow "
+    "driving is ≤15 min, which is still a plausible bus trip from the TAU area. "
+    "Free-flow driving alone is not used: that router treats an 11 km trip as "
+    "about 15 minutes. The mode is named on each row."
 )
 
 
@@ -115,7 +113,7 @@ class TravelClient:
     def __init__(self, pause: float = 1.05):
         self.pause = pause
         self._geo_cache: dict[str, tuple[float, float, str] | None] = {}
-        self._route_cache: dict[tuple, float | None] = {}
+        self._route_cache: dict[tuple, tuple[float, float] | None] = {}
         self._last_nominatim = 0.0
 
     def geocode_campus(self, query: str) -> tuple[float, float, str]:
@@ -164,23 +162,25 @@ class TravelClient:
         self._geo_cache[key] = chosen
         return chosen
 
-    def route_minutes(self, profile: str, origin: tuple[float, float], dest: tuple[float, float]) -> float | None:
+    def route_leg(
+        self, profile: str, origin: tuple[float, float], dest: tuple[float, float]
+    ) -> tuple[float, float] | None:
+        """Return (minutes, kilometers) for a foot or driving route."""
         key = (profile, round(origin[0], 5), round(origin[1], 5), round(dest[0], 5), round(dest[1], 5))
         if key in self._route_cache:
             return self._route_cache[key]
+        base = FOOT_ROUTER if profile == "foot" else DRIVE_ROUTER
         # OSRM expects lon,lat.
         path = f"{origin[1]},{origin[0]};{dest[1]},{dest[0]}"
-        url = f"{OSRM}/{profile}/{path}?overview=false"
+        url = f"{base}/{profile}/{path}?overview=false"
         try:
             body, _final = fetch(url, timeout=20, user_agent=BROWSER_UA)
             payload = json.loads(body)
-        except (FetchError, json.JSONDecodeError, ValueError):
-            self._route_cache[key] = None
-            return None
-        try:
-            seconds = payload["routes"][0]["duration"]
-            minutes = float(seconds) / 60.0
-        except (KeyError, IndexError, TypeError, ValueError):
-            minutes = None
-        self._route_cache[key] = minutes
-        return minutes
+            route = payload["routes"][0]
+            minutes = float(route["duration"]) / 60.0
+            kilometers = float(route["distance"]) / 1000.0
+            leg = (minutes, kilometers)
+        except (FetchError, json.JSONDecodeError, KeyError, IndexError, TypeError, ValueError):
+            leg = None
+        self._route_cache[key] = leg
+        return leg
